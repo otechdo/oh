@@ -1,6 +1,6 @@
 [package]
 name = "eywa"
-version = "0.0.1"
+version = "0.2.1"
 edition = "2021"
 license = "GPL-2.0-or-later"
 keywords = ["eywa"]
