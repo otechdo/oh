@@ -1,0 +1,13 @@
+[package]
+name = "eywa"
+version = "0.0.1"
+edition = "2021"
+license = "GPL-2.0-or-later"
+keywords = ["eywa"]
+categories = ["development-tools"]
+readme = "README.md"
+authors = ["Willy Micieli"]
+repository = "https://github.com/otechdo/eywa"
+description = "eywa"
+
+[dependencies]
