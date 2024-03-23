@@ -164,15 +164,24 @@ impl Arch {
         assert!(exec("sh", &["-c", "sudo rm -rf eywa"]));
         assert!(exec("sh", &["-c", "sudo rm locale.conf"]));
         assert!(exec("sh", &["-c", "sudo rm vconsole.conf"]));
-        exit(self.enable_services());
+        exit(self.configure_boot().enable_services());
     }
 
     ///
     /// # Panics
     ///
     pub fn enable_services(&mut self) -> i32 {
-        assert!(exec("sh", &["-c", "sudo systemctl enable NetworkManager.service"]));
-        assert!(exec("sh", &["-c", "sudo systemctl enable NetworkManager-wait-online.service"]));
+        assert!(exec(
+            "sh",
+            &["-c", "sudo systemctl enable NetworkManager.service"]
+        ));
+        assert!(exec(
+            "sh",
+            &[
+                "-c",
+                "sudo systemctl enable NetworkManager-wait-online.service"
+            ]
+        ));
         0
     }
     ///
@@ -309,6 +318,13 @@ impl Arch {
         }
     }
 
+    ///
+    /// # Panics
+    ///
+    fn configure_boot(&mut self) -> &mut Self {
+        assert!(exec("sh", &["-c", "sudo bootctl --path=/boot install"]));
+        self
+    }
     ///
     /// # Panics
     ///
