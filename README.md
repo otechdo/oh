@@ -1,4 +1,149 @@
-# Key Bindings
+# Eywa
+
+
+##  Set desired keymap
+
+```bash
+loadkeys <keymap>
+```
+
+## Connect to Internet
+
+```bash
+nmcli
+```
+
+##  Sync clock
+
+```bash
+timedatectl set-ntp true
+```
+
+##  Create three partitions:
+
+* 4096MB Linux partition  # 8300
+* 2 EFI partition         # ef00
+* 100% Linux partition    # 8300
+
+```bash
+cgdisk /dev/sda
+```
+
+## Create mount point
+
+```bash
+mkdir -p /mnt/boot/efi
+```
+
+## Formatting
+
+### /boot
+
+```bash
+mkfs.ext2 /dev/sda1
+```
+
+### /boot/efi
+
+```bash
+mkfs.fat -F32 /dev/sda2
+```
+
+### /
+
+```bash
+mkfs.ext4  /dev/sda3
+```
+
+## Mount EFI partition
+
+```bash
+mount /dev/sda3 /mnt
+mount /dev/sda1 /mnt/boot
+mount /dev/sda2 /mnt/boot/efi
+```
+
+## Change pacman mirror priority
+
+```bash
+reflector -c <country> --sort rate --save /etc/pacman.d/mirrorlist -p https
+```
+
+## Install the base system
+
+```bash
+pacstrap /mnt base base-devel linux linux-firmware vim git efibootmgr rustup sudo
+```
+
+##  Generate fstab
+
+```bash
+genfstab -U /mnt >> /mnt/etc/fstab
+```
+
+##  Enter inside the new system
+
+```bash
+arch-chroot /mnt
+```
+
+## Create your account
+
+### Create user
+
+```bash
+useradd -m -g users -G wheel -s  <shell> <username>
+```
+
+### Create password
+```bash
+passwd <username>
+```
+
+### Add to sudoers
+
+```bash
+echo '<username> ALL=(ALL) ALL' > /etc/sudoers.d/<username>
+```
+
+## Checkout user
+
+```bash
+su <username> && cd ~
+```
+
+## Install Paru
+
+```bash
+git clone https://aur.archlinux.org/paru && cd paru && makepkg -si && cd .. && rm -rf paru
+```
+
+## Install eywa
+
+```bash
+paru -Syu eywa
+```
+
+## Personalize arch
+
+```bash
+sudo eywa
+```
+## Dependencies
+
+### Minimal required
+
+```bash
+pacman -S git base base-devel 
+```
+
+### Installer
+
+```bash
+paru -Syu eywa
+```
+
+## Key Bindings
 
 This file lists all of the key bindings currently registered by prompts.
 
