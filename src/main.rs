@@ -3,7 +3,7 @@
 use inquire::{prompt_confirmation, MultiSelect, Password, Select, Text};
 use regex::Regex;
 use std::collections::HashMap;
-use std::fs::{remove_dir_all, remove_file, File};
+use std::fs::{remove_file, File};
 use std::io;
 use std::io::{read_to_string, BufRead};
 use std::path::Path;
@@ -11,6 +11,16 @@ use std::process::{exit, Command, ExitCode};
 use tabled::builder::Builder;
 use tabled::settings::Style;
 use tabled::{Table, Tabled};
+
+fn exec(cmd: &str, args: &[&str]) -> bool {
+    Command::new(cmd)
+        .args(args)
+        .spawn()
+        .unwrap()
+        .wait()
+        .expect("failed to execute cmd")
+        .success()
+}
 
 ///
 /// # Panics
@@ -31,12 +41,13 @@ fn parse_file_lines(filename: &str) -> Vec<String> {
     file_lines
 }
 pub struct Arch {
-    locales: Vec<String>,
+    locales: String,
     packages: Vec<String>,
     root: HashMap<bool, String>,
     users: Vec<Users>,
     users_table: Vec<Users>,
-    success: i32,
+    timezone: String,
+    keymap: String,
 }
 
 #[derive(Tabled, Clone)]
@@ -62,27 +73,28 @@ impl Users {
 impl Default for Arch {
     #[must_use]
     fn default() -> Self {
+        if Path::new("eywa").exists() {
+            assert!(exec("sh", &["-c", "sudo rm -rf eywa"]));
+        }
+        if !Path::new("eywa").exists() {
+            assert!(exec("sh", &["-c", "sudo mkdir -p eywa"]));
+            assert!(exec("sh", &["-c", "sudo chmod -R 777 eywa"]));
+        }
         Self {
-            locales: Vec::new(),
+            locales: String::new(),
             packages: Vec::new(),
             root: HashMap::new(),
             users: Vec::new(),
             users_table: Vec::new(),
-            success: 0,
+            timezone: String::new(),
+            keymap: String::new(),
         }
     }
 }
 impl Arch {
     #[must_use]
     pub fn new() -> Self {
-        Self {
-            locales: Vec::new(),
-            packages: Vec::new(),
-            root: HashMap::new(),
-            users: Vec::new(),
-            users_table: Vec::new(),
-            success: 0,
-        }
+        Self::default()
     }
 
     ///
@@ -92,30 +104,26 @@ impl Arch {
         let dot = prompt_confirmation("Clone a dotfiles repository ?").unwrap();
         let mut cmds: Vec<String> = Vec::new();
         if dot {
-            if Path::new("/tmp/dotfiles").exists() {
-                remove_dir_all("/tmp/dotfiles").expect("failed to remove the tmp dir");
+            if Path::new("eywa/dotfiles").exists() {
+                assert!(exec("sh", &["-c", "sudo rm -rf eywa/dotfiles"]));
             }
             let repo = Text::new("Enter repository url : ")
                 .with_help_message("Url must be a git repository")
                 .prompt()
                 .unwrap();
-            assert!(Command::new("git")
-                .arg("clone")
-                .arg("--quiet")
-                .arg(repo.as_str())
-                .arg("/tmp/dotfiles")
-                .spawn()
-                .unwrap()
-                .wait()
-                .unwrap()
-                .success());
+            assert!(exec(
+                "sh",
+                &[
+                    "-c",
+                    format!("git clone --quiet {repo} eywa/dotfiles").as_str()
+                ]
+            ));
             loop {
                 let cmd = Text::new("Please enter a bash command : ")
-                    .with_help_message("Command will be executed in your repository")
                     .prompt()
                     .unwrap();
                 cmds.push(cmd);
-                match prompt_confirmation("Continue ?") {
+                match prompt_confirmation("Add a new command ? ") {
                     Ok(true) => continue,
                     Ok(false) | Err(_) => break,
                 }
@@ -124,7 +132,7 @@ impl Arch {
                 let collection: Vec<&str> = cmd.split_whitespace().collect();
                 assert!(Command::new("bash")
                     .args(collection)
-                    .current_dir("/tmp/dotfiles")
+                    .current_dir("eywa/dotfiles")
                     .spawn()
                     .unwrap()
                     .wait()
@@ -136,25 +144,37 @@ impl Arch {
         self
     }
 
-    fn install_package(&mut self, pkgs: &[String]) -> &mut Self {
-        for pkg in pkgs {
-            assert!(Command::new("paru")
-                .arg("-S")
-                .arg("--noconfirm")
-                .arg(pkg.as_str())
-                .spawn()
-                .unwrap()
-                .wait()
-                .unwrap()
-                .success());
+    ///
+    ///  # Panics
+    ///
+    fn install_package(&mut self, packages: &[String]) -> &mut Self {
+        for pkg in packages {
+            assert!(exec(
+                "sh",
+                &["-c", format!("paru -S --noconfirm {pkg}").as_str()]
+            ));
         }
         self
     }
 
+    ///
+    /// # Panics
+    ///
     pub fn quit(&mut self) -> ExitCode {
-        exit(self.success);
+        assert!(exec("sh", &["-c", "sudo rm -rf eywa"]));
+        assert!(exec("sh", &["-c", "sudo rm locale.conf"]));
+        assert!(exec("sh", &["-c", "sudo rm vconsole.conf"]));
+        exit(self.enable_services());
     }
 
+    ///
+    /// # Panics
+    ///
+    pub fn enable_services(&mut self) -> i32 {
+        assert!(exec("sh", &["-c", "sudo systemctl enable NetworkManager.service"]));
+        assert!(exec("sh", &["-c", "sudo systemctl enable NetworkManager-wait-online.service"]));
+        0
+    }
     ///
     /// # Panics
     ///
@@ -169,18 +189,88 @@ impl Arch {
         for mat in re.find_iter(text.as_str()) {
             locales.push(mat.as_str().to_string());
         }
-        let l = MultiSelect::new("Choose your system locale : ", locales)
+        let l = Select::new("Choose your system locale : ", locales)
             .with_help_message("Locale for the system")
             .prompt()
             .expect("Failed to get locales");
         if l.is_empty() {
             self.choose_locale()
         } else {
-            for locale in &l {
-                self.locales.push(locale.to_string());
-            }
+            self.locales.push_str(l.as_str());
             self
         }
+    }
+
+    ///
+    /// # Panics
+    ///
+    pub fn choose_keymap(&mut self) -> &mut Self {
+        self.keymap
+            .push_str(Text::new("Enter your keymap : ").prompt().unwrap().as_str());
+        if self.keymap.is_empty() {
+            self.choose_keymap()
+        } else {
+            self
+        }
+    }
+
+    ///
+    /// # Panics
+    ///
+    pub fn configure_timezone(&mut self) -> &mut Self {
+        assert!(exec(
+            "sh",
+            &[
+                "-c",
+                format!("sudo timedatectl set-timezone {}", self.timezone).as_str()
+            ]
+        ));
+        self
+    }
+
+    ///
+    /// # Panics
+    ///
+    pub fn check_network(&mut self) -> &mut Self {
+        assert!(exec("sh", &["-c", "ping -4c4 archlinux.org"]));
+        self
+    }
+
+    ///
+    /// # Panics
+    ///
+    pub fn configure_keymap(&mut self) -> &mut Self {
+        assert!(exec(
+            "sh",
+            &[
+                "-c",
+                format!("echo 'KEYMAP={}' > vconsole.conf", self.keymap).as_str()
+            ]
+        ));
+        assert!(exec(
+            "sh",
+            &["-c", "sudo install -m 644 vconsole.conf /etc/vconsole.conf"]
+        ));
+        self
+    }
+
+    ///
+    /// # Panics
+    ///
+    pub fn configure_locale(&mut self) -> &mut Self {
+        assert!(exec(
+            "sh",
+            &[
+                "-c",
+                format!("sudo echo \"LANG={}\" > locale.conf", self.locales).as_str()
+            ]
+        ));
+
+        assert!(exec(
+            "sh",
+            &["-c", "sudo install -m 644 locale.conf /etc/locale.conf"]
+        ));
+        self
     }
 
     ///
@@ -190,18 +280,22 @@ impl Arch {
     /// if failed to remove file
     ///
     pub fn choose_packages(&mut self) -> &mut Self {
-        if Path::new("/tmp/eywa/pkgs").exists() {
-            remove_file("/tmp/eywa/pkgs").expect("failed to remove file");
+        if Path::new("eywa/pkgs").exists() {
+            remove_file("eywa/pkgs").expect("failed to remove file");
         }
-        assert!(Command::new("make")
-            .arg("pkgs")
-            .current_dir("/tmp/eywa")
-            .spawn()
-            .unwrap()
-            .wait()
-            .unwrap()
-            .success());
-        let p = MultiSelect::new("Select packages : ", parse_file_lines("/tmp/eywa/pkgs"))
+        assert!(exec(
+            "sh",
+            &["-c", "sudo pacman -Sl core | cut -d ' ' -f 2 > eywa/pkgs"]
+        ));
+        assert!(exec(
+            "sh",
+            &["-c", "sudo pacman -Sl extra | cut -d ' ' -f 2 >> eywa/pkgs"]
+        ));
+        assert!(exec(
+            "sh",
+            &["-c", "paru --list  aur | cut -d ' ' -f 2 >> eywa/pkgs"]
+        ));
+        let p = MultiSelect::new("Select packages : ", parse_file_lines("eywa/pkgs"))
             .with_help_message("Packages to install on the system")
             .prompt()
             .expect("Failed to get packages");
@@ -215,36 +309,35 @@ impl Arch {
         }
     }
 
-    fn create_users(&mut self) -> &mut Self {
+    ///
+    /// # Panics
+    ///
+    pub fn create_users(&mut self) -> &mut Self {
         for user in &self.users {
             if user.sudoers {
-                assert!(Command::new("useradd")
-                    .arg("-m")
-                    .arg("-g")
-                    .arg("wheel")
-                    .arg("-p")
-                    .arg(&user.password)
-                    .arg(&user.name)
-                    .arg("-s")
-                    .arg(&user.shell)
-                    .spawn()
-                    .unwrap()
-                    .wait()
-                    .unwrap()
-                    .success());
+                assert!(exec(
+                    "sh",
+                    &[
+                        "-c",
+                        format!(
+                            "sudo useradd -m -g wheel -p {} {} -s {}",
+                            user.password, user.name, user.shell
+                        )
+                        .as_str()
+                    ]
+                ));
             } else {
-                assert!(Command::new("useradd")
-                    .arg("-m")
-                    .arg("-p")
-                    .arg(&user.password)
-                    .arg(&user.name)
-                    .arg("-s")
-                    .arg(&user.shell)
-                    .spawn()
-                    .unwrap()
-                    .wait()
-                    .unwrap()
-                    .success());
+                assert!(exec(
+                    "sh",
+                    &[
+                        "-c",
+                        format!(
+                            "sudo useradd -m -p {} {} -s {}",
+                            user.password, user.name, user.shell
+                        )
+                        .as_str()
+                    ]
+                ));
             }
         }
         self
@@ -265,7 +358,7 @@ impl Arch {
             "{}",
             format_args!(
                 "\nLocale:\n{}\nPackages:\n{}\n{}",
-                self.convert(&self.locales.clone()),
+                self.convert(&[self.locales.to_string()]),
                 self.convert(&self.packages.clone()),
                 self.convert_users(self.users_table.clone())
             )
@@ -274,11 +367,21 @@ impl Arch {
             Ok(true) => self
                 .install_package(&self.packages.clone())
                 .create_users()
+                .configure_timezone()
+                .configure_locale()
+                .configure_keymap()
                 .quit(),
             Ok(false) | Err(_) => exit(1),
         }
     }
 
+    ///
+    /// # Panics
+    ///
+    pub fn pacman_keys(&mut self) -> &mut Self {
+        assert!(exec("sh", &["-c", "pacman-key --refresh-keys"]));
+        self
+    }
     ///
     /// # Panics
     ///
@@ -345,6 +448,46 @@ impl Arch {
     ///
     /// # Panics
     ///
+    pub fn choose_timezone(&mut self) -> &mut Self {
+        self.timezone = Text::new("Please enter your timezone : ").prompt().unwrap();
+        if self.timezone.is_empty() {
+            self.choose_timezone()
+        } else {
+            self
+        }
+    }
+
+    ///
+    /// # Panics
+    ///
+    pub fn configure_mirrors(&mut self) -> &mut Self {
+        let country = Text::new("Please enter your country ? : ")
+            .prompt()
+            .unwrap();
+
+        let mut parallel = Text::new("Please enter the pacman parallel downloads size : ")
+            .prompt()
+            .unwrap();
+        if parallel.is_empty() {
+            parallel.push('5');
+        }
+        assert!(exec(
+            "sh",
+            &[
+                "-c",
+                format!(
+                    "sudo reflector --sort delay -c {country} --save /etc/pacman.d/mirrorlist -p https"
+                )
+                .as_str()
+            ],
+        ));
+        assert!(exec("sh",&["-c",format!("sudo sed -i 's/#ParallelDownloads = 5/ParallelDownloads = {parallel}/g' /etc/pacman.conf").as_str()]));
+        self
+    }
+
+    ///
+    /// # Panics
+    ///
     pub fn configure_root(&mut self) -> &mut Self {
         let root = match prompt_confirmation("Enable root user ? ") {
             Ok(true) => true,
@@ -362,7 +505,10 @@ impl Arch {
 
 fn main() -> ExitCode {
     Arch::new()
+        .check_network()
+        .configure_mirrors()
         .choose_locale()
+        .choose_timezone()
         .choose_packages()
         .dotfiles()
         .configure_root()
