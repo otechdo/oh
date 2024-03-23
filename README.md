@@ -67,7 +67,7 @@ reflector -c <country> --sort rate --save /etc/pacman.d/mirrorlist -p https
 ## Install the base system
 
 ```bash
-pacstrap /mnt base base-devel linux linux-firmware vim git efibootmgr rustup sudo
+pacstrap /mnt base base-devel linux linux-firmware vim git efibootmgr rustup sudo networkmanager
 ```
 
 ##  Generate fstab
@@ -87,10 +87,17 @@ arch-chroot /mnt
 ### Create user
 
 ```bash
-useradd -m -g users -G wheel -s  <shell> <username>
+useradd -m -g users -G wheel -s <shell> <username>
 ```
 
-### Create password
+### Create root password
+
+```bash
+passwd root
+```
+
+### Create user password
+
 ```bash
 passwd <username>
 ```
@@ -147,7 +154,7 @@ This file lists all of the key bindings currently registered by prompts.
 These key bindings may be used with all prompts.
 
 | **command**                      | **description**         |
-| -------------------------------- | ----------------------- |
+|----------------------------------|-------------------------|
 | <kbd>enter</kbd>                 | Submit answer.          |
 | <kbd>esc</kbd>                   | Cancel the prompt\*.    |
 | <kbd>ctrl</kbd>  +  <kbd>c</kbd> | Interrupt the prompt\*. |
@@ -159,18 +166,18 @@ These key bindings may be used with all prompts.
 These key bindings may be used with all prompts that ask the user for text input: [`Text`], [`Select`], [`MultiSelect`], [`Confirm`], [`CustomType`] and [`Password`]. The [`Editor`] prompt is not included because it opens a separate text editor for text input.
 
 
-| **command**                         | **description**                                 |
-| ----------------------------------- | ----------------------------------------------- |
-| <kbd>character</kbd>                | Insert the character into the input.            |
-| <kbd>left</kbd>                     | Move the cursor back one character.             |
-| <kbd>right</kbd>                    | Move the cursor forward one character.          |
-| <kbd>ctrl</kbd> + <kbd>left</kbd>   | Move one word to the left of the cursor.        |
-| <kbd>ctrl</kbd> + <kbd>right</kbd>  | Move one word to the right of the cursor.       |
-| <kbd>home</kbd>                     | Move cursor to the start of the line*.          |
-| <kbd>end</kbd>                      | Move cursor to the end of the line*.            |
-| <kbd>backspace</kbd>                | Delete one character to the left of the cursor. |
-| <kbd>delete</kbd>                   | Delete the character at the cursor.             |
-| <kbd>ctrl</kbd> + <kbd>delete</kbd> | Delete one word to the right of the cursor.     |
+| **command**                          | **description**                                 |
+|--------------------------------------|-------------------------------------------------|
+| <kbd>character</kbd>                 | Insert the character into the input.            |
+| <kbd>left</kbd>                      | Move the cursor back one character.             |
+| <kbd>right</kbd>                     | Move the cursor forward one character.          |
+| <kbd>ctrl</kbd> + <kbd>left</kbd>    | Move one word to the left of the cursor.        |
+| <kbd>ctrl</kbd> + <kbd>right</kbd>   | Move one word to the right of the cursor.       |
+| <kbd>home</kbd>                      | Move cursor to the start of the line*.          |
+| <kbd>end</kbd>                       | Move cursor to the end of the line*.            |
+| <kbd>backspace</kbd>                 | Delete one character to the left of the cursor. |
+| <kbd>delete</kbd>                    | Delete the character at the cursor.             |
+| <kbd>ctrl</kbd> + <kbd>delete</kbd>  | Delete one word to the right of the cursor.     |
 
 \* Key bindings not supported on [`Select`] and [`MultiSelect`] prompts.
 
@@ -179,7 +186,7 @@ These key bindings may be used with all prompts that ask the user for text input
 These key bindings may be used in [`Text`] prompts.
 
 | **command**          | **description**                                               |
-| -------------------- | ------------------------------------------------------------- |
+|----------------------|---------------------------------------------------------------|
 | <kbd>enter</kbd>     | Submit the current current text input.                        |
 | <kbd>up</kbd>        | When suggestions are displayed, move cursor one row up.       |
 | <kbd>down</kbd>      | When suggestions are displayed, move cursor one row down.     |
@@ -193,7 +200,7 @@ These key bindings may be used in [`Text`] prompts.
 These key bindings may be used in [`Select`] prompts.
 
 | **command**          | **description**                                               |
-| -------------------- | ------------------------------------------------------------- |
+|----------------------|---------------------------------------------------------------|
 | <kbd>enter</kbd>     | Submit the current highlighted option.                        |
 | <kbd>up</kbd>        | Move cursor one row up.                                       |
 | <kbd>down</kbd>      | Move cursor one row down.                                     |
@@ -210,7 +217,7 @@ These key bindings may be used in [`Select`] prompts.
 These key bindings may be used in [`MultiSelect`] prompts.
 
 | **command**          | **description**                                               |
-| -------------------- | ------------------------------------------------------------- |
+|----------------------|---------------------------------------------------------------|
 | <kbd>enter</kbd>     | Submit the options currently selected.                        |
 | <kbd>space</kbd>     | Toggle the selection of the current highlighted option.       |
 | <kbd>up</kbd>        | Move cursor one row up.                                       |
@@ -231,7 +238,7 @@ These key bindings may be used in the interactive calendar of the [`DateSelect`]
 
 
 | **command**                              | **description**                                               |
-| ---------------------------------------- | ------------------------------------------------------------- |
+|------------------------------------------|---------------------------------------------------------------|
 | <kbd>space bar</kbd> or <kbd>enter</kbd> | Submit the current highlighted date.                          |
 | <kbd>up</kbd>                            | Move cursor one row up.                                       |
 | <kbd>down</kbd>                          | Move cursor one row down.                                     |
@@ -251,7 +258,7 @@ These key bindings may be used in the interactive calendar of the [`DateSelect`]
 These key bindings may be used in [`Editor`] prompts.
 
 | **command**      | **description**                                                |
-| ---------------- | -------------------------------------------------------------- |
+|------------------|----------------------------------------------------------------|
 | <kbd>e</kbd>     | Open the editor.                                               |
 | <kbd>enter</kbd> | Submit the current content of the temporary file being edited. |
 
