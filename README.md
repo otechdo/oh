@@ -29,12 +29,6 @@ timedatectl set-ntp true
 cgdisk /dev/sda
 ```
 
-## Create mount point
-
-```bash
-mkdir -p /mnt/boot/efi
-```
-
 ## Formatting
 
 ### /boot
@@ -59,6 +53,7 @@ mkfs.ext4  /dev/sda3
 
 ```bash
 mount /dev/sda3 /mnt
+mkdir -p /mnt/boot/efi
 mount /dev/sda1 /mnt/boot
 mount /dev/sda2 /mnt/boot/efi
 ```
