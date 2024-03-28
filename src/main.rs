@@ -231,7 +231,11 @@ impl Arch {
             "sh",
             &[
                 "-c",
-                format!("sudo timedatectl set-timezone {}", self.timezone).as_str()
+                format!(
+                    "sudo ln -sf /usr/share/zoneinfo/{} /etc/localtime",
+                    self.timezone
+                )
+                .as_str()
             ]
         ));
         self
@@ -274,10 +278,17 @@ impl Arch {
                 format!("sudo echo \"LANG={}\" > locale.conf", self.locales).as_str()
             ]
         ));
-
         assert!(exec(
             "sh",
             &["-c", "sudo install -m 644 locale.conf /etc/locale.conf"]
+        ));
+
+        assert!(exec(
+            "sh",
+            &[
+                "-c",
+                format!("sudo sed -i 's/#{} UTF-8/{} UTF-8/g' /etc/locale.gen",self.locales,self.locales).as_str()
+            ]
         ));
         self
     }
@@ -302,29 +313,49 @@ impl Arch {
         ));
         assert!(exec(
             "sh",
+            &[
+                "-c",
+                "sudo pacman -Sl multilib | cut -d ' ' -f 2 >> eywa/pkgs"
+            ]
+        ));
+        assert!(exec(
+            "sh",
             &["-c", "paru --list  aur | cut -d ' ' -f 2 >> eywa/pkgs"]
         ));
-        let p = MultiSelect::new("Select packages : ", parse_file_lines("eywa/pkgs"))
-            .with_help_message("Packages to install on the system")
-            .prompt()
-            .expect("Failed to get packages");
-        if p.is_empty() {
-            self.choose_packages()
-        } else {
-            for x in &p {
-                self.packages.push(x.to_string());
+        loop {
+            let p = MultiSelect::new("Select packages : ", parse_file_lines("eywa/pkgs"))
+                .with_help_message("Packages to install on the system")
+                .prompt()
+                .expect("Failed to get packages");
+            if p.is_empty() {
+                return self.choose_packages();
+            } else {
+                for x in &p {
+                    self.packages.push(x.to_string());
+                }
+
+                match prompt_confirmation("Add package ? ") {
+                    Ok(true) => continue,
+                    Ok(false) | Err(_) => break,
+                }
             }
-            self
         }
+        self
     }
 
     ///
     /// # Panics
     ///
     fn configure_boot(&mut self) -> &mut Self {
-        assert!(exec("sh", &["-c", "sudo bootctl --path=/boot install"]));
+        assert!(exec("sh", &["-c", "sudo mkdir -p /boot/grub"]));
+        assert!(exec(
+            "sh",
+            &["-c", "sudo grub-mkconfig -o /boot/grub/grub.cfg"]
+        ));
+        assert!(exec("sh", &["-c", "sudo grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id arch --recheck"]));
         self
     }
+
     ///
     /// # Panics
     ///
@@ -526,8 +557,5 @@ fn main() -> ExitCode {
         .choose_locale()
         .choose_timezone()
         .choose_packages()
-        .dotfiles()
-        .configure_root()
-        .configure_users()
         .run()
 }
