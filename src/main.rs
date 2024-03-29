@@ -287,7 +287,11 @@ impl Arch {
             "sh",
             &[
                 "-c",
-                format!("sudo sed -i 's/#{} UTF-8/{} UTF-8/g' /etc/locale.gen",self.locales,self.locales).as_str()
+                format!(
+                    "sudo sed -i 's/#{} UTF-8/{} UTF-8/g' /etc/locale.gen",
+                    self.locales, self.locales
+                )
+                .as_str()
             ]
         ));
         self
@@ -329,15 +333,14 @@ impl Arch {
                 .expect("Failed to get packages");
             if p.is_empty() {
                 return self.choose_packages();
-            } else {
-                for x in &p {
-                    self.packages.push(x.to_string());
-                }
+            }
+            for x in &p {
+                self.packages.push(x.to_string());
+            }
 
-                match prompt_confirmation("Add package ? ") {
-                    Ok(true) => continue,
-                    Ok(false) | Err(_) => break,
-                }
+            match prompt_confirmation("Add package ? ") {
+                Ok(true) => continue,
+                Ok(false) | Err(_) => break,
             }
         }
         self
