@@ -214,13 +214,14 @@ impl Arch {
     /// # Panics
     ///
     pub fn choose_keymap(&mut self) -> &mut Self {
-        self.keymap
-            .push_str(Text::new("Enter your keymap : ").prompt().unwrap().as_str());
-        if self.keymap.is_empty() {
-            self.choose_keymap()
-        } else {
-            self
+        let keymap = Text::new("Enter your keymap : ").prompt().unwrap();
+
+        if keymap.is_empty() {
+            return self.choose_keymap();
         }
+        self.keymap.clear();
+        self.keymap.push_str(keymap.as_str());
+        self
     }
 
     ///
@@ -294,6 +295,7 @@ impl Arch {
                 .as_str()
             ]
         ));
+        assert!(exec("sh", &["-c", "sudo locale-gen"]));
         self
     }
 
@@ -428,69 +430,69 @@ impl Arch {
     ///
     /// # Panics
     ///
-    pub fn pacman_keys(&mut self) -> &mut Self {
-        assert!(exec("sh", &["-c", "pacman-key --refresh-keys"]));
-        self
-    }
-    ///
-    /// # Panics
-    ///
     pub fn configure_users(&mut self) -> &mut Self {
-        loop {
-            let name = Text::new("New Username : ")
-                .with_help_message("New username")
-                .prompt()
-                .unwrap();
-            let shell = Select::new(
-                format!("{name}'s shell : ").as_str(),
-                vec![
-                    "sh",
-                    "bash",
-                    "git-shell",
-                    "rbash",
-                    "fish",
-                    "zsh",
-                    "tcsh",
-                    "closh",
-                    "elvish",
-                    "ion",
-                    "murex",
-                    "oh",
-                    "xonsh",
-                    "nushell",
-                ],
-            )
-            .prompt()
-            .unwrap();
-
-            if !name.is_empty() {
-                let password = Password::new(format!("{name}'s password : ").as_str())
+        let create = match prompt_confirmation("Create a new user ? : ") {
+            Ok(true) => true,
+            Ok(false) | Err(_) => false,
+        };
+        if create {
+            loop {
+                let name = Text::new("New Username : ")
+                    .with_help_message("New username")
                     .prompt()
                     .unwrap();
+                let shell = Select::new(
+                    format!("{name}'s shell : ").as_str(),
+                    vec![
+                        "sh",
+                        "bash",
+                        "git-shell",
+                        "rbash",
+                        "fish",
+                        "zsh",
+                        "tcsh",
+                        "closh",
+                        "elvish",
+                        "ion",
+                        "murex",
+                        "oh",
+                        "xonsh",
+                        "nushell",
+                    ],
+                )
+                .prompt()
+                .unwrap();
 
-                let sudoers = match prompt_confirmation(
-                    format!("{name}'s user can administrate the system : ").as_str(),
-                ) {
-                    Ok(false) | Err(_) => false,
-                    Ok(true) => true,
-                };
-                self.users.push(Users::new(
-                    name.to_string(),
-                    password.to_string(),
-                    format!("/usr/bin/{shell}"),
-                    sudoers,
-                ));
-                self.users_table.push(Users::new(
-                    name.to_string(),
-                    "********".to_string(),
-                    shell.to_string(),
-                    sudoers,
-                ));
-                match prompt_confirmation("Add a new user ?") {
-                    Ok(true) => continue,
-                    Ok(false) | Err(_) => break,
+                if !name.is_empty() {
+                    let password = Password::new(format!("{name}'s password : ").as_str())
+                        .prompt()
+                        .unwrap();
+
+                    let sudoers = match prompt_confirmation(
+                        format!("{name}'s user can administrate the system : ").as_str(),
+                    ) {
+                        Ok(false) | Err(_) => false,
+                        Ok(true) => true,
+                    };
+                    self.users.push(Users::new(
+                        name.to_string(),
+                        password.to_string(),
+                        format!("/usr/bin/{shell}"),
+                        sudoers,
+                    ));
+                    self.users_table.push(Users::new(
+                        name.to_string(),
+                        "********".to_string(),
+                        shell.to_string(),
+                        sudoers,
+                    ));
+                    match prompt_confirmation("Add a new user ?") {
+                        Ok(true) => continue,
+                        Ok(false) | Err(_) => break,
+                    }
                 }
             }
+            return self;
         }
         self
     }
@@ -560,5 +562,7 @@ fn main() -> ExitCode {
         .choose_locale()
         .choose_timezone()
         .choose_packages()
+        .choose_keymap()
+        .configure_users()
         .run()
 }
