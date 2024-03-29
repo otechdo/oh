@@ -7,12 +7,6 @@
 loadkeys <keymap>
 ```
 
-## Connect to Internet
-
-```bash
-nmcli
-```
-
 ##  Sync clock
 
 ```bash
@@ -21,9 +15,8 @@ timedatectl set-ntp true
 
 ##  Create three partitions:
 
-* 4096MB Linux partition  # 8300
-* 2 EFI partition         # ef00
-* 100% Linux partition    # 8300
+* 1 4096MB EFI partition  # ef00
+* 2 100% Linux partition  # 8300
 
 ```bash
 cgdisk /dev/sda
@@ -52,10 +45,9 @@ mkfs.ext4  /dev/sda3
 ## Mount EFI partition
 
 ```bash
-mount /dev/sda3 /mnt
-mkdir -p /mnt/boot/efi
+mount /dev/sda2 /mnt
+mkdir /mnt/boot
 mount /dev/sda1 /mnt/boot
-mount /dev/sda2 /mnt/boot/efi
 ```
 
 ## Change pacman mirror priority
@@ -64,10 +56,16 @@ mount /dev/sda2 /mnt/boot/efi
 reflector -c <country> --sort rate --save /etc/pacman.d/mirrorlist -p https
 ```
 
+## Enabled multilib repository
+
+```bash
+vim /etc/pacman.conf
+```
+
 ## Install the base system
 
 ```bash
-pacstrap /mnt base base-devel linux linux-firmware vim git efibootmgr rustup sudo networkmanager
+pacstrap /mnt base base-devel linux linux-firmware vim git efibootmgr rustup sudo networkmanager reflector <sheel>
 ```
 
 ##  Generate fstab
@@ -87,7 +85,7 @@ arch-chroot /mnt
 ### Create user
 
 ```bash
-useradd -m -g users -G wheel -s <shell> <username>
+useradd -m -g users -g wheel -s <shell> <username>
 ```
 
 ### Create root password
@@ -129,20 +127,7 @@ paru -Syu eywa
 ## Personalize arch
 
 ```bash
-sudo eywa
-```
-## Dependencies
-
-### Minimal required
-
-```bash
-pacman -S git base base-devel 
-```
-
-### Installer
-
-```bash
-paru -Syu eywa
+eywa
 ```
 
 ## Key Bindings
