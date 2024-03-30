@@ -137,16 +137,34 @@ git clone https://aur.archlinux.org/paru && cd paru && makepkg -si && cd .. && r
 
 ## Install arch
  
+### From Crates.io
+
+```bash
+cargo install arch
+```
+
 ### From GitHub
 
 ```bash
-git clone https://github.com/otechdo/arch && cd arch && cargo run -- setup
+git clone https://github.com/otechdo/arch && cargo install --path .
 ```
 
 ### From Aur
 
 ```bash
-paru -Syu arch && arch setup
+paru -Syu arch
+```
+
+## Path
+
+```bash
+export PATH="$HOME/.cargo/bin:$PATH" # add to ~/.bashrc
+```
+
+## Run installer
+
+```bash
+arch setup
 ```
 
 ## Exit chroot
