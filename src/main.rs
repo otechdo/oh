@@ -156,13 +156,27 @@ impl Arch {
     }
 
     ///
+    ///  # Panics
+    ///
+    fn remove_package(&mut self) -> &mut Self {
+        for pkg in &self.packages {
+            assert!(exec("sh", &["-c", format!("paru -Rns {pkg}").as_str()]));
+        }
+        self
+    }
+
+    ///
     /// # Panics
     ///
-    pub fn quit(&mut self) -> ExitCode {
+    pub fn quit_installer(&mut self) -> ExitCode {
         assert!(exec("sh", &["-c", "sudo rm -rf eywa"]));
         assert!(exec("sh", &["-c", "sudo rm locale.conf"]));
         assert!(exec("sh", &["-c", "sudo rm vconsole.conf"]));
         exit(self.configure_boot().enable_services());
+    }
+
+    pub fn quit(&mut self) -> ExitCode {
+        exit(0);
     }
 
     ///
@@ -400,7 +414,7 @@ impl Arch {
                 .configure_timezone()
                 .configure_locale()
                 .configure_keymap()
-                .quit(),
+                .quit_installer(),
             Ok(false) | Err(_) => exit(1),
         }
     }
@@ -549,8 +563,16 @@ fn main() -> ExitCode {
     if args.len() == 2 && args.get(1).unwrap().eq("archinstall") {
         return install();
     }
-    if args.len() == 2 && args.get(1).unwrap().eq("install") {
+    if args.len() == 2 && args.get(1).unwrap().eq("--intall-packages") {
         return Arch::new().choose_packages().install_package().quit();
+    }
+
+    if args.len() == 2 && args.get(1).unwrap().eq("--remove-packages") {
+        return Arch::new().choose_packages().remove_package().quit();
+    }
+
+    if args.len() == 2 && args.get(1).unwrap().eq("--update-mirrors") {
+        return Arch::new().check_network().configure_mirrors().quit();
     }
     exit(1);
 }
