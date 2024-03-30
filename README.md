@@ -122,13 +122,13 @@ git clone https://aur.archlinux.org/paru && cd paru && makepkg -si && cd .. && r
 ## Install eywa
 
 ```bash
-paru -Syu eywa
+paru -Syu arch
 ```
 
 ## Personalize arch
 
 ```bash
-eywa
+arch
 ```
 
 ## Key Bindings
