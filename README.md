@@ -63,6 +63,12 @@ reflector -c <country> --sort rate --save /etc/pacman.d/mirrorlist -p https
 vim /etc/pacman.conf
 ```
 
+## Update package signing keys
+
+```bash
+pacman-key --init && pacman-key --populate && pacman-key --refresh-keys
+```
+
 ## Install the base system
 
 ```bash
