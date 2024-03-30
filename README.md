@@ -1,5 +1,6 @@
-# Eywa
+# Arch
 
+A archinstaller, manager for advanced arch users.
 
 ##  Set desired keymap
 
