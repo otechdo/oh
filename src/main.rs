@@ -39,13 +39,14 @@ fn parse_file_lines(filename: &str) -> Vec<String> {
     file_lines
 }
 pub struct Arch {
-    locales: String,
+    locale: String,
     packages: Vec<String>,
     root: HashMap<bool, String>,
     users: Vec<Users>,
     users_table: Vec<Users>,
     timezone: String,
     keymap: String,
+    hostname: String,
 }
 
 #[derive(Clone)]
@@ -72,13 +73,14 @@ impl Default for Arch {
     #[must_use]
     fn default() -> Self {
         Self {
-            locales: String::new(),
+            locale: String::new(),
             packages: Vec::new(),
             root: HashMap::new(),
             users: Vec::new(),
             users_table: Vec::new(),
             timezone: String::new(),
             keymap: String::new(),
+            hostname: String::new(),
         }
     }
 }
@@ -173,7 +175,6 @@ impl Arch {
     pub fn quit_installer(&mut self) -> ExitCode {
         assert!(exec("sh", &["-c", "sudo rm -rf eywa"]));
         assert!(exec("sh", &["-c", "sudo rm locale.conf"]));
-        assert!(exec("sh", &["-c", "sudo rm vconsole.conf"]));
         exit(self.configure_boot().enable_services());
     }
 
@@ -220,7 +221,8 @@ impl Arch {
         if l.is_empty() {
             self.choose_locale()
         } else {
-            self.locales.push_str(l.as_str());
+            self.locale.clear();
+            self.locale.push_str(l.as_str());
             self
         }
     }
@@ -229,14 +231,21 @@ impl Arch {
     /// # Panics
     ///
     pub fn choose_keymap(&mut self) -> &mut Self {
-        let keymap = Text::new("Enter your keymap : ").prompt().unwrap();
-
-        if keymap.is_empty() {
-            return self.choose_keymap();
+        if Path::new("/tmp/keys").exists() {
+            let keymap = Select::new("Select your keymap : ", parse_file_lines("/tmp/keys"))
+                .prompt()
+                .unwrap();
+            if keymap.is_empty() {
+                return self.choose_keymap();
+            }
+            self.keymap.clear();
+            self.keymap.push_str(keymap.as_str());
+            return self;
         }
-        self.keymap.clear();
-        self.keymap.push_str(keymap.as_str());
-        self
+        assert!(exec("sh", &["-c", "sudo localectl list-keymaps > keys"]));
+        assert!(exec("sh", &["-c", "sudo install -m 644 keys /tmp/keys"]));
+        assert!(exec("sh", &["-c", "sudo rm keys"]));
+        self.choose_keymap()
     }
 
     ///
@@ -297,14 +306,14 @@ impl Arch {
             "sh",
             &[
                 "-c",
-                format!("sudo echo \"LANG={}\" > locale.conf", self.locales).as_str()
+                format!("echo \"LANG={}\" > locale.conf", self.locale).as_str()
             ]
         ));
+
         assert!(exec(
             "sh",
             &["-c", "sudo install -m 644 locale.conf /etc/locale.conf"]
         ));
-        assert!(exec("sh", &["-c", "sudo rm locale.conf"]));
 
         assert!(exec(
             "sh",
@@ -312,7 +321,7 @@ impl Arch {
                 "-c",
                 format!(
                     "sudo sed -i 's/#{} UTF-8/{} UTF-8/g' /etc/locale.gen",
-                    self.locales, self.locales
+                    self.locale, self.locale
                 )
                 .as_str()
             ]
@@ -450,6 +459,7 @@ impl Arch {
                 .configure_timezone()
                 .configure_locale()
                 .configure_keymap()
+                .configure_hostname()
                 .quit_installer();
         }
         exit(1);
@@ -529,12 +539,24 @@ impl Arch {
     /// # Panics
     ///
     pub fn choose_timezone(&mut self) -> &mut Self {
-        self.timezone = Text::new("Please enter your timezone : ").prompt().unwrap();
-        if self.timezone.is_empty() {
-            self.choose_timezone()
-        } else {
-            self
+        if Path::new("/tmp/zones").exists() {
+            let zone = Select::new("Select your time zone : ", parse_file_lines("/tmp/zones"))
+                .prompt()
+                .unwrap();
+            if zone.is_empty() {
+                return self.choose_timezone();
+            }
+            self.timezone.clear();
+            self.timezone.push_str(zone.as_str());
+            return self;
         }
+        assert!(exec(
+            "sh",
+            &["-c", "sudo timedatectl list-timezones > zones"]
+        ));
+        assert!(exec("sh", &["-c", "sudo install -m 644 zones /tmp/zones"]));
+        assert!(exec("sh", &["-c", "sudo rm zones"]));
+        self.choose_timezone()
     }
 
     ///
@@ -581,6 +603,34 @@ impl Arch {
         }
         self
     }
+    ///
+    /// # Panics
+    ///
+    pub fn configure_hostname(&mut self) -> &mut Self {
+        assert!(exec(
+            "sh",
+            &["-c", format!("echo {} > hostname ", self.hostname).as_str()],
+        ));
+        assert!(exec(
+            "sh",
+            &["-c", "sudo install -m 644 hostname /etc/hostanme"]
+        ));
+        self
+    }
+    ///
+    /// # Panics
+    ///
+    pub fn choose_hostname(&mut self) -> &mut Self {
+        self.hostname.clear();
+        self.hostname.push_str(
+            Text::new("Please enter your hostname : ")
+                .prompt()
+                .unwrap()
+                .as_str(),
+        );
+
+        self
+    }
 }
 
 fn help() -> i32 {
@@ -592,9 +642,10 @@ fn install() -> ExitCode {
         .check_network()
         .configure_mirrors()
         .choose_locale()
-        .choose_timezone()
-        .choose_packages()
         .choose_keymap()
+        .choose_timezone()
+        .choose_hostname()
+        .choose_packages()
         .configure_users()
         .run()
 }
