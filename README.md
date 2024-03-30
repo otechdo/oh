@@ -1,6 +1,6 @@
 # Arch
 
-<img src="https://raw.githubusercontent.com/otechdo/arch/main/archlinux.png" alt="archlinux" align="right" width="250">
+<img src="https://raw.githubusercontent.com/otechdo/arch/main/archlinux.svg" alt="archlinux" align="right" width="250">
 
 A archlinux installer, manager for advanced arch users.
 

@@ -1,10 +1,10 @@
 [package]
 name = "arch"
-version = "0.0.1"
+version = "0.0.2"
 edition = "2021"
 license = "GPL-2.0-or-later"
-keywords = ["archlinux","editor","installer","manager","tool"]
-categories = ["development-tools"]
+keywords = ["archlinux","editor","installer","manager","utility"]
+categories = ["command-line-utilities"]
 readme = "README.md"
 authors = ["Willy Micieli"]
 repository = "https://github.com/otechdo/arch"
