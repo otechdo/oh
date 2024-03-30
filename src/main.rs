@@ -4,7 +4,7 @@ use inquire::{prompt_confirmation, MultiSelect, Password, Select, Text};
 use regex::Regex;
 use std::collections::HashMap;
 use std::env::args;
-use std::fs::{remove_file, File};
+use std::fs::File;
 use std::io;
 use std::io::{read_to_string, BufRead};
 use std::path::Path;
@@ -150,6 +150,19 @@ impl Arch {
             assert!(exec(
                 "sh",
                 &["-c", format!("paru -S --noconfirm {pkg}").as_str()]
+            ));
+        }
+        self
+    }
+
+    ///
+    ///  # Panics
+    ///
+    fn install_dependencies(&mut self) -> &mut Self {
+        for pkg in &self.packages {
+            assert!(exec(
+                "sh",
+                &["-c", format!("paru -S --noconfirm {pkg} --asdeps").as_str()]
             ));
         }
         self
@@ -318,30 +331,47 @@ impl Arch {
     /// if failed to remove file
     ///
     pub fn choose_packages(&mut self) -> &mut Self {
-        if Path::new("eywa/pkgs").exists() {
-            remove_file("eywa/pkgs").expect("failed to remove file");
+        if Path::new("/tmp/pkgs").exists() {
+            loop {
+                let p = MultiSelect::new("Select packages : ", parse_file_lines("/tmp/pkgs"))
+                    .with_help_message("Packages to install on the system")
+                    .prompt()
+                    .expect("Failed to get packages");
+                if p.is_empty() {
+                    return self.choose_packages();
+                }
+                for x in &p {
+                    self.packages.push(x.to_string());
+                }
+
+                match prompt_confirmation("Add package ? ") {
+                    Ok(true) => continue,
+                    Ok(false) | Err(_) => break,
+                }
+            }
+            return self;
         }
         assert!(exec(
             "sh",
-            &["-c", "sudo pacman -Sl core | cut -d ' ' -f 2 > eywa/pkgs"]
+            &["-c", "sudo pacman -Sl core | cut -d ' ' -f 2 > pkgs"]
         ));
         assert!(exec(
             "sh",
-            &["-c", "sudo pacman -Sl extra | cut -d ' ' -f 2 >> eywa/pkgs"]
+            &["-c", "sudo pacman -Sl extra | cut -d ' ' -f 2 >> pkgs"]
         ));
         assert!(exec(
             "sh",
-            &[
-                "-c",
-                "sudo pacman -Sl multilib | cut -d ' ' -f 2 >> eywa/pkgs"
-            ]
+            &["-c", "sudo pacman -Sl multilib | cut -d ' ' -f 2 >> pkgs"]
         ));
         assert!(exec(
             "sh",
-            &["-c", "paru --list  aur | cut -d ' ' -f 2 >> eywa/pkgs"]
+            &["-c", "paru --list  aur | cut -d ' ' -f 2 >> pkgs"]
         ));
+        assert!(exec("sh", &["-c", "sudo install -m 644 pkgs /tmp/pkgs"]));
+
+        assert!(exec("sh", &["-c", "rm pkgs"]));
         loop {
-            let p = MultiSelect::new("Select packages : ", parse_file_lines("eywa/pkgs"))
+            let p = MultiSelect::new("Select packages : ", parse_file_lines("/tmp/pkgs"))
                 .with_help_message("Packages to install on the system")
                 .prompt()
                 .expect("Failed to get packages");
@@ -357,6 +387,7 @@ impl Arch {
                 Ok(false) | Err(_) => break,
             }
         }
+
         self
     }
 
@@ -560,11 +591,16 @@ fn install() -> ExitCode {
 }
 fn main() -> ExitCode {
     let args: Vec<String> = args().collect();
+    println!("{}", args.len());
     if args.len() == 2 && args.get(1).unwrap().eq("archinstall") {
         return install();
     }
-    if args.len() == 2 && args.get(1).unwrap().eq("--intall-packages") {
+    if args.len() == 2 && args.get(1).unwrap().eq("--install-packages") {
         return Arch::new().choose_packages().install_package().quit();
+    }
+
+    if args.len() == 2 && args.get(1).unwrap().eq("--install-dependencies") {
+        return Arch::new().choose_packages().install_dependencies().quit();
     }
 
     if args.len() == 2 && args.get(1).unwrap().eq("--remove-packages") {
@@ -574,5 +610,6 @@ fn main() -> ExitCode {
     if args.len() == 2 && args.get(1).unwrap().eq("--update-mirrors") {
         return Arch::new().check_network().configure_mirrors().quit();
     }
+
     exit(1);
 }
