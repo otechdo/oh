@@ -609,11 +609,10 @@ impl Arch {
     pub fn configure_hostname(&mut self) -> &mut Self {
         assert!(exec(
             "sh",
-            &["-c", format!("echo {} > hostname ", self.hostname).as_str()],
-        ));
-        assert!(exec(
-            "sh",
-            &["-c", "sudo install -m 644 hostname /etc/hostanme"]
+            &[
+                "-c",
+                format!("sudo hostnamectl hostname {}", self.hostname).as_str()
+            ],
         ));
         self
     }
