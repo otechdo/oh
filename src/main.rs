@@ -539,24 +539,13 @@ impl Arch {
     /// # Panics
     ///
     pub fn choose_timezone(&mut self) -> &mut Self {
-        if Path::new("/tmp/zones").exists() {
-            let zone = Select::new("Select your time zone : ", parse_file_lines("/tmp/zones"))
-                .prompt()
-                .unwrap();
-            if zone.is_empty() {
-                return self.choose_timezone();
-            }
-            self.timezone.clear();
-            self.timezone.push_str(zone.as_str());
-            return self;
+        let zone = Text::new("Please enter your timezone : ").prompt().unwrap();
+        if zone.is_empty() {
+            return self.choose_timezone();
         }
-        assert!(exec(
-            "sh",
-            &["-c", "sudo timedatectl list-timezones > zones"]
-        ));
-        assert!(exec("sh", &["-c", "sudo install -m 644 zones /tmp/zones"]));
-        assert!(exec("sh", &["-c", "sudo rm zones"]));
-        self.choose_timezone()
+        self.timezone.clear();
+        self.timezone.push_str(zone.as_str());
+        self
     }
 
     ///
