@@ -591,7 +591,6 @@ fn install() -> ExitCode {
 }
 fn main() -> ExitCode {
     let args: Vec<String> = args().collect();
-    println!("{}", args.len());
     if args.len() == 2 && args.get(1).unwrap().eq("archinstall") {
         return install();
     }
