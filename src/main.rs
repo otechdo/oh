@@ -141,7 +141,7 @@ impl Arch {
     ///
     fn install_package(&mut self) -> &mut Self {
         for pkg in &self.packages {
-            assert!(exec("sh", &["-c", format!("paru -S {pkg}").as_str()]));
+            assert!(exec("sh", &["-c", format!("paru -S --noconfirm {pkg}").as_str()]));
         }
         self
     }
@@ -153,7 +153,7 @@ impl Arch {
         for pkg in &self.packages {
             assert!(exec(
                 "sh",
-                &["-c", format!("paru -S {pkg} --asdeps").as_str()]
+                &["-c", format!("paru -S {pkg} --noconfirm --asdeps").as_str()]
             ));
         }
         self
@@ -164,7 +164,7 @@ impl Arch {
     ///
     fn remove_package(&mut self) -> &mut Self {
         for pkg in &self.packages {
-            assert!(exec("sh", &["-c", format!("paru -Rns {pkg}").as_str()]));
+            assert!(exec("sh", &["-c", format!("paru -Rns --noconfirm {pkg}").as_str()]));
         }
         self
     }
@@ -590,11 +590,15 @@ impl Arch {
     pub fn configure_hostname(&mut self) -> &mut Self {
         assert!(exec(
             "sh",
-            &[
-                "-c",
-                format!("sudo hostnamectl hostname {}", self.hostname).as_str()
-            ],
+            &["-c", format!("echo {} > hostname", self.hostname).as_str()],
         ));
+
+        assert!(exec(
+            "sh",
+            &["-c", "sudo install -m 644 hostname /etc/hostname"],
+        ));
+
+        assert!(exec("sh", &["-c", "rm hostname"],));
         self
     }
     ///
