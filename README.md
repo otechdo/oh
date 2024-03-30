@@ -1,5 +1,7 @@
 # Arch
 
+<img src="https://raw.githubusercontent.com/otechdo/arch/main/archlinux.svg" alt="archlinux" align="right" width="250">
+
 A archlinux installer, manager for advanced arch users.
 
 - [@archlinux](https://archlinux.org)
@@ -7,7 +9,6 @@ A archlinux installer, manager for advanced arch users.
 - [@code](https://github.com/otechdo/arch/)
 - [@issues](https://github.com/otechdo/arch/issues)
 
-<img src="https://raw.githubusercontent.com/otechdo/arch/main/archlinux.svg" alt="archlinux" align="right" width="250">
 
 ##  Set desired keymap
 
