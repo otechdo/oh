@@ -137,6 +137,25 @@ paru -Syu arch
 arch
 ```
 
+## Quit chroot
+
+```bash
+exit
+```
+
+## Umount partitions
+
+```bash
+umount -R /mnt
+```
+
+## Restart on the new system
+
+```bash
+reboot
+```
+
+
 ## Key Bindings
 
 This file lists all of the key bindings currently registered by prompts.
