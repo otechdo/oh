@@ -1,6 +1,9 @@
 # Arch
 
-A archinstaller, manager for advanced arch users.
+<img src="https://raw.githubusercontent.com/otechdo/arch/main/archlinux.png" alt="archlinux" float="right" width="250">
+
+A archlinux installer, manager for advanced arch users.
+
 
 ##  Set desired keymap
 
@@ -8,13 +11,7 @@ A archinstaller, manager for advanced arch users.
 loadkeys <keymap>
 ```
 
-##  Sync clock
-
-```bash
-timedatectl set-ntp true
-```
-
-##  Create three partitions:
+##  Create two partitions:
 
 * 1 4096MB EFI partition  # ef00
 * 2 100% Linux partition  # 8300
@@ -28,22 +25,16 @@ cgdisk /dev/sda
 ### /boot
 
 ```bash
-mkfs.ext2 /dev/sda1
-```
-
-### /boot/efi
-
-```bash
-mkfs.fat -F32 /dev/sda2
+mkfs.vfat -F 32 /dev/sda1
 ```
 
 ### /
 
 ```bash
-mkfs.ext4  /dev/sda3
+mkfs.ext4 /dev/sda2
 ```
 
-## Mount EFI partition
+## Mount partitions
 
 ```bash
 mount /dev/sda2 /mnt
@@ -57,22 +48,22 @@ mount /dev/sda1 /mnt/boot
 reflector -c <country> --sort rate --save /etc/pacman.d/mirrorlist -p https
 ```
 
-## Enabled multilib repository
-
-```bash
-vim /etc/pacman.conf
-```
-
 ## Update package signing keys
 
 ```bash
-pacman-key --init && pacman-key --populate && pacman-key --refresh-keys
+pacman-key --init && pacman-key --populate
+```
+
+## Refresh package signing keys
+
+```bash
+pacman-key --refresh-keys
 ```
 
 ## Install the base system
 
 ```bash
-pacstrap /mnt base base-devel linux linux-firmware vim git efibootmgr rustup sudo networkmanager reflector <sheel>
+pacstrap /mnt base base-devel linux linux-firmware vim git efibootmgr rustup sudo grub networkmanager reflector <shell>
 ```
 
 ##  Generate fstab
@@ -84,7 +75,19 @@ genfstab -U /mnt >> /mnt/etc/fstab
 ##  Enter inside the new system
 
 ```bash
-arch-chroot /mnt
+arch-chroot /mnt && cd ~
+```
+
+## Enabled multilib repository
+
+```bash
+vim /etc/pacman.conf
+```
+
+##  Sync clock
+
+```bash
+timedatectl set-ntp true
 ```
 
 ## Create your account
@@ -92,7 +95,7 @@ arch-chroot /mnt
 ### Create user
 
 ```bash
-useradd -m -g users -g wheel -s <shell> <username>
+useradd -m -g wheel -c 'REAL NAME' -s <shell> <username>
 ```
 
 ### Create root password
@@ -107,37 +110,39 @@ passwd root
 passwd <username>
 ```
 
-### Add to sudoers
+### Add your account to sudoers 
 
 ```bash
 echo '<username> ALL=(ALL) ALL' > /etc/sudoers.d/<username>
 ```
 
-## Checkout user
+## Checkout on your account
 
 ```bash
 su <username> && cd ~
 ```
 
-## Install Paru
+## Install paru
 
 ```bash
 git clone https://aur.archlinux.org/paru && cd paru && makepkg -si && cd .. && rm -rf paru
 ```
 
-## Install eywa
+## Install arch
+ 
+### From GitHub
 
 ```bash
-paru -Syu arch
+git clone https://github.com/otechdo/arch && cd arch && cargo run -- setup
 ```
 
-## Personalize arch
+### From Aur
 
 ```bash
-arch
+paru -Syu arch && arch setup
 ```
 
-## Quit chroot
+## Exit chroot
 
 ```bash
 exit
@@ -154,7 +159,6 @@ umount -R /mnt
 ```bash
 reboot
 ```
-
 
 ## Key Bindings
 
@@ -272,8 +276,6 @@ These key bindings may be used in [`Editor`] prompts.
 |------------------|----------------------------------------------------------------|
 | <kbd>e</kbd>     | Open the editor.                                               |
 | <kbd>enter</kbd> | Submit the current content of the temporary file being edited. |
-
-
 
 
 [`Text`]: https://docs.rs/inquire/*/inquire/prompts/text/struct.Text.html
