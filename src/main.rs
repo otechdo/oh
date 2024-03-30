@@ -188,7 +188,8 @@ impl Arch {
         exit(self.configure_boot().enable_services());
     }
 
-    pub fn quit(&mut self) -> ExitCode {
+    pub fn quit(&mut self,t:&str) -> ExitCode {
+        println!("{t}");
         exit(0);
     }
 
@@ -290,6 +291,11 @@ impl Arch {
             "sh",
             &["-c", "sudo install -m 644 vconsole.conf /etc/vconsole.conf"]
         ));
+
+        assert!(exec(
+            "sh",
+            &["-c", "sudo rm vconsole.conf"]
+        ));
         self
     }
 
@@ -307,6 +313,10 @@ impl Arch {
         assert!(exec(
             "sh",
             &["-c", "sudo install -m 644 locale.conf /etc/locale.conf"]
+        ));
+       assert!(exec(
+            "sh",
+            &["-c", "sudo rm locale.conf"]
         ));
 
         assert!(exec(
@@ -539,13 +549,6 @@ impl Arch {
         let country = Text::new("Please enter your country ? : ")
             .prompt()
             .unwrap();
-
-        let mut parallel = Text::new("Please enter the pacman parallel downloads size : ")
-            .prompt()
-            .unwrap();
-        if parallel.is_empty() {
-            parallel.push('5');
-        }
         assert!(exec(
             "sh",
             &[
@@ -556,7 +559,7 @@ impl Arch {
                 .as_str()
             ],
         ));
-        assert!(exec("sh",&["-c",format!("sudo sed -i 's/#ParallelDownloads = 5/ParallelDownloads = {parallel}/g' /etc/pacman.conf").as_str()]));
+        assert!(exec("sh",&["-c",format!("sudo sed -i 's/#ParallelDownloads = 5/ParallelDownloads = 5/g' /etc/pacman.conf").as_str()]));
         self
     }
 
@@ -595,19 +598,19 @@ fn main() -> ExitCode {
         return install();
     }
     if args.len() == 2 && args.get(1).unwrap().eq("--install-packages") {
-        return Arch::new().choose_packages().install_package().quit();
+        return Arch::new().choose_packages().install_package().quit("Packages has been installed successfully");
     }
 
     if args.len() == 2 && args.get(1).unwrap().eq("--install-dependencies") {
-        return Arch::new().choose_packages().install_dependencies().quit();
+        return Arch::new().choose_packages().install_dependencies().quit("Dependencies as been installed successfully");
     }
 
     if args.len() == 2 && args.get(1).unwrap().eq("--remove-packages") {
-        return Arch::new().choose_packages().remove_package().quit();
+        return Arch::new().choose_packages().remove_package().quit("Packages has been removed successfully");
     }
 
     if args.len() == 2 && args.get(1).unwrap().eq("--update-mirrors") {
-        return Arch::new().check_network().configure_mirrors().quit();
+        return Arch::new().check_network().configure_mirrors().quit("Mirrors has been updated successfully");
     }
 
     exit(1);
