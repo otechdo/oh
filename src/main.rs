@@ -128,6 +128,7 @@ impl Arch {
                     .unwrap()
                     .success());
             }
+            assert!(exec("sh", &["-c", "rm -rf dotfiles"]));
             return self;
         }
         self
