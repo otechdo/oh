@@ -188,7 +188,7 @@ impl Arch {
         exit(self.configure_boot().enable_services());
     }
 
-    pub fn quit(&mut self,t:&str) -> ExitCode {
+    pub fn quit(&mut self, t: &str) -> ExitCode {
         println!("{t}");
         exit(0);
     }
@@ -292,10 +292,7 @@ impl Arch {
             &["-c", "sudo install -m 644 vconsole.conf /etc/vconsole.conf"]
         ));
 
-        assert!(exec(
-            "sh",
-            &["-c", "sudo rm vconsole.conf"]
-        ));
+        assert!(exec("sh", &["-c", "sudo rm vconsole.conf"]));
         self
     }
 
@@ -314,10 +311,7 @@ impl Arch {
             "sh",
             &["-c", "sudo install -m 644 locale.conf /etc/locale.conf"]
         ));
-       assert!(exec(
-            "sh",
-            &["-c", "sudo rm locale.conf"]
-        ));
+        assert!(exec("sh", &["-c", "sudo rm locale.conf"]));
 
         assert!(exec(
             "sh",
@@ -598,19 +592,31 @@ fn main() -> ExitCode {
         return install();
     }
     if args.len() == 2 && args.get(1).unwrap().eq("--install-packages") {
-        return Arch::new().choose_packages().install_package().quit("Packages has been installed successfully");
+        return Arch::new()
+            .choose_packages()
+            .install_package()
+            .quit("Packages has been installed successfully");
     }
 
     if args.len() == 2 && args.get(1).unwrap().eq("--install-dependencies") {
-        return Arch::new().choose_packages().install_dependencies().quit("Dependencies as been installed successfully");
+        return Arch::new()
+            .choose_packages()
+            .install_dependencies()
+            .quit("Dependencies as been installed successfully");
     }
 
     if args.len() == 2 && args.get(1).unwrap().eq("--remove-packages") {
-        return Arch::new().choose_packages().remove_package().quit("Packages has been removed successfully");
+        return Arch::new()
+            .choose_packages()
+            .remove_package()
+            .quit("Packages has been removed successfully");
     }
 
     if args.len() == 2 && args.get(1).unwrap().eq("--update-mirrors") {
-        return Arch::new().check_network().configure_mirrors().quit("Mirrors has been updated successfully");
+        return Arch::new()
+            .check_network()
+            .configure_mirrors()
+            .quit("Mirrors has been updated successfully");
     }
 
     exit(1);
