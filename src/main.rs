@@ -121,7 +121,7 @@ impl Arch {
                 let collection: Vec<&str> = cmd.split_whitespace().collect();
                 assert!(Command::new("bash")
                     .args(collection)
-                    .current_dir("eywa/dotfiles")
+                    .current_dir("dotfiles")
                     .spawn()
                     .unwrap()
                     .wait()
