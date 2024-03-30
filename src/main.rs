@@ -1,6 +1,6 @@
 #![allow(clippy::multiple_crate_versions)]
 
-use inquire::{prompt_confirmation, MultiSelect, Password, Select, Text};
+use inquire::{prompt_confirmation, Confirm, MultiSelect, Password, Select, Text};
 use regex::Regex;
 use std::collections::HashMap;
 use std::env::args;
@@ -71,13 +71,6 @@ impl Users {
 impl Default for Arch {
     #[must_use]
     fn default() -> Self {
-        if Path::new("eywa").exists() {
-            assert!(exec("sh", &["-c", "sudo rm -rf eywa"]));
-        }
-        if !Path::new("eywa").exists() {
-            assert!(exec("sh", &["-c", "sudo mkdir -p eywa"]));
-            assert!(exec("sh", &["-c", "sudo chmod -R 777 eywa"]));
-        }
         Self {
             locales: String::new(),
             packages: Vec::new(),
@@ -102,8 +95,8 @@ impl Arch {
         let dot = prompt_confirmation("Clone a dotfiles repository ?").unwrap();
         let mut cmds: Vec<String> = Vec::new();
         if dot {
-            if Path::new("eywa/dotfiles").exists() {
-                assert!(exec("sh", &["-c", "sudo rm -rf eywa/dotfiles"]));
+            if Path::new("dotfiles").exists() {
+                assert!(exec("sh", &["-c", "sudo rm -rf dotfiles"]));
             }
             let repo = Text::new("Enter repository url : ")
                 .with_help_message("Url must be a git repository")
@@ -111,11 +104,9 @@ impl Arch {
                 .unwrap();
             assert!(exec(
                 "sh",
-                &[
-                    "-c",
-                    format!("git clone --quiet {repo} eywa/dotfiles").as_str()
-                ]
+                &["-c", format!("git clone --quiet {repo} dotfiles").as_str()]
             ));
+
             loop {
                 let cmd = Text::new("Please enter a bash command : ")
                     .prompt()
@@ -272,7 +263,11 @@ impl Arch {
     /// # Panics
     ///
     pub fn check_network(&mut self) -> &mut Self {
-        assert!(exec("sh", &["-c", "ping -4c4 archlinux.org"]));
+        println!("Checking network...");
+        assert!(exec(
+            "sh",
+            &["-c", "ping -4c4 archlinux.org > /dev/null 2> /dev/null"]
+        ));
         self
     }
 
@@ -441,17 +436,25 @@ impl Arch {
         }
         self
     }
+
+    ///
+    /// # Panics
+    ///
     pub fn run(&mut self) -> ExitCode {
-        match prompt_confirmation("Run installation ? ") {
-            Ok(true) => self
+        let run = Confirm::new("Run installation ? ")
+            .with_default(true)
+            .prompt()
+            .unwrap();
+        if run {
+            return self
                 .install_package()
                 .create_users()
                 .configure_timezone()
                 .configure_locale()
                 .configure_keymap()
-                .quit_installer(),
-            Ok(false) | Err(_) => exit(1),
+                .quit_installer();
         }
+        exit(1);
     }
 
     ///
@@ -553,7 +556,14 @@ impl Arch {
                 .as_str()
             ],
         ));
-        assert!(exec("sh",&["-c",format!("sudo sed -i 's/#ParallelDownloads = 5/ParallelDownloads = 5/g' /etc/pacman.conf").as_str()]));
+        assert!(exec(
+            "sh",
+            &[
+                "-c",
+                "sudo sed -i 's/#ParallelDownloads = 5/ParallelDownloads = 5/g' /etc/pacman.conf"
+            ]
+        ));
+        assert!(exec("sh", &["-c", "paru -Syyu"]));
         self
     }
 
