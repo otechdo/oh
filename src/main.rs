@@ -584,7 +584,7 @@ impl Arch {
 }
 
 fn help() -> i32 {
-    println!("arch --help                   : Display help\narch --install-packages       : Install packages as inplicit\narch install-dependencies     : Install packages as dependencies\narch remove-packages          : Remove selected packages\narch --update-mirrors         : Update arch mirrors");
+    println!("arch setup                    : Configure a new archlinux\narch --help                   : Display help\narch --install-packages       : Install packages as inplicit\narch --install-dependencies   : Install packages as dependencies\narch --remove-packages        : Remove selected packages\narch --update-mirrors         : Update arch mirrors");
     1
 }
 fn install() -> ExitCode {
@@ -600,7 +600,7 @@ fn install() -> ExitCode {
 }
 fn main() -> ExitCode {
     let args: Vec<String> = args().collect();
-    if args.len() == 2 && args.get(1).unwrap().eq("archinstall") {
+    if args.len() == 2 && args.get(1).unwrap().eq("setup") {
         return install();
     }
     if args.len() == 2 && args.get(1).unwrap().eq("--install-packages") {
