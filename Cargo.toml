@@ -1,16 +1,15 @@
 [package]
-name = "eywa"
-version = "1.0.0"
+name = "arch"
+version = "0.0.1"
 edition = "2021"
 license = "GPL-2.0-or-later"
-keywords = ["eywa"]
+keywords = ["archlinux","editor","installer","manager","tool"]
 categories = ["development-tools"]
 readme = "README.md"
 authors = ["Willy Micieli"]
-repository = "https://github.com/otechdo/eywa"
-description = "eywa"
+repository = "https://github.com/otechdo/arch"
+description = "A archlinux installer and manager"
 
 [dependencies]
 inquire = { version = "0.7.3", features = ["date", "editor"] }
-tabled = "0.15.0"
 regex = "1.10.3"

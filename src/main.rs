@@ -3,14 +3,12 @@
 use inquire::{prompt_confirmation, MultiSelect, Password, Select, Text};
 use regex::Regex;
 use std::collections::HashMap;
+use std::env::args;
 use std::fs::{remove_file, File};
 use std::io;
 use std::io::{read_to_string, BufRead};
 use std::path::Path;
 use std::process::{exit, Command, ExitCode};
-use tabled::builder::Builder;
-use tabled::settings::Style;
-use tabled::{Table, Tabled};
 
 fn exec(cmd: &str, args: &[&str]) -> bool {
     Command::new(cmd)
@@ -50,7 +48,7 @@ pub struct Arch {
     keymap: String,
 }
 
-#[derive(Tabled, Clone)]
+#[derive(Clone)]
 pub struct Users {
     name: String,
     password: String,
@@ -147,8 +145,8 @@ impl Arch {
     ///
     ///  # Panics
     ///
-    fn install_package(&mut self, packages: &[String]) -> &mut Self {
-        for pkg in packages {
+    fn install_package(&mut self) -> &mut Self {
+        for pkg in &self.packages {
             assert!(exec(
                 "sh",
                 &["-c", format!("paru -S --noconfirm {pkg}").as_str()]
@@ -394,30 +392,10 @@ impl Arch {
         }
         self
     }
-    pub fn convert(&mut self, x: &[String]) -> String {
-        let mut builder = Builder::new();
-        for i in x {
-            builder.push_record([i.as_str()]);
-        }
-        builder.build().with(Style::modern_rounded()).to_string()
-    }
-
-    pub fn convert_users(&mut self, users: Vec<Users>) -> String {
-        Table::new(users).with(Style::modern_rounded()).to_string()
-    }
     pub fn run(&mut self) -> ExitCode {
-        println!(
-            "{}",
-            format_args!(
-                "\nLocale:\n{}\nPackages:\n{}\n{}",
-                self.convert(&[self.locales.to_string()]),
-                self.convert(&self.packages.clone()),
-                self.convert_users(self.users_table.clone())
-            )
-        );
         match prompt_confirmation("Run installation ? ") {
             Ok(true) => self
-                .install_package(&self.packages.clone())
+                .install_package()
                 .create_users()
                 .configure_timezone()
                 .configure_locale()
@@ -555,7 +533,7 @@ impl Arch {
     }
 }
 
-fn main() -> ExitCode {
+fn install() -> ExitCode {
     Arch::new()
         .check_network()
         .configure_mirrors()
@@ -565,4 +543,14 @@ fn main() -> ExitCode {
         .choose_keymap()
         .configure_users()
         .run()
+}
+fn main() -> ExitCode {
+    let args: Vec<String> = args().collect();
+    if args.len() == 2 && args.get(1).unwrap().eq("archinstall") {
+        return install();
+    }
+    if args.len() == 2 && args.get(1).unwrap().eq("install") {
+        return Arch::new().choose_packages().install_package().quit();
+    }
+    exit(1);
 }
