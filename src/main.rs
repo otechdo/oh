@@ -231,21 +231,13 @@ impl Arch {
     /// # Panics
     ///
     pub fn choose_keymap(&mut self) -> &mut Self {
-        if Path::new("/tmp/keys").exists() {
-            let keymap = Select::new("Select your keymap : ", parse_file_lines("/tmp/keys"))
-                .prompt()
-                .unwrap();
-            if keymap.is_empty() {
-                return self.choose_keymap();
-            }
-            self.keymap.clear();
-            self.keymap.push_str(keymap.as_str());
-            return self;
+        let keymap = Text::new("Please enter your keymap : ").prompt().unwrap();
+        if keymap.is_empty() {
+            return self.choose_keymap();
         }
-        assert!(exec("sh", &["-c", "sudo localectl list-keymaps > keys"]));
-        assert!(exec("sh", &["-c", "sudo install -m 644 keys /tmp/keys"]));
-        assert!(exec("sh", &["-c", "sudo rm keys"]));
-        self.choose_keymap()
+        self.keymap.clear();
+        self.keymap.push_str(keymap.as_str());
+        self
     }
 
     ///
