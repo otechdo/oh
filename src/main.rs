@@ -141,7 +141,10 @@ impl Arch {
     ///
     fn install_package(&mut self) -> &mut Self {
         for pkg in &self.packages {
-            assert!(exec("sh", &["-c", format!("paru -S --noconfirm {pkg}").as_str()]));
+            assert!(exec(
+                "sh",
+                &["-c", format!("paru -S --noconfirm {pkg}").as_str()]
+            ));
         }
         self
     }
@@ -164,7 +167,10 @@ impl Arch {
     ///
     fn remove_package(&mut self) -> &mut Self {
         for pkg in &self.packages {
-            assert!(exec("sh", &["-c", format!("paru -Rns --noconfirm {pkg}").as_str()]));
+            assert!(exec(
+                "sh",
+                &["-c", format!("paru -Rns --noconfirm {pkg}").as_str()]
+            ));
         }
         self
     }
