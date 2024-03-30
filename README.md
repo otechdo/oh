@@ -5,10 +5,12 @@
 A archlinux installer, manager for advanced arch users.
 
 - [@archlinux](https://archlinux.org)
+- [@guide](https://wiki.archlinux.org/title/Installation_guide)
+- [@wiki](https://wiki.archlinux.org/)
 - [@download](https://archlinux.org/download/)
 - [@code](https://github.com/otechdo/arch/)
 - [@issues](https://github.com/otechdo/arch/issues)
-
+- [@discord](https://discord.gg/jWHjkpRJPw)
 
 ##  Set desired keymap
 
