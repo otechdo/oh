@@ -585,6 +585,10 @@ impl Arch {
     }
 }
 
+fn help() -> i32 {
+    println!("arch --help                   : Display help\narch --install-packages       : Install packages as inplicit\narch install-dependencies     : Install packages as dependencies\narch remove-packages          : Remove selected packages\narch --update-mirrors         : Update arch mirrors");
+    1
+}
 fn install() -> ExitCode {
     Arch::new()
         .check_network()
@@ -628,7 +632,9 @@ fn main() -> ExitCode {
             .configure_mirrors()
             .quit("Mirrors has been updated successfully");
     }
-    println!("arch --install-packages   : Install packages as inplicit\narch install-dependencies    : Install packages as dependencies\narch remove-packages  : Remove selected packages\narch --update-mirrors   : Update arch mirrors");
-    exit(1);
+    if args.len() == 2 && args.get(1).unwrap().eq("--help") {
+        let _ = help();
+        exit(0);
+    }
+    exit(help());
 }
-
