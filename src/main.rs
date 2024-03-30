@@ -628,7 +628,7 @@ fn main() -> ExitCode {
             .configure_mirrors()
             .quit("Mirrors has been updated successfully");
     }
-
+    println!("arch --install-packages   : Install packages as inplicit\narch install-dependencies    : Install packages as dependencies\narch remove-packages  : Remove selected packages\narch --update-mirrors   : Update arch mirrors");
     exit(1);
 }
 
