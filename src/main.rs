@@ -104,10 +104,13 @@ impl Arch {
                 .with_help_message("Url must be a git repository")
                 .prompt()
                 .unwrap();
-            assert!(exec(
-                "sh",
-                &["-c", format!("git clone --quiet {repo} dotfiles").as_str()]
-            ));
+            assert!(
+                exec(
+                    "sh",
+                    &["-c", format!("git clone --quiet {repo} dotfiles").as_str()]
+                ),
+                "Failed to download your dotfiles repository"
+            );
 
             loop {
                 let cmd = Text::new("Please enter a bash command : ")
@@ -130,7 +133,10 @@ impl Arch {
                     .unwrap()
                     .success());
             }
-            assert!(exec("sh", &["-c", "rm -rf dotfiles"]));
+            assert!(
+                exec("sh", &["-c", "rm -rf dotfiles"]),
+                "Failed to remove dotefiles directory"
+            );
             return self;
         }
         self
@@ -141,10 +147,11 @@ impl Arch {
     ///
     fn install_package(&mut self) -> &mut Self {
         for pkg in &self.packages {
-            assert!(exec(
-                "sh",
-                &["-c", format!("paru -S --noconfirm {pkg}").as_str()]
-            ));
+            assert!(
+                exec("sh", &["-c", format!("paru -S --noconfirm {pkg}").as_str()]),
+                "{}",
+                format!("Fail to install the {pkg}").as_str()
+            );
         }
         self
     }
@@ -154,10 +161,14 @@ impl Arch {
     ///
     fn install_dependencies(&mut self) -> &mut Self {
         for pkg in &self.packages {
-            assert!(exec(
-                "sh",
-                &["-c", format!("paru -S {pkg} --noconfirm --asdeps").as_str()]
-            ));
+            assert!(
+                exec(
+                    "sh",
+                    &["-c", format!("paru -S {pkg} --noconfirm --asdeps").as_str()]
+                ),
+                "{}",
+                format!("Fiale to install {pkg} dependency").as_str()
+            );
         }
         self
     }
@@ -167,10 +178,14 @@ impl Arch {
     ///
     fn remove_package(&mut self) -> &mut Self {
         for pkg in &self.packages {
-            assert!(exec(
-                "sh",
-                &["-c", format!("paru -Rns --noconfirm {pkg}").as_str()]
-            ));
+            assert!(
+                exec(
+                    "sh",
+                    &["-c", format!("paru -Rns --noconfirm {pkg}").as_str()]
+                ),
+                "{}",
+                format!("Fiale to remove {pkg} dependency").as_str()
+            );
         }
         self
     }
@@ -179,8 +194,6 @@ impl Arch {
     /// # Panics
     ///
     pub fn quit_installer(&mut self) -> ExitCode {
-        assert!(exec("sh", &["-c", "sudo rm -rf eywa"]));
-        assert!(exec("sh", &["-c", "sudo rm locale.conf"]));
         exit(self.configure_boot().enable_services());
     }
 
@@ -391,7 +404,6 @@ impl Arch {
                 Ok(false) | Err(_) => break,
             }
         }
-
         self
     }
 
@@ -400,11 +412,11 @@ impl Arch {
     ///
     fn configure_boot(&mut self) -> &mut Self {
         assert!(exec("sh", &["-c", "sudo mkdir -p /boot/grub"]));
-        assert!(exec(
-            "sh",
-            &["-c", "sudo grub-mkconfig -o /boot/grub/grub.cfg"]
-        ));
-        assert!(exec("sh", &["-c", "sudo grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id arch --recheck"]));
+        assert!(
+            exec("sh", &["-c", "sudo grub-mkconfig -o /boot/grub/grub.cfg"]),
+            "Failed to generate grub config"
+        );
+        assert!(exec("sh", &["-c", "sudo grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id arch --recheck"]),"Failed to install grub menu");
         self
     }
 
@@ -414,29 +426,35 @@ impl Arch {
     pub fn create_users(&mut self) -> &mut Self {
         for user in &self.users {
             if user.sudoers {
-                assert!(exec(
-                    "sh",
-                    &[
-                        "-c",
-                        format!(
-                            "sudo useradd -m -g wheel -p {} {} -s {}",
-                            user.password, user.name, user.shell
-                        )
-                        .as_str()
-                    ]
-                ));
+                assert!(
+                    exec(
+                        "sh",
+                        &[
+                            "-c",
+                            format!(
+                                "sudo useradd -m -g wheel -p {} {} -s {}",
+                                user.password, user.name, user.shell
+                            )
+                            .as_str()
+                        ]
+                    ),
+                    "Failed to create the new user"
+                );
             } else {
-                assert!(exec(
-                    "sh",
-                    &[
-                        "-c",
-                        format!(
-                            "sudo useradd -m -p {} {} -s {}",
-                            user.password, user.name, user.shell
-                        )
-                        .as_str()
-                    ]
-                ));
+                assert!(
+                    exec(
+                        "sh",
+                        &[
+                            "-c",
+                            format!(
+                                "sudo useradd -m -p {} {} -s {}",
+                                user.password, user.name, user.shell
+                            )
+                            .as_str()
+                        ]
+                    ),
+                    "Failed to create the new user"
+                );
             }
         }
         self
@@ -479,22 +497,7 @@ impl Arch {
                     .unwrap();
                 let shell = Select::new(
                     format!("{name}'s shell : ").as_str(),
-                    vec![
-                        "sh",
-                        "bash",
-                        "git-shell",
-                        "rbash",
-                        "fish",
-                        "zsh",
-                        "tcsh",
-                        "closh",
-                        "elvish",
-                        "ion",
-                        "murex",
-                        "oh",
-                        "xonsh",
-                        "nushell",
-                    ],
+                    parse_file_lines("/etc/shells"),
                 )
                 .prompt()
                 .unwrap();
@@ -562,15 +565,18 @@ impl Arch {
                 )
                 .as_str()
             ],
-        ));
+        ),"Failed to generate mirrorlist");
         assert!(exec(
             "sh",
             &[
                 "-c",
                 "sudo sed -i 's/#ParallelDownloads = 5/ParallelDownloads = 5/g' /etc/pacman.conf"
             ]
-        ));
-        assert!(exec("sh", &["-c", "paru -Syyu"]));
+        ),"Failed to set Parallel download to 5");
+        assert!(
+            exec("sh", &["-c", "paru -Syyu"]),
+            "Failed to update mirrors"
+        );
         self
     }
 
@@ -594,17 +600,23 @@ impl Arch {
     /// # Panics
     ///
     pub fn configure_hostname(&mut self) -> &mut Self {
-        assert!(exec(
-            "sh",
-            &["-c", format!("echo {} > hostname", self.hostname).as_str()],
-        ));
+        assert!(
+            exec(
+                "sh",
+                &["-c", format!("echo {} > hostname", self.hostname).as_str()],
+            ),
+            "Failed to define hostname"
+        );
 
-        assert!(exec(
-            "sh",
-            &["-c", "sudo install -m 644 hostname /etc/hostname"],
-        ));
+        assert!(
+            exec("sh", &["-c", "sudo install -m 644 hostname /etc/hostname"],),
+            "Failed to install hostname"
+        );
 
-        assert!(exec("sh", &["-c", "rm hostname"],));
+        assert!(
+            exec("sh", &["-c", "rm hostname"]),
+            "Failed to remove tmp hostname file"
+        );
         self
     }
     ///
@@ -626,7 +638,10 @@ impl Arch {
     /// # Panics
     ///
     pub fn upgrade(&mut self) -> ExitCode {
-        assert!(exec("sh", &["-c", "paru -Syu && flatpak update"]));
+        assert!(
+            exec("sh", &["-c", "paru -Syu && flatpak update"]),
+            "Failed to update the system"
+        );
         self.quit("Updated successfully")
     }
 
@@ -634,14 +649,17 @@ impl Arch {
     /// # Panics
     ///
     pub fn upgrade_and_reboot(&mut self) -> ExitCode {
-        assert!(exec("sh", &["-c", "paru -Syu && flatpak update"]));
+        assert!(
+            exec("sh", &["-c", "paru -Syu && flatpak update"]),
+            "Failed to update the system"
+        );
         assert!(exec(
             "sh",
             &[
                 "-c",
                 "sudo shutdown -r +5 \"Save your work! This system will shut down in five minutes\""
             ]
-        ));
+        ),"Failed to program the reboot of your system");
         self.quit("Save your works ! Your computer will reboot after five minutes.")
     }
 
@@ -649,7 +667,10 @@ impl Arch {
     /// # Panics
     ///
     pub fn cancel_reboot(&mut self) -> ExitCode {
-        assert!(exec("sh", &["-c", "shutdown -c"]));
+        assert!(
+            exec("sh", &["-c", "shutdown -c"]),
+            "Cancelation of rhe reboot task has failed"
+        );
         self.quit("The reboot has been canceled successfully")
     }
 
@@ -657,7 +678,7 @@ impl Arch {
     /// # Panics
     ///
     pub fn check_update(&mut self) -> ExitCode {
-        assert!(exec("sh", &["-c", "checkupdates"]));
+        assert!(exec("sh", &["-c", "checkupdates"]), "System is up to date");
         self.quit("Run -> arch --update in order to update your system")
     }
 
@@ -665,7 +686,10 @@ impl Arch {
     /// # Panics
     ///
     pub fn download_update(&mut self) -> ExitCode {
-        assert!(exec("sh", &["-c", "checkupdates -d"]));
+        assert!(
+            exec("sh", &["-c", "checkupdates -d"]),
+            "System is up to date"
+        );
         self.quit("Run -> arch --update in order to update your system")
     }
 }
@@ -734,6 +758,9 @@ fn main() -> ExitCode {
     }
     if args.len() == 2 && args.get(1).unwrap().eq("--check-updates") {
         return Arch::new().check_update();
+    }
+    if args.len() == 2 && args.get(1).unwrap().eq("--download-updates") {
+        return Arch::new().download_update();
     }
     if args.len() == 2 && args.get(1).unwrap().eq("--cancel-reboot") {
         return Arch::new().cancel_reboot();
