@@ -150,7 +150,7 @@ impl Arch {
             assert!(
                 exec("sh", &["-c", format!("paru -S --noconfirm {pkg}").as_str()]),
                 "{}",
-                format!("Fail to install the {pkg}").as_str()
+                format!("Failed to install the {pkg}").as_str()
             );
         }
         self
@@ -167,7 +167,7 @@ impl Arch {
                     &["-c", format!("paru -S {pkg} --noconfirm --asdeps").as_str()]
                 ),
                 "{}",
-                format!("Fiale to install {pkg} dependency").as_str()
+                format!("Failed to install {pkg} dependency").as_str()
             );
         }
         self
@@ -181,10 +181,10 @@ impl Arch {
             assert!(
                 exec(
                     "sh",
-                    &["-c", format!("paru -Rns --noconfirm {pkg}").as_str()]
+                    &["-c", format!("paru -Rns {pkg}").as_str()]
                 ),
                 "{}",
-                format!("Fiale to remove {pkg} dependency").as_str()
+                format!("Failed to remove {pkg} dependency").as_str()
             );
         }
         self
