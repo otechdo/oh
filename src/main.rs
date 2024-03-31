@@ -179,10 +179,7 @@ impl Arch {
     fn remove_package(&mut self) -> &mut Self {
         for pkg in &self.packages {
             assert!(
-                exec(
-                    "sh",
-                    &["-c", format!("paru -Rns {pkg}").as_str()]
-                ),
+                exec("sh", &["-c", format!("paru -Rns {pkg}").as_str()]),
                 "{}",
                 format!("Failed to remove {pkg} dependency").as_str()
             );
