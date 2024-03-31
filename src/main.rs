@@ -621,10 +621,58 @@ impl Arch {
 
         self
     }
+
+    ///
+    /// # Panics
+    ///
+    pub fn upgrade(&mut self) -> ExitCode {
+        assert!(exec("sh", &["-c", "paru -Syu && flatpak update"]));
+        self.quit("Updated successfully")
+    }
+
+    ///
+    /// # Panics
+    ///
+    pub fn upgrade_and_reboot(&mut self) -> ExitCode {
+        assert!(exec("sh", &["-c", "paru -Syu && flatpak update"]));
+        println!("Updated successfully rebooting after five minutes...");
+        assert!(exec(
+            "sh",
+            &[
+                "-c",
+                "sudo shutdown -r +5 \"Save your work! This system will shut down in 5 min\""
+            ]
+        ));
+        self.quit("Waiting five minutes before rebooting")
+    }
+
+    ///
+    /// # Panics
+    ///
+    pub fn cancel_reboot(&mut self) -> ExitCode {
+        assert!(exec("sh", &["-c", "shutdown -c"]));
+        self.quit("The reboot has been canceled successfully")
+    }
+
+    ///
+    /// # Panics
+    ///
+    pub fn check_update(&mut self) -> ExitCode {
+        assert!(exec("sh", &["-c", "checkupdates"]));
+        self.quit("Run -> arch --update in order to update your system")
+    }
+
+    ///
+    /// # Panics
+    ///
+    pub fn download_update(&mut self) -> ExitCode {
+        assert!(exec("sh", &["-c", "checkupdates -d"]));
+        self.quit("Run -> arch --update in order to update your system")
+    }
 }
 
 fn help() -> i32 {
-    println!("arch setup                    : Configure a new archlinux\narch --help                   : Display help\narch --install-packages       : Install packages as inplicit\narch --install-dependencies   : Install packages as dependencies\narch --remove-packages        : Remove selected packages\narch --update-mirrors         : Update arch mirrors");
+    println!("arch setup                    : Configure a new arch\narch --help                   : Display help\narch --install-packages       : Install packages as inplicit\narch --install-dependencies   : Install packages as dependencies\narch --remove-packages        : Remove selected packages\narch --update-mirrors         : Update arch mirrors\narch --update                 : Update arch\narch --update-and-reboot      : Update arch and reboot after five minutes\narch --download-updates       : Download all updates\narch --check-updates          : Check and print all available updates\narch --cancel-reboot          : Cancel rebooting after five minutes");
     1
 }
 fn install() -> ExitCode {
@@ -650,7 +698,6 @@ fn main() -> ExitCode {
             .install_package()
             .quit("Packages has been installed successfully");
     }
-
     if args.len() == 2 && args.get(1).unwrap().eq("--install-dependencies") {
         return Arch::new()
             .choose_packages()
@@ -664,7 +711,6 @@ fn main() -> ExitCode {
             .remove_package()
             .quit("Packages has been removed successfully");
     }
-
     if args.len() == 2 && args.get(1).unwrap().eq("--update-mirrors") {
         return Arch::new()
             .check_network()
@@ -674,6 +720,24 @@ fn main() -> ExitCode {
     if args.len() == 2 && args.get(1).unwrap().eq("--help") {
         let _ = help();
         exit(0);
+    }
+    if args.len() == 2 && args.get(1).unwrap().eq("--update") {
+        return Arch::new().upgrade();
+    }
+    if args.len() == 3 && args.get(1).unwrap().eq("--update") && args.get(2).unwrap().eq("-r") {
+        return Arch::new().upgrade_and_reboot();
+    }
+    if args.len() == 3 && args.get(1).unwrap().eq("-r") && args.get(2).unwrap().eq("--update") {
+        return Arch::new().upgrade_and_reboot();
+    }
+    if args.len() == 2 && args.get(1).unwrap().eq("--update-and-reboot") {
+        return Arch::new().upgrade_and_reboot();
+    }
+    if args.len() == 2 && args.get(1).unwrap().eq("--check-updates") {
+        return Arch::new().check_update();
+    }
+    if args.len() == 2 && args.get(1).unwrap().eq("--cancel-reboot") {
+        return Arch::new().cancel_reboot();
     }
     exit(help());
 }
