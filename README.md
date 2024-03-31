@@ -2,6 +2,8 @@
 
 <img src="https://raw.githubusercontent.com/otechdo/arch/main/archlinux.svg" alt="archlinux" align="right" width="250">
 
+[![zuu](https://github.com/otechdo/arch/actions/workflows/zuu.yml/badge.svg)](https://github.com/otechdo/arch/actions/workflows/zuu.yml)
+
 A archlinux installer, manager for advanced arch users.
 
 - [@archlinux](https://archlinux.org)
@@ -137,35 +139,81 @@ git clone https://aur.archlinux.org/paru && cd paru && makepkg -si && cd .. && r
 
 ## Install arch
  
-### From Crates.io
-
-```bash
-cargo install arch
-```
-
 ### From GitHub
 
 ```bash
-git clone https://github.com/otechdo/arch && cargo install --path .
+git clone https://github.com/otechdo/arch && cd arch && cargo run -- setup
 ```
 
 ### From Aur
 
 ```bash
-paru -Syu arch
+paru -Syu arch && arch setup
 ```
 
-## Path
-
-```bash
-export PATH="$HOME/.cargo/bin:$PATH" # add to ~/.bashrc
-```
-
-## Run installer
+## Setup an new arch
 
 ```bash
 arch setup
 ```
+
+## Install all selected packages on arch
+
+```bash
+arch --install-packages
+```
+
+## Install all selected packages as deps on arch
+
+```bash
+arch --install-dependencies
+```
+
+## Remove all selected packages on arch
+
+```bash
+arch --remove-packages
+```
+
+## Update all mirrors to the enter country
+
+```bash
+arch --update-mirrors
+```
+
+## Update arch
+
+```bash
+arch --update
+```
+
+
+## Update and reboot arch
+
+```bash
+arch --update-and-reboot
+arch --update -r
+arch -r --update
+```
+
+## Cancel the reboot task
+
+```bash
+arch --cancel-reboot
+```
+
+## Check updates
+
+```bash
+arch --check-updates
+```
+
+## Download updates
+
+```bash
+arch --download-updates
+```
+
 
 ## Exit chroot
 
