@@ -635,15 +635,14 @@ impl Arch {
     ///
     pub fn upgrade_and_reboot(&mut self) -> ExitCode {
         assert!(exec("sh", &["-c", "paru -Syu && flatpak update"]));
-        println!("Updated successfully rebooting after five minutes...");
         assert!(exec(
             "sh",
             &[
                 "-c",
-                "sudo shutdown -r +5 \"Save your work! This system will shut down in 5 min\""
+                "sudo shutdown -r +5 \"Save your work! This system will shut down in five minutes\""
             ]
         ));
-        self.quit("Waiting five minutes before rebooting")
+        self.quit("Save your works ! Your computer will reboot after five minutes.")
     }
 
     ///
