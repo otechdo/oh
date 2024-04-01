@@ -20,10 +20,11 @@ A archlinux installer, manager for advanced arch users.
 loadkeys <keymap>
 ```
 
-##  Create two partitions:
+##  Create three partitions:
 
-* 1 4096MB EFI partition  # ef00
-* 2 100% Linux partition  # 8300
+* 1 1024MB  EFI partition   # ef00
+* 2 4096MB  Linux partition # 8300
+* 3 100%    Linux partition # 8300
 
 ```bash
 cgdisk /dev/sda
@@ -31,24 +32,38 @@ cgdisk /dev/sda
 
 ## Formatting
 
-### /boot
+### /boot/efi
 
 ```bash
 mkfs.vfat -F 32 /dev/sda1
 ```
 
+### /boot
+
+```bash
+mkfs.ext2 /dev/sda2
+```
+
 ### /
 
 ```bash
-mkfs.ext4 /dev/sda2
+mkfs.ext4 /dev/sda3
+```
+
+## List device block for mounting
+
+```bash
+lsblk --fs
 ```
 
 ## Mount partitions
 
 ```bash
-mount /dev/sda2 /mnt
+mount /dev/sda3 /mnt
 mkdir /mnt/boot
-mount /dev/sda1 /mnt/boot
+mount /dev/sda2 /mnt/boot
+mkdir /mnt/boot/efi
+mount /dev/sda1 /mnt/boot/efi
 ```
 
 ## Change pacman mirror priority
