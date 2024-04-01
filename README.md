@@ -54,7 +54,7 @@ mount /dev/sda1 /mnt/boot
 ## Change pacman mirror priority
 
 ```bash
-reflector -c <country> --sort rate --save /etc/pacman.d/mirrorlist -p https
+reflector -c <country> --sort delay --save /etc/pacman.d/mirrorlist -p https
 ```
 
 ## Update package signing keys
