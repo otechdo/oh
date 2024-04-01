@@ -107,6 +107,12 @@ arch-chroot /mnt && cd ~
 ```bash
 vim /etc/pacman.conf
 ```
+## Check updates
+
+```bash
+arch --check-updates
+```
+
 
 ##  Sync clock
 
@@ -235,11 +241,13 @@ arch -r --update
 arch --cancel-reboot
 ```
 
-## Check updates
+## Refrech cache
 
 ```bash
-arch --check-updates
+sudo arch --refresh-cache
 ```
+
+
 
 ## Download updates
 

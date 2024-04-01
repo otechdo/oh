@@ -265,7 +265,7 @@ impl Arch {
             &[
                 "-c",
                 format!(
-                    "sudo ln -sf /usr/share/zoneinfo/{} /etc/localtime",
+                    "sudo ln -svf /usr/share/zoneinfo/{} /etc/localtime",
                     self.timezone
                 )
                 .as_str()
@@ -377,6 +377,7 @@ impl Arch {
             "sh",
             &["-c", "sudo pacman -Sl multilib | cut -d ' ' -f 2 >> pkgs"]
         ));
+        assert!(exec("sh", &["-c", "sudo pacman -Sg >> pkgs"]));
         assert!(exec(
             "sh",
             &["-c", "paru --list  aur | cut -d ' ' -f 2 >> pkgs"]
@@ -593,6 +594,73 @@ impl Arch {
         }
         self
     }
+
+    ///
+    /// # Panics
+    ///
+    pub fn profile(&mut self) -> &mut Self {
+        let profile = Select::new(
+            "Select a profile",
+            vec!["@gnome", "@deepin", "@kde", "@none"],
+        )
+        .prompt()
+        .unwrap();
+        if profile.is_empty() {
+            return self.profile();
+        }
+        if profile.eq("@none") {
+            return self.choose_packages();
+        }
+        match prompt_confirmation(format!("using {profile} ?").as_str()) {
+            Ok(true) => {
+                println!("{}", format!("using {profile}").as_str());
+                assert!(Command::new("wget")
+                    .arg("-q")
+                    .arg(
+                        format!("https://raw.githubusercontent.com/otechdo/arch/main/{profile}")
+                            .as_str()
+                    )
+                    .current_dir(".")
+                    .spawn()
+                    .unwrap()
+                    .wait()
+                    .unwrap()
+                    .success());
+                assert!(
+                    exec(
+                        "sh",
+                        &[
+                            "-c",
+                            format!("xargs -d '\n' -a {profile} paru --noconfirm --needed -Syu")
+                                .as_str()
+                        ]
+                    ),
+                    "{}",
+                    format!("failed to install {profile}").as_str()
+                );
+                if profile.eq("@gnome") {
+                    assert!(
+                        exec("sh", &["-c", "sudo systemctl enable gdm"]),
+                        "Failed to enable gdm"
+                    );
+                } else if profile.eq("@kde") {
+                    assert!(
+                        exec("sh", &["-c", "sudo systemctl enable sddm"]),
+                        "Failed to enable sddm"
+                    );
+                } else if profile.eq("@deepin") {
+                    assert!(
+                        exec("sh", &["-c", "sudo systemctl enable lightdm"]),
+                        "Failed to enable lightdm"
+                    );
+                }
+                std::fs::remove_file(profile).expect("failed to profile file");
+                self.choose_packages()
+            }
+            Ok(false) | Err(_) => self.profile(),
+        }
+    }
+
     ///
     /// # Panics
     ///
@@ -689,12 +757,43 @@ impl Arch {
         );
         self.quit("Run -> arch --update in order to update your system")
     }
+
+    ///
+    /// # Panics
+    ///
+    pub fn refresh_cache(&mut self) -> ExitCode {
+        assert!(exec(
+            "sh",
+            &["-c", "pacman -Sl core | cut -d ' ' -f 2 > pkgs"]
+        ));
+        assert!(exec(
+            "sh",
+            &["-c", "pacman -Sl extra | cut -d ' ' -f 2 >> pkgs"]
+        ));
+        assert!(exec(
+            "sh",
+            &["-c", "pacman -Sl multilib | cut -d ' ' -f 2 >> pkgs"]
+        ));
+        assert!(exec("sh", &["-c", "pacman -Sg >> pkgs"]));
+        assert!(exec(
+            "sh",
+            &["-c", "paru --list  aur | cut -d ' ' -f 2 >> pkgs"]
+        ));
+        assert!(exec("sh", &["-c", "install -m 644 pkgs /tmp/pkgs"]));
+
+        assert!(exec("sh", &["-c", "rm pkgs"]));
+        self.quit("Cache updated successfully")
+    }
 }
 
 fn help() -> i32 {
     println!("arch setup                    : Configure a new arch\narch --help                   : Display help\narch --install-packages       : Install packages as inplicit\narch --install-dependencies   : Install packages as dependencies\narch --remove-packages        : Remove selected packages\narch --update-mirrors         : Update arch mirrors\narch --update                 : Update arch\narch --update-and-reboot      : Update arch and reboot after five minutes\narch --download-updates       : Download all updates\narch --check-updates          : Check and print all available updates\narch --cancel-reboot          : Cancel rebooting after five minutes");
     1
 }
+
+///
+/// # Panics
+///
 fn install() -> ExitCode {
     Arch::new()
         .check_network()
@@ -703,7 +802,7 @@ fn install() -> ExitCode {
         .choose_keymap()
         .choose_timezone()
         .choose_hostname()
-        .choose_packages()
+        .profile()
         .configure_users()
         .run()
 }
@@ -743,6 +842,10 @@ fn main() -> ExitCode {
     }
     if args.len() == 2 && args.get(1).unwrap().eq("--update") {
         return Arch::new().upgrade();
+    }
+
+    if args.len() == 2 && args.get(1).unwrap().eq("--refresh-cache") {
+        return Arch::new().refresh_cache();
     }
     if args.len() == 3 && args.get(1).unwrap().eq("--update") && args.get(2).unwrap().eq("-r") {
         return Arch::new().upgrade_and_reboot();
