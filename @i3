@@ -17,6 +17,6 @@ vi
 qutebrowser
 python-adblock
 dunst
-lib-notify
+libnotify
 lightdm-slick-greeter
 numlockx
