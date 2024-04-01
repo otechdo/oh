@@ -171,6 +171,12 @@ paru -Syu arch
 arch setup
 ```
 
+## Desktop 
+
+- [@deepin](https://wiki.archlinux.org/title/Deepin_Desktop_Environment)
+- [@kde](https://wiki.archlinux.org/title/KDE)
+- [@gnome](https://wiki.archlinux.org/title/GNOME)
+
 ## Install all selected packages on arch
 
 ```bash
