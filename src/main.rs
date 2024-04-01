@@ -611,6 +611,7 @@ impl Arch {
         if profile.eq("@none") {
             return self.choose_packages();
         }
+
         match prompt_confirmation(format!("using {profile} ?").as_str()) {
             Ok(true) => {
                 println!("{}", format!("using {profile}").as_str());
@@ -653,6 +654,12 @@ impl Arch {
                         exec("sh", &["-c", "sudo systemctl enable lightdm"]),
                         "Failed to enable lightdm"
                     );
+                    if profile.eq("@xmonad") {
+                        assert!(
+                            exec("sh", &["-c", "mkdir ~/.xmonad && wget -q https://raw.githubusercontent.com/otechdo/arch/main/xmonad.hs && mv xmonad.hs ~/.xmonad && touch ~/.xmonad/build && chmod +x ~/.xmonad/build && xmonad --recompile"]),
+                            "Failed to configure xmonad"
+                            );
+                    }
                 }
                 std::fs::remove_file(profile).expect("failed to profile file");
                 self.choose_packages()
