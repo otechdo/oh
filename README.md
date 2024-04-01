@@ -163,16 +163,15 @@ git clone https://aur.archlinux.org/paru && cd paru && makepkg -si && cd .. && r
 ### From GitHub
 
 ```bash
-git clone https://github.com/otechdo/arch && cd arch && cargo install --path .
+git clone https://github.com/otechdo/arch && cd arch && cargo build --release && install -m 755 target/release/arch /usr/bin/arch
 ```
+
 
 ### From Crates.io
 
 ```bash
-cargo install arch
+cargo install arch && install "$HOME/.cargo/bin/arch" /usr/bin/arch 
 ```
-
-> Don't forget to add `$HOME/.cargo/bin` to the `$PATH`
 
 ### From Aur
 
