@@ -157,6 +157,8 @@ git clone https://github.com/otechdo/arch && cd arch && cargo install --path .
 cargo install arch
 ```
 
+> Don't forget to add `$HOME/.cargo/bin` to the `$PATH`
+
 ### From Aur
 
 ```bash
