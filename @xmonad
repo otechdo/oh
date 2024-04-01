@@ -8,6 +8,6 @@ dmenu
 rofi
 dzen2
 dunst
-lib-notify
 lightdm-slick-greeter
 numlockx
+libnotify
