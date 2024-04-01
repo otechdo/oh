@@ -128,7 +128,7 @@ echo '<username> ALL=(ALL) ALL' > /etc/sudoers.d/<username>
 ## Checkout on your account
 
 ```bash
-su <username> && cd ~
+su - <username>
 ```
 
 ## Install paru
