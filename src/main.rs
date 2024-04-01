@@ -413,7 +413,7 @@ impl Arch {
             exec("sh", &["-c", "sudo grub-mkconfig -o /boot/grub/grub.cfg"]),
             "Failed to generate grub config"
         );
-        assert!(exec("sh", &["-c", "sudo grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id arch --recheck"]),"Failed to install grub menu");
+        assert!(exec("sh", &["-c", "sudo grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id arch --recheck"]),"Failed to install grub menu");
         self
     }
 
