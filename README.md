@@ -148,16 +148,22 @@ git clone https://aur.archlinux.org/paru && cd paru && makepkg -si && cd .. && r
 ### From GitHub
 
 ```bash
-git clone https://github.com/otechdo/arch && cd arch && cargo run -- setup
+git clone https://github.com/otechdo/arch && cd arch && cargo install --path .
+```
+
+### From Crates.io
+
+```bash
+cargo install arch
 ```
 
 ### From Aur
 
 ```bash
-paru -Syu arch && arch setup
+paru -Syu arch
 ```
 
-## Setup an new arch
+## Setup the new arch
 
 ```bash
 arch setup
@@ -193,7 +199,6 @@ arch --update-mirrors
 arch --update
 ```
 
-
 ## Update and reboot arch
 
 ```bash
@@ -219,7 +224,6 @@ arch --check-updates
 ```bash
 arch --download-updates
 ```
-
 
 ## Exit chroot
 
