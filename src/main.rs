@@ -601,7 +601,7 @@ impl Arch {
     pub fn profile(&mut self) -> &mut Self {
         let profile = Select::new(
             "Select a profile",
-            vec!["@gnome", "@deepin", "@kde", "@none"],
+            vec!["@gnome", "@deepin", "@kde", "@i3", "@xmonad", "@none"],
         )
         .prompt()
         .unwrap();
@@ -648,7 +648,7 @@ impl Arch {
                         exec("sh", &["-c", "sudo systemctl enable sddm"]),
                         "Failed to enable sddm"
                     );
-                } else if profile.eq("@deepin") {
+                } else if profile.eq("@deepin") || profile.eq("@xmonad") || profile.eq("@i3") {
                     assert!(
                         exec("sh", &["-c", "sudo systemctl enable lightdm"]),
                         "Failed to enable lightdm"
