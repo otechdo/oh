@@ -131,6 +131,12 @@ echo '<username> ALL=(ALL) ALL' > /etc/sudoers.d/<username>
 su - <username>
 ```
 
+## Configure the toolchain
+
+```bash
+rustup default stable
+```
+
 ## Install paru
 
 ```bash
