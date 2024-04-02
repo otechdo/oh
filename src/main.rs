@@ -800,7 +800,9 @@ impl Arch {
         assert!(exec("sh", &["-c", "checkupdates"]), "System is up to date");
         self.quit("Run -> arch --update in order to update your system")
     }
-
+    ///
+    /// # Panics
+    ///
     pub fn man(&mut self) -> &mut Self {
         assert!(
             exec("sh", &["-c", "w3m https://man.archlinux.org"]),
@@ -808,6 +810,27 @@ impl Arch {
         );
         self
     }
+    ///
+    /// # Panics
+    ///
+    pub fn aur(&mut self) -> &mut Self {
+        assert!(
+            exec("sh", &["-c", "w3m https://aur.archlinux.org"]),
+            "Failed to navigate on aur website"
+        );
+        self
+    }
+    ///
+    /// # Panics
+    ///
+    pub fn packages(&mut self) -> &mut Self {
+        assert!(
+            exec("sh", &["-c", "w3m https://archlinux.org/packages/"]),
+            "Failed to navigate on arch website"
+        );
+        self
+    }
+
     ///
     /// # Panics
     ///
@@ -912,6 +935,10 @@ fn main() -> ExitCode {
         exit(remove_packages(&args));
     }
 
+    if args.len() == 2 && args.get(1).expect("failed to get argument").eq("-a") {
+        return Arch::new().aur().quit("Exit aur successfully");
+    }
+
     if args.len() == 2 && args.get(1).unwrap().eq("setup") {
         return install();
     }
@@ -924,6 +951,12 @@ fn main() -> ExitCode {
     if args.len() == 2 && args.get(1).unwrap().eq("--man") || args.get(1).unwrap().eq("-m") {
         return Arch::new().man().quit("Man exit success");
     }
+    if args.len() == 2 && args.get(1).expect("failed to get argument").eq("-a")
+        || args.get(1).unwrap().eq("--aur")
+    {
+        return Arch::new().aur().quit("Exit aur successfully");
+    }
+
     if args.len() == 2 && args.get(1).unwrap().eq("--install") || args.get(1).unwrap().eq("-i") {
         return Arch::new()
             .choose_packages()
