@@ -90,6 +90,34 @@ impl Arch {
         Self::default()
     }
 
+    pub fn systemd(&mut self) -> &mut Self {
+        assert!(
+            exec(
+                "sh",
+                &["wget -q https://raw.githubusercontent.com/otechdo/arch/main/arch.service"]
+            ),
+            "Failed to download arch.service"
+        );
+        assert!(
+            exec(
+                "sh",
+                &["wget -q https://github.com/otechdo/arch/blob/main/arch.timer"]
+            ),
+            "Failed to download arch.timer"
+        );
+        assert!(exec("sh",&["sudo install -m 644 arch.timer /etc/systemd/system/timers.target.wants/arch.timer"]),"Failed to install arch.timer");
+        assert!(exec("sh",&["sudo install -m 644 arch.service /etc/systemd/system/default.target.wants/arch.service"]),"Failed to install arch.service");
+        assert!(
+            exec("sh", &["sudo systemctl enable arch.service"]),
+            "Failed to enable arch.service"
+        );
+        assert!(
+            exec("sh", &["sudo systemctl enable arch.timer"]),
+            "Failed to enable arch.timer"
+        );
+        self
+    }
+
     ///
     /// # Panics
     ///
@@ -815,6 +843,21 @@ fn install() -> ExitCode {
 }
 fn main() -> ExitCode {
     let args: Vec<String> = args().collect();
+
+    if args.len() > 2 && args.get(1).expect("failed to get argument").eq("-S") {
+        for pkg in &args {
+            if pkg.contains("arch") || pkg.contains("-S") {
+                continue;
+            }
+            assert!(
+                exec("sh", &["-c", format!("paru -S {pkg}").as_str()]),
+                "{}",
+                format!("Failed to install the {pkg} package").as_str()
+            );
+        }
+        exit(0);
+    }
+
     if args.len() == 2 && args.get(1).unwrap().eq("setup") {
         return install();
     }
