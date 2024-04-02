@@ -801,6 +801,13 @@ impl Arch {
         self.quit("Run -> arch --update in order to update your system")
     }
 
+    pub fn man(&mut self) -> &mut Self {
+        assert!(
+            exec("sh", &["-c", "w3m https://man.archlinux.org"]),
+            "Failed to navigate on website"
+        );
+        self
+    }
     ///
     /// # Panics
     ///
@@ -901,7 +908,7 @@ fn main() -> ExitCode {
     if args.len() >= 2 && args.get(1).expect("failed to get argument").eq("-S") {
         exit(install_packages(&args));
     }
-    if args.len() >= 2   && args.get(1).expect("failed to get argument").eq("-R") {
+    if args.len() >= 2 && args.get(1).expect("failed to get argument").eq("-R") {
         exit(remove_packages(&args));
     }
 
@@ -914,9 +921,14 @@ fn main() -> ExitCode {
     if args.len() == 2 && args.get(1).unwrap().eq("--wiki") || args.get(1).unwrap().eq("-w") {
         return Arch::new().wiki().quit("Wiki exit success");
     }
-
+    if args.len() == 2 && args.get(1).unwrap().eq("--man") || args.get(1).unwrap().eq("-m") {
+        return Arch::new().man().quit("Man exit success");
+    }
     if args.len() == 2 && args.get(1).unwrap().eq("--install") || args.get(1).unwrap().eq("-i") {
-        return Arch::new().choose_packages().install_package().quit("Packages installed success");
+        return Arch::new()
+            .choose_packages()
+            .install_package()
+            .quit("Packages installed success");
     }
     if args.len() == 2 && args.get(1).unwrap().eq("--install-dependencies") {
         return Arch::new()
@@ -924,8 +936,7 @@ fn main() -> ExitCode {
             .install_dependencies()
             .quit("Dependencies as been installed successfully");
     }
-
-    if args.len() == 2 && args.get(1).unwrap().eq("--remove-packages") {
+    if args.len() == 2 && args.get(1).unwrap().eq("--remove") || args.get(1).unwrap().eq("-R") {
         return Arch::new()
             .choose_packages()
             .remove_package()
