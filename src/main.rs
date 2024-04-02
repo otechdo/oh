@@ -323,6 +323,14 @@ impl Arch {
     ///
     /// # Panics
     ///
+    pub fn forums(&mut self) -> &mut Self {
+        assert!(exec("sh", &["-c", "w3m https://bbs.archlinux.org"]));
+        self
+    }
+
+    ///
+    /// # Panics
+    ///
     pub fn check_network(&mut self) -> &mut Self {
         println!("Checking network...");
         assert!(exec(
@@ -916,6 +924,7 @@ fn install() -> ExitCode {
     Arch::new()
         .check_network()
         .news()
+        .forums()
         .wiki()
         .configure_mirrors()
         .choose_locale()
@@ -950,6 +959,9 @@ fn main() -> ExitCode {
     }
     if args.len() == 2 && args.get(1).unwrap().eq("--man") || args.get(1).unwrap().eq("-m") {
         return Arch::new().man().quit("Man exit success");
+    }
+    if args.len() == 2 && args.get(1).unwrap().eq("--forums") || args.get(1).unwrap().eq("-f") {
+        return Arch::new().forums().quit("Forums exit success");
     }
     if args.len() == 2 && args.get(1).expect("failed to get argument").eq("-a")
         || args.get(1).unwrap().eq("--aur")
