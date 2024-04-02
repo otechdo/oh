@@ -89,7 +89,9 @@ impl Arch {
     pub fn new() -> Self {
         Self::default()
     }
-
+    ///
+    /// # Panics
+    ///
     pub fn systemd(&mut self) -> &mut Self {
         assert!(
             exec(
@@ -502,6 +504,7 @@ impl Arch {
                 .configure_locale()
                 .configure_keymap()
                 .configure_hostname()
+                .systemd()
                 .quit_installer();
         }
         exit(1);
@@ -829,6 +832,40 @@ fn help() -> i32 {
 ///
 /// # Panics
 ///
+fn install_packages(pkgs: &[String]) -> i32 {
+    for pkg in pkgs {
+        if pkg.contains("arch") || pkg.contains("-S") {
+            continue;
+        }
+        assert!(
+            exec("sh", &["-c", format!("paru -S {pkg}").as_str()]),
+            "{}",
+            format!("Failed to install the {pkg} package").as_str()
+        );
+    }
+    0
+}
+
+///
+/// # Panics
+///
+fn remove_packages(pkgs: &[String]) -> i32 {
+    for pkg in pkgs {
+        if pkg.contains("arch") || pkg.contains("-R") {
+            continue;
+        }
+        assert!(
+            exec("sh", &["-c", format!("paru -Rns {pkg}").as_str()]),
+            "{}",
+            format!("Failed to install the {pkg} package").as_str()
+        );
+    }
+    0
+}
+
+///
+/// # Panics
+///
 fn install() -> ExitCode {
     Arch::new()
         .check_network()
@@ -839,24 +876,15 @@ fn install() -> ExitCode {
         .choose_hostname()
         .profile()
         .configure_users()
-        .systemd()
         .run()
 }
 fn main() -> ExitCode {
     let args: Vec<String> = args().collect();
-
     if args.len() > 2 && args.get(1).expect("failed to get argument").eq("-S") {
-        for pkg in &args {
-            if pkg.contains("arch") || pkg.contains("-S") {
-                continue;
-            }
-            assert!(
-                exec("sh", &["-c", format!("paru -S {pkg}").as_str()]),
-                "{}",
-                format!("Failed to install the {pkg} package").as_str()
-            );
-        }
-        exit(0);
+        exit(install_packages(&args));
+    }
+    if args.len() > 2 && args.get(1).expect("failed to get argument").eq("-R") {
+        exit(remove_packages(&args));
     }
 
     if args.len() == 2 && args.get(1).unwrap().eq("setup") {
