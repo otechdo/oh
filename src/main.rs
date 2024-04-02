@@ -854,7 +854,7 @@ fn install_packages(pkgs: &[String]) -> i32 {
             continue;
         }
         assert!(
-            exec("sh", &["-c", format!("paru -S {pkg}").as_str()]),
+            exec("sh", &["-c", format!("paru -Syu {pkg}").as_str()]),
             "{}",
             format!("Failed to install the {pkg} package").as_str()
         );
@@ -898,10 +898,10 @@ fn install() -> ExitCode {
 }
 fn main() -> ExitCode {
     let args: Vec<String> = args().collect();
-    if args.len() > 2 && args.get(1).expect("failed to get argument").eq("-S") {
+    if args.len() >= 2 && args.get(1).expect("failed to get argument").eq("-S") {
         exit(install_packages(&args));
     }
-    if args.len() > 2 && args.get(1).expect("failed to get argument").eq("-R") {
+    if args.len() >= 2   && args.get(1).expect("failed to get argument").eq("-R") {
         exit(remove_packages(&args));
     }
 
@@ -913,6 +913,10 @@ fn main() -> ExitCode {
     }
     if args.len() == 2 && args.get(1).unwrap().eq("--wiki") || args.get(1).unwrap().eq("-w") {
         return Arch::new().wiki().quit("Wiki exit success");
+    }
+
+    if args.len() == 2 && args.get(1).unwrap().eq("--install") || args.get(1).unwrap().eq("-i") {
+        return Arch::new().choose_packages().install_package().quit("Packages installed success");
     }
     if args.len() == 2 && args.get(1).unwrap().eq("--install-dependencies") {
         return Arch::new()

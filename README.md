@@ -1,18 +1,19 @@
-<img src="https://raw.githubusercontent.com/otechdo/arch/main/archlinux.svg" alt="archlinux" align="right" width="250">
+<img src="https://raw.githubusercontent.com/otechdo/arch/main/arch/archlinux.svg" alt="archlinux" align="right" width="250">
 
 A archlinux installer, manager for advanced arch users.
 
-- [@en](https://raw.githubusercontent.com/otechdo/arch/main/README.md)
-- [@fr](https://raw.githubusercontent.com/otechdo/arch/main/README.fr.md)
-- [@es](https://raw.githubusercontent.com/otechdo/arch/main/README.es.md)
-- [@it](https://raw.githubusercontent.com/otechdo/arch/main/README.it.md)
-    - [@archlinux](https://archlinux.org)
+- [@documentation]
+    - [@en](https://raw.githubusercontent.com/otechdo/arch/main/README.md)
+    - [@fr](https://github.com/otechdo/arch/blob/main/arch/docs/fr/README.md)
+    - [@es](https://github.com/otechdo/arch/blob/main/arch/docs/es/README.md)
+    - [@it](https://github.com/otechdo/arch/blob/main/arch/docs/it/README.md)
+- [@archlinux](https://archlinux.org)
     - [@guide](https://wiki.archlinux.org/title/Installation_guide)
     - [@wiki](https://wiki.archlinux.org/)
     - [@download](https://archlinux.org/download/)
-    - [@code](https://github.com/otechdo/arch/)
+- [@arch](https://github.com/otechdo/arch/)
     - [@issues](https://github.com/otechdo/arch/issues)
-    - [@discord](https://discord.gg/jWHjkpRJPw)
+    - [@discussions](https://discord.gg/jWHjkpRJPw)
 
 ##  Set desired keymap
 
