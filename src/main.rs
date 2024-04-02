@@ -839,6 +839,7 @@ fn install() -> ExitCode {
         .choose_hostname()
         .profile()
         .configure_users()
+        .systemd()
         .run()
 }
 fn main() -> ExitCode {
