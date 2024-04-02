@@ -246,6 +246,7 @@ impl Arch {
         ));
         0
     }
+
     ///
     /// # Panics
     ///
@@ -277,7 +278,10 @@ impl Arch {
     /// # Panics
     ///
     pub fn wiki(&mut self) -> &mut Self {
-        assert!(exec("sh", &["-c", "w3m https://wiki.archlinux.org"]));
+        assert!(exec(
+            "sh",
+            &["-c", "w3m https://wiki.archlinux.org 2> /dev/null"]
+        ));
         self
     }
 
@@ -285,7 +289,10 @@ impl Arch {
     /// # Panics
     ///
     pub fn news(&mut self) -> &mut Self {
-        assert!(exec("sh", &["-c", "w3m https://archlinux.org/news"]));
+        assert!(exec(
+            "sh",
+            &["-c", "w3m https://archlinux.org/news 2> /dev/null"]
+        ));
         self
     }
 
@@ -324,7 +331,10 @@ impl Arch {
     /// # Panics
     ///
     pub fn forums(&mut self) -> &mut Self {
-        assert!(exec("sh", &["-c", "w3m https://bbs.archlinux.org"]));
+        assert!(exec(
+            "sh",
+            &["-c", "w3m https://bbs.archlinux.org 2> /dev/null"]
+        ));
         self
     }
 
