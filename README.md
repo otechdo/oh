@@ -2,7 +2,7 @@
 
 A archlinux installer, manager for advanced arch users.
 
-- [@documentation]
+- [@documentation](https://github.com/otechdo/arch/blob/main/arch/docs/)
     - [@en](https://raw.githubusercontent.com/otechdo/arch/main/README.md)
     - [@fr](https://github.com/otechdo/arch/blob/main/arch/docs/fr/README.md)
     - [@es](https://github.com/otechdo/arch/blob/main/arch/docs/es/README.md)
