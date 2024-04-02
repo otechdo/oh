@@ -276,6 +276,22 @@ impl Arch {
     ///
     /// # Panics
     ///
+    pub fn wiki(&mut self) -> &mut Self {
+        assert!(exec("sh", &["-c", "w3m https://wiki.archlinux.org"]));
+        self
+    }
+
+    ///
+    /// # Panics
+    ///
+    pub fn news(&mut self) -> &mut Self {
+        assert!(exec("sh", &["-c", "w3m https://archlinux.org/news"]));
+        self
+    }
+
+    ///
+    /// # Panics
+    ///
     pub fn choose_keymap(&mut self) -> &mut Self {
         let keymap = Text::new("Please enter your keymap : ").prompt().unwrap();
         if keymap.is_empty() {
@@ -869,6 +885,8 @@ fn remove_packages(pkgs: &[String]) -> i32 {
 fn install() -> ExitCode {
     Arch::new()
         .check_network()
+        .news()
+        .wiki()
         .configure_mirrors()
         .choose_locale()
         .choose_keymap()
@@ -890,11 +908,11 @@ fn main() -> ExitCode {
     if args.len() == 2 && args.get(1).unwrap().eq("setup") {
         return install();
     }
-    if args.len() == 2 && args.get(1).unwrap().eq("--install-packages") {
-        return Arch::new()
-            .choose_packages()
-            .install_package()
-            .quit("Packages has been installed successfully");
+    if args.len() == 2 && args.get(1).unwrap().eq("--news") || args.get(1).unwrap().eq("-n") {
+        return Arch::new().news().quit("News exit success");
+    }
+    if args.len() == 2 && args.get(1).unwrap().eq("--wiki") || args.get(1).unwrap().eq("-w") {
+        return Arch::new().wiki().quit("Wiki exit success");
     }
     if args.len() == 2 && args.get(1).unwrap().eq("--install-dependencies") {
         return Arch::new()
