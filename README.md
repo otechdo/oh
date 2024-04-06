@@ -76,7 +76,7 @@ reflector -c <country> --sort delay --save /etc/pacman.d/mirrorlist -p https
 ## Update package signing keys
 
 ```bash
-pacman-key --init && pacman-key --populate
+pacman-key --init && pacman-key --populate archlinux
 ```
 
 ## Refresh package signing keys
@@ -88,7 +88,7 @@ pacman-key --refresh-keys
 ## Install the base system
 
 ```bash
-pacstrap /mnt base base-devel wget linux linux-firmware vim git efibootmgr rustup sudo grub networkmanager reflector <shell>
+pacstrap /mnt base base-devel wget git linux linux-firmware vim git efibootmgr rustup sudo grub networkmanager reflector <shell> <ucode>
 ```
 
 ##  Generate fstab
@@ -108,11 +108,8 @@ arch-chroot /mnt && cd ~
 ```bash
 vim /etc/pacman.conf
 ```
-## Check updates
 
-```bash
-arch --check-updates
-```
+
 
 
 ##  Sync clock
@@ -173,17 +170,16 @@ git clone https://aur.archlinux.org/paru && cd paru && makepkg -si && cd .. && r
 git clone https://github.com/otechdo/arch && cd arch && cargo build --release && install -m 755 target/release/arch /usr/bin/arch
 ```
 
-
 ### From Crates.io
 
 ```bash
-cargo install arch && install "$HOME/.cargo/bin/arch" /usr/bin/arch 
+cargo install arch && install -m 755 "$HOME/.cargo/bin/arch" /usr/bin/arch 
 ```
 
 ### From Aur
 
 ```bash
-paru -Syu arch
+paru -Syu manager
 ```
 
 ## Setup the new arch
@@ -220,6 +216,12 @@ arch --remove-packages
 
 ```bash
 arch --update-mirrors
+```
+
+## Check updates
+
+```bash
+arch --check-updates
 ```
 
 ## Update arch
