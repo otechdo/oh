@@ -529,7 +529,7 @@ impl Arch {
                         &[
                             "-c",
                             format!(
-                                "echo '{} ALL=(ALL) ALL' > /etc/sudoers.d/{} ",
+                                "sudo echo '{} ALL=(ALL) ALL' > /etc/sudoers.d/{} ",
                                 user.name, user.name
                             )
                             .as_str()
@@ -577,7 +577,7 @@ impl Arch {
                 .systemd()
                 .quit_installer();
         }
-        exit(1);
+        install()
     }
 
     ///
@@ -765,41 +765,30 @@ impl Arch {
     /// # Panics
     ///
     pub fn confirm(&mut self) -> ExitCode {
-        let mut again = false;
-        loop {
-            let ok_locale =
-                prompt_confirmation(format!("Use locales : {:?}", self.locales).as_str()).unwrap();
-            if !ok_locale {
-                self.choose_locales();
-                again = true;
-            }
-            let ok_timezone =
-                prompt_confirmation(format!("Use timezone : {}", self.timezone).as_str()).unwrap();
-            if !ok_timezone {
-                self.choose_timezone();
-                again = true;
-            }
-            let ok_keymap =
-                prompt_confirmation(format!("Use keymap : {}", self.keymap).as_str()).unwrap();
-            if !ok_keymap {
-                self.choose_keymap();
-                again = true;
-            }
-            let ok_hostname =
-                prompt_confirmation(format!("Use hostname : {}", self.hostname).as_str()).unwrap();
-            if !ok_hostname {
-                self.choose_hostname();
-                again = true;
-            }
-            let ok_profile =
-                prompt_confirmation(format!("Use profile : {}", self.profile).as_str()).unwrap();
-            if !ok_profile {
-                again = true;
-            }
-
-            if !again {
-                break;
-            }
+        let ok_locale =
+            prompt_confirmation(format!("Use locales : {:?}", self.locales).as_str()).unwrap();
+        if !ok_locale {
+            return self.choose_locales().confirm();
+        }
+        let ok_timezone =
+            prompt_confirmation(format!("Use timezone : {}", self.timezone).as_str()).unwrap();
+        if !ok_timezone {
+            return self.choose_timezone().confirm();
+        }
+        let ok_keymap =
+            prompt_confirmation(format!("Use keymap : {}", self.keymap).as_str()).unwrap();
+        if !ok_keymap {
+            return self.choose_keymap().confirm();
+        }
+        let ok_hostname =
+            prompt_confirmation(format!("Use hostname : {}", self.hostname).as_str()).unwrap();
+        if !ok_hostname {
+            return self.choose_hostname().confirm();
+        }
+        let ok_profile =
+            prompt_confirmation(format!("Use profile : {}", self.profile).as_str()).unwrap();
+        if !ok_profile {
+            return self.choose_profile().confirm();
         }
         self.run()
     }
