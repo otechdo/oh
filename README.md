@@ -182,7 +182,13 @@ git clone https://aur.archlinux.org/yay && cd yay && makepkg -si && cd .. && rm 
 ### From GitHub
 
 ```bash
-git clone https://github.com/otechdo/arch && cd arch && cargo build --release && install -m 755 target/release/arch /usr/bin/arch
+git clone https://github.com/otechdo/arch && cd arch
+```
+
+### Build Setup
+
+```bash
+make setup
 ```
 
 ### From Crates.io
