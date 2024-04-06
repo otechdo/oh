@@ -394,7 +394,7 @@ impl Arch {
     pub fn configure_keymap(&mut self) -> &mut Self {
         let mut keymap = File::create("vconsole.conf").expect("failed to cretae the keymap file");
         keymap
-            .write_all(format!("KEYMAP={}", self.keymap).as_bytes())
+            .write_all(format!("KEYMAP={}\nXKBLAYOUT={}", self.keymap,self.keymap).as_bytes())
             .expect("failed to write data");
         keymap.sync_all().expect("failed to sync to disk");
         keymap.sync_data().expect("failed save to disk");
@@ -768,6 +768,11 @@ impl Arch {
     /// # Panics
     ///
     pub fn confirm(&mut self) -> ExitCode {
+        let ok_lang =
+            prompt_confirmation(format!("Use lang : {}", self.lang).as_str()).unwrap();
+        if !ok_lang {
+            return self.choose_language().confirm();
+        }
         let ok_locale =
             prompt_confirmation(format!("Use locales : {:?}", self.locales).as_str()).unwrap();
         if !ok_locale {
