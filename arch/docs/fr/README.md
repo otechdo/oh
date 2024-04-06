@@ -104,7 +104,7 @@ genfstab -U /mnt >> /mnt/etc/fstab
 arch-chroot /mnt && cd ~
 ```
 
-## Créer votre compte
+## Création de votre compte
 
 ### Ajout de l'utilisateur
 
@@ -112,24 +112,24 @@ arch-chroot /mnt && cd ~
 useradd -m -U -c 'REAL NAME' -s <shell> <username>
 ```
 
-### Creation d'un mot de passe pour root
+### Création d'un mot de passe pour root
 ```bash
 passwd root
 ```
 
-### Creation d'un mot de passe pour votre compte
+### Création d'un mot de passe pour votre compte
 
 ```bash
 passwd <username>
 ```
 
-### Ajout du compte pour utiliser la commande sudo 
+### Ajout du compte au sudoers
 
 ```bash
 echo '<username> ALL=(ALL) ALL' > /etc/sudoers.d/<username>
 ```
 
-## Changement de compte 
+## Se connecter en tant qu'utilisateur du nouveau compte
 
 ```bash
 su - <username>
