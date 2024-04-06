@@ -657,7 +657,7 @@ impl Arch {
     /// # Panics
     ///
     pub fn configure_mirrors(&mut self) -> &mut Self {
-        let country = Text::new("Please enter your country ? : ")
+        let country = Text::new("Please enter your country : ")
             .prompt()
             .unwrap();
 
@@ -1066,7 +1066,7 @@ fn main() -> ExitCode {
     if args.len() == 2 && args.get(1).unwrap().eq("--wiki") || args.get(1).unwrap().eq("-w") {
         return Arch::new().wiki().quit("Wiki exit success");
     }
-    if args.len() == 2 && args.get(1).unwrap().eq("--man") || args.get(1).unwrap().eq("-m") {
+    if args.len() == 2 && args.get(1).unwrap().eq("--man") || args.get(1).unwrap().eq("--woman") || args.get(1).unwrap().eq("-m") {
         return Arch::new().man().quit("Man exit success");
     }
     if args.len() == 2 && args.get(1).unwrap().eq("--forums") || args.get(1).unwrap().eq("-f") {
@@ -1090,7 +1090,7 @@ fn main() -> ExitCode {
             .install_dependencies()
             .quit("Dependencies as been installed successfully");
     }
-    if args.len() == 2 && args.get(1).unwrap().eq("--remove") || args.get(1).unwrap().eq("-R") {
+    if args.len() == 2 && args.get(1).unwrap().eq("--uninstall") {
         return Arch::new()
             .choose_packages()
             .remove_package()
@@ -1102,7 +1102,7 @@ fn main() -> ExitCode {
             .configure_mirrors()
             .quit("Mirrors has been updated successfully");
     }
-    if args.len() == 2 && args.get(1).unwrap().eq("--help") {
+    if args.len() == 2 && args.get(1).unwrap().eq("--help") || args.get(1).unwrap().eq("-h") {
         let _ = help();
         exit(0);
     }
