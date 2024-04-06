@@ -109,12 +109,6 @@ genfstab -U /mnt >> /mnt/etc/fstab
 arch-chroot /mnt && cd ~
 ```
 
-## Enabled multilib repository
-
-```bash
-vim /etc/pacman.conf
-```
-
 ##  Sync clock
 
 ```bash
@@ -157,6 +151,24 @@ su - <username>
 
 ```bash
 rustup default stable
+```
+
+## Enabled multilib repository
+
+```bash
+vim /etc/pacman.conf
+```
+
+## Refresh pacman database 
+
+```bash
+sudo pacman -Sy
+```
+
+## Refresh pacman database 
+
+```bash
+sudo pacman -Sy
 ```
 
 ## Install yay
