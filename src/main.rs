@@ -280,7 +280,7 @@ impl Arch {
     pub fn wiki(&mut self) -> &mut Self {
         assert!(exec(
             "sh",
-            &["-c", "w3m wiki.archlinux.org 2> /dev/null"]
+            &["-c", "w3m wiki.archlinux.org"]
         ));
         self
     }
@@ -291,7 +291,7 @@ impl Arch {
     pub fn news(&mut self) -> &mut Self {
         assert!(exec(
             "sh",
-            &["-c", "w3m archlinux.org/news 2> /dev/null"]
+            &["-c", "w3m archlinux.org/news"]
         ));
         self
     }
@@ -333,7 +333,7 @@ impl Arch {
     pub fn forums(&mut self) -> &mut Self {
         assert!(exec(
             "sh",
-            &["-c", "w3m bbs.archlinux.org 2> /dev/null"]
+            &["-c", "w3m bbs.archlinux.org"]
         ));
         self
     }
@@ -494,7 +494,7 @@ impl Arch {
                         &[
                             "-c",
                             format!(
-                                "sudo useradd -m -g wheel -p {} {} -s {}",
+                                "sudo useradd -m -U -p {} {} -s {}",
                                 user.password, user.name, user.shell
                             )
                             .as_str()
@@ -509,7 +509,7 @@ impl Arch {
                         &[
                             "-c",
                             format!(
-                                "sudo useradd -m -p {} {} -s {}",
+                                "sudo useradd -m -U -p {} {} -s {}",
                                 user.password, user.name, user.shell
                             )
                             .as_str()
