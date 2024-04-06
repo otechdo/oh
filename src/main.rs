@@ -96,25 +96,25 @@ impl Arch {
         assert!(
             exec(
                 "sh",
-                &["wget -q https://raw.githubusercontent.com/otechdo/arch/main/arch/systemd/arch.service"]
+                &["-c","wget -q https://raw.githubusercontent.com/otechdo/arch/main/arch/systemd/arch.service"]
             ),
             "Failed to download arch.service"
         );
         assert!(
             exec(
                 "sh",
-                &["wget -q https://raw.githubusercontent.com/otechdo/arch/main/arch/systemd/arch.timer"]
+                &["-c","wget -q https://raw.githubusercontent.com/otechdo/arch/main/arch/systemd/arch.timer"]
             ),
             "Failed to download arch.timer"
         );
-        assert!(exec("sh",&["sudo install -m 644 arch.timer /etc/systemd/system/timers.target.wants/arch.timer"]),"Failed to install arch.timer");
-        assert!(exec("sh",&["sudo install -m 644 arch.service /etc/systemd/system/default.target.wants/arch.service"]),"Failed to install arch.service");
+        assert!(exec("sh",&["-c","sudo install -m 644 arch.timer /etc/systemd/system/timers.target.wants/arch.timer"]),"Failed to install arch.timer");
+        assert!(exec("sh",&["-c","sudo install -m 644 arch.service /etc/systemd/system/default.target.wants/arch.service"]),"Failed to install arch.service");
         assert!(
-            exec("sh", &["sudo systemctl enable arch.service"]),
+            exec("sh", &["-c","sudo systemctl enable arch.service"]),
             "Failed to enable arch.service"
         );
         assert!(
-            exec("sh", &["sudo systemctl enable arch.timer"]),
+            exec("sh", &["-c","sudo systemctl enable arch.timer"]),
             "Failed to enable arch.timer"
         );
         self
@@ -278,10 +278,7 @@ impl Arch {
     /// # Panics
     ///
     pub fn wiki(&mut self) -> &mut Self {
-        assert!(exec(
-            "sh",
-            &["-c", "w3m wiki.archlinux.org"]
-        ));
+        assert!(exec("sh", &["-c", "w3m wiki.archlinux.org"]));
         self
     }
 
@@ -289,10 +286,7 @@ impl Arch {
     /// # Panics
     ///
     pub fn news(&mut self) -> &mut Self {
-        assert!(exec(
-            "sh",
-            &["-c", "w3m archlinux.org/news"]
-        ));
+        assert!(exec("sh", &["-c", "w3m archlinux.org/news"]));
         self
     }
 
@@ -331,10 +325,7 @@ impl Arch {
     /// # Panics
     ///
     pub fn forums(&mut self) -> &mut Self {
-        assert!(exec(
-            "sh",
-            &["-c", "w3m bbs.archlinux.org"]
-        ));
+        assert!(exec("sh", &["-c", "w3m bbs.archlinux.org"]));
         self
     }
 
@@ -442,10 +433,7 @@ impl Arch {
             &["-c", "sudo pacman -Sl multilib | cut -d ' ' -f 2 >> pkgs"]
         ));
         assert!(exec("sh", &["-c", "sudo pacman -Sg >> pkgs"]));
-        assert!(exec(
-            "sh",
-            &["-c", "yay -Sl aur | cut -d ' ' -f 2 >> pkgs"]
-        ));
+        assert!(exec("sh", &["-c", "yay -Sl aur | cut -d ' ' -f 2 >> pkgs"]));
         assert!(exec("sh", &["-c", "sudo install -m 644 pkgs /tmp/pkgs"]));
 
         assert!(exec("sh", &["-c", "rm pkgs"]));
@@ -636,10 +624,7 @@ impl Arch {
                 "sudo sed -i 's/#ParallelDownloads = 5/ParallelDownloads = 5/g' /etc/pacman.conf"
             ]
         ),"Failed to set Parallel download to 5");
-        assert!(
-            exec("sh", &["-c", "yay -Syyu"]),
-            "Failed to update mirrors"
-        );
+        assert!(exec("sh", &["-c", "yay -Syyu"]), "Failed to update mirrors");
         self
     }
 
@@ -823,7 +808,7 @@ impl Arch {
     ///
     pub fn man(&mut self) -> &mut Self {
         assert!(
-            exec("sh", &["-c", "w3m man.archlinux.org 2>/dev/null"]),
+            exec("sh", &["-c", "w3m man.archlinux.org"]),
             "Failed to navigate on website"
         );
         self
@@ -863,7 +848,7 @@ impl Arch {
     ///
     /// # Panics
     ///
-    pub fn refresh_cache(&mut self) -> &mut Self {
+    pub fn refresh_cache(&mut self) -> ExitCode {
         assert!(exec(
             "sh",
             &["-c", "pacman -Sl core | cut -d ' ' -f 2 > pkgs"]
@@ -877,13 +862,10 @@ impl Arch {
             &["-c", "pacman -Sl multilib | cut -d ' ' -f 2 >> pkgs"]
         ));
         assert!(exec("sh", &["-c", "pacman -Sg >> pkgs"]));
-        assert!(exec(
-            "sh",
-            &["-c", "yay -Sl aur | cut -d ' ' -f 2 >> pkgs"]
-        ));
+        assert!(exec("sh", &["-c", "yay -Sl aur | cut -d ' ' -f 2 >> pkgs"]));
         assert!(exec("sh", &["-c", "install -m 644 pkgs /tmp/pkgs"]));
         assert!(exec("sh", &["-c", "rm pkgs"]));
-        self
+        self.quit("Packages cache updated successfully")
     }
 }
 
@@ -938,7 +920,6 @@ fn remove_packages(pkgs: &[String]) -> i32 {
 fn install() -> ExitCode {
     Arch::new()
         .check_network()
-        .refresh_cache()
         .news()
         .forums()
         .wiki()
@@ -1024,8 +1005,7 @@ fn main() -> ExitCode {
     }
 
     if args.len() == 2 && args.get(1).unwrap().eq("--refresh-cache") {
-        Arch::new().refresh_cache();
-        exit(0);
+        return Arch::new().refresh_cache();
     }
     if args.len() == 3 && args.get(1).unwrap().eq("--update") && args.get(2).unwrap().eq("-r") {
         return Arch::new().upgrade_and_reboot();
