@@ -39,7 +39,9 @@ fn parse_file_lines(filename: &str) -> Vec<String> {
     file_lines
 }
 pub struct Arch {
-    locale: String,
+    locales: Vec<String>,
+    profile: String,
+    lang: String,
     packages: Vec<String>,
     root: HashMap<bool, String>,
     users: Vec<Users>,
@@ -73,13 +75,15 @@ impl Default for Arch {
     #[must_use]
     fn default() -> Self {
         Self {
-            locale: String::new(),
+            locales: Vec::new(),
+            lang: String::new(),
             packages: Vec::new(),
             root: HashMap::new(),
             users: Vec::new(),
             users_table: Vec::new(),
             timezone: String::new(),
             keymap: String::new(),
+            profile: String::new(),
             hostname: String::new(),
         }
     }
@@ -107,14 +111,32 @@ impl Arch {
             ),
             "Failed to download arch.timer"
         );
-        assert!(exec("sh",&["-c","sudo install -m 644 arch.timer /etc/systemd/system/arch.timer"]),"Failed to install arch.timer");
-        assert!(exec("sh",&["-c","sudo install -m 644 arch.service /etc/systemd/system/arch.service"]),"Failed to install arch.service");
         assert!(
-            exec("sh", &["-c","sudo systemctl enable arch.service"]),
+            exec(
+                "sh",
+                &[
+                    "-c",
+                    "sudo install -m 644 arch.timer /etc/systemd/system/arch.timer"
+                ]
+            ),
+            "Failed to install arch.timer"
+        );
+        assert!(
+            exec(
+                "sh",
+                &[
+                    "-c",
+                    "sudo install -m 644 arch.service /etc/systemd/system/arch.service"
+                ]
+            ),
+            "Failed to install arch.service"
+        );
+        assert!(
+            exec("sh", &["-c", "sudo systemctl enable arch.service"]),
             "Failed to enable arch.service"
         );
         assert!(
-            exec("sh", &["-c","sudo systemctl enable arch.timer"]),
+            exec("sh", &["-c", "sudo systemctl enable arch.timer"]),
             "Failed to enable arch.timer"
         );
         self
@@ -248,12 +270,11 @@ impl Arch {
     }
 
     ///
-    /// # Panics
-    ///
     /// if failed to get locale
     ///
-    pub fn choose_locale(&mut self) -> &mut Self {
+    pub fn choose_language(&mut self) -> &mut Self {
         let mut locales: Vec<String> = Vec::new();
+        self.lang.clear();
         let text =
             read_to_string(File::open("/etc/locale.gen").expect("failed to open locale file"))
                 .expect("failed to get file content");
@@ -261,15 +282,41 @@ impl Arch {
         for mat in re.find_iter(text.as_str()) {
             locales.push(mat.as_str().to_string());
         }
-        let l = Select::new("Choose your system locale : ", locales)
-            .with_help_message("Locale for the system")
+        let locale = Select::new("Choose your system language : ", locales.clone())
             .prompt()
             .expect("Failed to get locales");
-        if l.is_empty() {
-            self.choose_locale()
+        if locale.is_empty() {
+            self.choose_language()
         } else {
-            self.locale.clear();
-            self.locale.push_str(l.as_str());
+            self.lang = locale.to_string();
+
+            self
+        }
+    }
+
+    ///
+    /// if failed to get locale
+    ///
+    pub fn choose_locales(&mut self) -> &mut Self {
+        let mut locales: Vec<String> = Vec::new();
+        self.locales.clear();
+        let text =
+            read_to_string(File::open("/etc/locale.gen").expect("failed to open locale file"))
+                .expect("failed to get file content");
+        let re = Regex::new(r"[a-z]{2}_[A-Z]{2}[.][A-Z]{3}-[0-9]").unwrap(); // \d means digit
+        for mat in re.find_iter(text.as_str()) {
+            locales.push(mat.as_str().to_string());
+        }
+        let locale = MultiSelect::new("Choose your system locales : ", locales.clone())
+            .prompt()
+            .expect("Failed to get locales");
+        if locales.is_empty() {
+            self.choose_locales()
+        } else {
+            for l in locale {
+                self.locales.push(l.to_string());
+            }
+
             self
         }
     }
@@ -369,7 +416,7 @@ impl Arch {
             "sh",
             &[
                 "-c",
-                format!("echo \"LANG={}\" > locale.conf", self.locale).as_str()
+                format!("echo \"LANG={}\" > locale.conf", self.lang).as_str()
             ]
         ));
 
@@ -378,17 +425,19 @@ impl Arch {
             &["-c", "sudo install -m 644 locale.conf /etc/locale.conf"]
         ));
 
-        assert!(exec(
-            "sh",
-            &[
-                "-c",
-                format!(
-                    "sudo sed -i 's/#{} UTF-8/{} UTF-8/g' /etc/locale.gen",
-                    self.locale, self.locale
-                )
-                .as_str()
-            ]
-        ));
+        for locale in &self.locales {
+            assert!(exec(
+                "sh",
+                &[
+                    "-c",
+                    format!(
+                        "sudo sed -i 's/#{} UTF-8/{} UTF-8/g' /etc/locale.gen",
+                        locale, locale
+                    )
+                    .as_str()
+                ]
+            ));
+        }
         assert!(exec("sh", &["-c", "sudo locale-gen"]));
         self
     }
@@ -401,6 +450,8 @@ impl Arch {
     ///
     pub fn choose_packages(&mut self) -> &mut Self {
         if Path::new("/tmp/pkgs").exists() {
+            self.packages.clear();
+            assert!(self.packages.is_empty());
             loop {
                 let p = MultiSelect::new("Select packages : ", parse_file_lines("/tmp/pkgs"))
                     .with_help_message("Packages to install on the system")
@@ -435,26 +486,8 @@ impl Arch {
         assert!(exec("sh", &["-c", "sudo pacman -Sg >> pkgs"]));
         assert!(exec("sh", &["-c", "yay -Sl aur | cut -d ' ' -f 2 >> pkgs"]));
         assert!(exec("sh", &["-c", "sudo install -m 644 pkgs /tmp/pkgs"]));
-
         assert!(exec("sh", &["-c", "rm pkgs"]));
-        loop {
-            let p = MultiSelect::new("Select packages : ", parse_file_lines("/tmp/pkgs"))
-                .with_help_message("Packages to install on the system")
-                .prompt()
-                .expect("Failed to get packages");
-            if p.is_empty() {
-                return self.choose_packages();
-            }
-            for x in &p {
-                self.packages.push(x.to_string());
-            }
-
-            match prompt_confirmation("Add package ? ") {
-                Ok(true) => continue,
-                Ok(false) | Err(_) => break,
-            }
-        }
-        self
+        self.choose_packages()
     }
 
     ///
@@ -484,6 +517,20 @@ impl Arch {
                             format!(
                                 "sudo useradd -m -U -p {} {} -s {}",
                                 user.password, user.name, user.shell
+                            )
+                            .as_str()
+                        ]
+                    ),
+                    "Failed to create the new user"
+                );
+                assert!(
+                    exec(
+                        "sh",
+                        &[
+                            "-c",
+                            format!(
+                                "echo '{} ALL=(ALL) ALL' > /etc/sudoers.d/{} ",
+                                user.name, user.name
                             )
                             .as_str()
                         ]
@@ -648,7 +695,7 @@ impl Arch {
     ///
     /// # Panics
     ///
-    pub fn profile(&mut self) -> &mut Self {
+    pub fn choose_profile(&mut self) -> &mut Self {
         let profile = Select::new(
             "Select a profile",
             vec!["@gnome", "@deepin", "@kde", "@i3", "@xmonad", "@none"],
@@ -656,8 +703,9 @@ impl Arch {
         .prompt()
         .unwrap();
         if profile.is_empty() {
-            return self.profile();
+            return self.choose_profile();
         }
+        self.profile = profile.to_string();
         if profile.eq("@none") {
             return self.choose_packages();
         }
@@ -714,7 +762,7 @@ impl Arch {
                 std::fs::remove_file(profile).expect("failed to profile file");
                 self.choose_packages()
             }
-            Ok(false) | Err(_) => self.profile(),
+            Ok(false) | Err(_) => self.choose_profile(),
         }
     }
 
@@ -754,6 +802,49 @@ impl Arch {
         );
 
         self
+    }
+
+    ///
+    /// # Panics
+    ///
+    pub fn confirm(&mut self) -> ExitCode {
+        let mut again = false;
+        loop {
+            let ok_locale =
+                prompt_confirmation(format!("Use locales : {:?}", self.locales).as_str()).unwrap();
+            if !ok_locale {
+                self.choose_locales();
+                again = true;
+            }
+            let ok_timezone =
+                prompt_confirmation(format!("Use timezone : {}", self.timezone).as_str()).unwrap();
+            if !ok_timezone {
+                self.choose_timezone();
+                again = true;
+            }
+            let ok_keymap =
+                prompt_confirmation(format!("Use keymap : {}", self.keymap).as_str()).unwrap();
+            if !ok_keymap {
+                self.choose_keymap();
+                again = true;
+            }
+            let ok_hostname =
+                prompt_confirmation(format!("Use hostname : {}", self.hostname).as_str()).unwrap();
+            if !ok_hostname {
+                self.choose_hostname();
+                again = true;
+            }
+            let ok_profile =
+                prompt_confirmation(format!("Use profile : {}", self.profile).as_str()).unwrap();
+            if !ok_profile {
+                again = true;
+            }
+
+            if !again {
+                break;
+            }
+        }
+        self.run()
     }
 
     ///
@@ -924,13 +1015,14 @@ fn install() -> ExitCode {
         .forums()
         .wiki()
         .configure_mirrors()
-        .choose_locale()
+        .choose_language()
+        .choose_locales()
         .choose_keymap()
         .choose_timezone()
         .choose_hostname()
-        .profile()
+        .choose_profile()
         .configure_users()
-        .run()
+        .confirm()
 }
 fn main() -> ExitCode {
     let args: Vec<String> = args().collect();
