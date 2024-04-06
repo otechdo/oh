@@ -1,0 +1,12 @@
+[Unit]
+Description=Check update for arch
+After=network.target
+ConditionPathExists=/usr/bin/arch
+ 
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/arch --check-updates && notify-send "update available" || notify-send 'up to date'
+Restart=true
+ 
+[Install]
+WantedBy=default.target

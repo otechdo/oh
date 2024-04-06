@@ -823,7 +823,7 @@ impl Arch {
     ///
     pub fn man(&mut self) -> &mut Self {
         assert!(
-            exec("sh", &["-c", "w3m https://man.archlinux.org"]),
+            exec("sh", &["-c", "w3m https://man.archlinux.org 2>/dev/null"]),
             "Failed to navigate on website"
         );
         self
@@ -882,7 +882,6 @@ impl Arch {
             &["-c", "paru --list  aur | cut -d ' ' -f 2 >> pkgs"]
         ));
         assert!(exec("sh", &["-c", "install -m 644 pkgs /tmp/pkgs"]));
-
         assert!(exec("sh", &["-c", "rm pkgs"]));
         self.quit("Cache updated successfully")
     }
@@ -902,10 +901,11 @@ fn install_packages(pkgs: &[String]) -> i32 {
             continue;
         }
         assert!(
-            exec("sh", &["-c", format!("paru -Syu {pkg}").as_str()]),
+            exec("sh", &["-c", format!("paru -S --noconfirm {pkg}").as_str()]),
             "{}",
             format!("Failed to install the {pkg} package").as_str()
         );
+        assert!(notifme::Notification::new().app("arch").summary(format!("{pkg} Installed").as_str()).body(format!("{pkg} has been installed successfully").as_str()).timeout(5).send());
     }
     0
 }
@@ -956,6 +956,10 @@ fn main() -> ExitCode {
 
     if args.len() == 2 && args.get(1).expect("failed to get argument").eq("-a") {
         return Arch::new().aur().quit("Exit aur successfully");
+    }
+
+    if args.len() == 2 && args.get(1).expect("failed to get argument").eq("--man") || args.get(1).expect("failed to get argument").eq("-m")  {
+        return Arch::new().man().quit("Exit man successfully");
     }
 
     if args.len() == 2 && args.get(1).unwrap().eq("setup") {

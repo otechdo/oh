@@ -1,0 +1,18 @@
+#!/bin/bash
+
+REPOS=('core' 'extra' 'multilib')
+OUTPUT="/tmp/pkgs"
+
+echo "" > "${OUTPUT}"
+
+for repo in "${REPOS[@]}"
+do
+	pacman -Sl "$repo" >> "${OUTPUT}"
+done
+
+if [ -x "/usr/bin/paru" ]
+then
+	paru --list aur >> ${OUTPUT}
+fi
+
+exit 0
