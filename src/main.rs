@@ -96,14 +96,14 @@ impl Arch {
         assert!(
             exec(
                 "sh",
-                &["wget -q https://raw.githubusercontent.com/otechdo/arch/main/arch.service"]
+                &["wget -q https://raw.githubusercontent.com/otechdo/arch/main/arch/systemd/arch.service"]
             ),
             "Failed to download arch.service"
         );
         assert!(
             exec(
                 "sh",
-                &["wget -q https://github.com/otechdo/arch/blob/main/arch.timer"]
+                &["wget -q https://raw.githubusercontent.com/otechdo/arch/main/arch/systemd/arch.timer"]
             ),
             "Failed to download arch.timer"
         );
@@ -128,7 +128,7 @@ impl Arch {
         let mut cmds: Vec<String> = Vec::new();
         if dot {
             if Path::new("dotfiles").exists() {
-                assert!(exec("sh", &["-c", "sudo rm -rf dotfiles"]));
+                assert!(exec("sh", &["-c", "rm -rf dotfiles"]));
             }
             let repo = Text::new("Enter repository url : ")
                 .with_help_message("Url must be a git repository")
@@ -280,7 +280,7 @@ impl Arch {
     pub fn wiki(&mut self) -> &mut Self {
         assert!(exec(
             "sh",
-            &["-c", "w3m https://wiki.archlinux.org 2> /dev/null"]
+            &["-c", "w3m wiki.archlinux.org 2> /dev/null"]
         ));
         self
     }
@@ -291,7 +291,7 @@ impl Arch {
     pub fn news(&mut self) -> &mut Self {
         assert!(exec(
             "sh",
-            &["-c", "w3m https://archlinux.org/news 2> /dev/null"]
+            &["-c", "w3m archlinux.org/news 2> /dev/null"]
         ));
         self
     }
@@ -333,7 +333,7 @@ impl Arch {
     pub fn forums(&mut self) -> &mut Self {
         assert!(exec(
             "sh",
-            &["-c", "w3m https://bbs.archlinux.org 2> /dev/null"]
+            &["-c", "w3m bbs.archlinux.org 2> /dev/null"]
         ));
         self
     }
@@ -444,7 +444,7 @@ impl Arch {
         assert!(exec("sh", &["-c", "sudo pacman -Sg >> pkgs"]));
         assert!(exec(
             "sh",
-            &["-c", "yay --list  aur | cut -d ' ' -f 2 >> pkgs"]
+            &["-c", "yay -Sl aur | cut -d ' ' -f 2 >> pkgs"]
         ));
         assert!(exec("sh", &["-c", "sudo install -m 644 pkgs /tmp/pkgs"]));
 
