@@ -280,6 +280,7 @@ arch -w
 
 ```bash
 arch --man
+arch --womman
 arch -m
 ```
 
