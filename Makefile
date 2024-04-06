@@ -2,10 +2,12 @@ arch: clean
 	@cargo build --release
 install: 
 	@install -m 755 target/release/arch /usr/bin/arch
-clean:
+clean: update
 	@cargo clean
 setup: arch
 	@echo "Enter your password in order to refreshing the packages cache"
 	@sudo -k target/release/arch --refresh-cache
-	@target/release/arch setup 
+	@target/release/arch setup
+update:
+	@git pull origin main
 
