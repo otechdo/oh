@@ -120,7 +120,7 @@ timedatectl set-ntp true
 ### Create user
 
 ```bash
-useradd -m -u -c 'REAL NAME' -s <shell> <username>
+useradd -m -U -c 'REAL NAME' -s <shell> <username>
 ```
 
 ### Create root password
