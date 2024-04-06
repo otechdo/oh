@@ -823,7 +823,7 @@ impl Arch {
     ///
     pub fn man(&mut self) -> &mut Self {
         assert!(
-            exec("sh", &["-c", "w3m https://man.archlinux.org 2>/dev/null"]),
+            exec("sh", &["-c", "w3m man.archlinux.org 2>/dev/null"]),
             "Failed to navigate on website"
         );
         self
@@ -833,7 +833,7 @@ impl Arch {
     ///
     pub fn aur(&mut self) -> &mut Self {
         assert!(
-            exec("sh", &["-c", "w3m https://aur.archlinux.org"]),
+            exec("sh", &["-c", "w3m aur.archlinux.org"]),
             "Failed to navigate on aur website"
         );
         self
@@ -843,7 +843,7 @@ impl Arch {
     ///
     pub fn packages(&mut self) -> &mut Self {
         assert!(
-            exec("sh", &["-c", "w3m https://archlinux.org/packages/"]),
+            exec("sh", &["-c", "w3m archlinux.org/packages/"]),
             "Failed to navigate on arch website"
         );
         self
