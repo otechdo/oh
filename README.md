@@ -194,7 +194,8 @@ paru -Syu manager && arch setup
 ## Install all selected packages on arch
 
 ```bash
-arch --install-packages
+arch --install
+arch -S <pkg> <pkg>
 ```
 
 ## Install all selected packages as deps on arch
@@ -206,7 +207,8 @@ arch --install-dependencies
 ## Remove all selected packages on arch
 
 ```bash
-arch --remove-packages
+arch --uninstall
+arch -R <pkg> <pkg> 
 ```
 
 ## Update all mirrors to the enter country
@@ -245,6 +247,48 @@ arch --cancel-reboot
 
 ```bash
 sudo arch --refresh-cache
+```
+
+## Show help
+
+```bash
+arch --help
+arch -h
+```
+
+## Show arch news using w3m
+
+```bash
+arch --news
+arch -n
+```
+
+## Show arch wiki using w3m
+
+```bash
+arch --wiki
+arch -w
+```
+
+## Show arch manpages using w3m
+
+```bash
+arch --man
+arch -m
+```
+
+## Show arch formum using w3m
+
+```bash
+arch --forums
+arch -f
+```
+
+## Show aur packages formum using w3m
+
+```bash
+arch --aur
+arch -a
 ```
 
 ## Download updates
