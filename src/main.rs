@@ -178,7 +178,7 @@ impl Arch {
     fn install_package(&mut self) -> &mut Self {
         for pkg in &self.packages {
             assert!(
-                exec("sh", &["-c", format!("paru -S --noconfirm {pkg}").as_str()]),
+                exec("sh", &["-c", format!("yay -S --noconfirm {pkg}").as_str()]),
                 "{}",
                 format!("Failed to install the {pkg}").as_str()
             );
@@ -194,7 +194,7 @@ impl Arch {
             assert!(
                 exec(
                     "sh",
-                    &["-c", format!("paru -S {pkg} --noconfirm --asdeps").as_str()]
+                    &["-c", format!("yay -S {pkg} --noconfirm --asdeps").as_str()]
                 ),
                 "{}",
                 format!("Failed to install {pkg} dependency").as_str()
@@ -209,7 +209,7 @@ impl Arch {
     fn remove_package(&mut self) -> &mut Self {
         for pkg in &self.packages {
             assert!(
-                exec("sh", &["-c", format!("paru -Rns {pkg}").as_str()]),
+                exec("sh", &["-c", format!("yay -Rns {pkg}").as_str()]),
                 "{}",
                 format!("Failed to remove {pkg} dependency").as_str()
             );
@@ -444,7 +444,7 @@ impl Arch {
         assert!(exec("sh", &["-c", "sudo pacman -Sg >> pkgs"]));
         assert!(exec(
             "sh",
-            &["-c", "paru --list  aur | cut -d ' ' -f 2 >> pkgs"]
+            &["-c", "yay --list  aur | cut -d ' ' -f 2 >> pkgs"]
         ));
         assert!(exec("sh", &["-c", "sudo install -m 644 pkgs /tmp/pkgs"]));
 
@@ -637,7 +637,7 @@ impl Arch {
             ]
         ),"Failed to set Parallel download to 5");
         assert!(
-            exec("sh", &["-c", "paru -Syyu"]),
+            exec("sh", &["-c", "yay -Syyu"]),
             "Failed to update mirrors"
         );
         self
@@ -697,7 +697,7 @@ impl Arch {
                         "sh",
                         &[
                             "-c",
-                            format!("xargs -d '\n' -a {profile} paru --noconfirm --needed -Syu")
+                            format!("xargs -d '\n' -a {profile} yay --noconfirm --needed -Syu")
                                 .as_str()
                         ]
                     ),
@@ -776,7 +776,7 @@ impl Arch {
     ///
     pub fn upgrade(&mut self) -> ExitCode {
         assert!(
-            exec("sh", &["-c", "paru -Syu && flatpak update"]),
+            exec("sh", &["-c", "yay -Syu && flatpak update"]),
             "Failed to update the system"
         );
         self.quit("Updated successfully")
@@ -787,7 +787,7 @@ impl Arch {
     ///
     pub fn upgrade_and_reboot(&mut self) -> ExitCode {
         assert!(
-            exec("sh", &["-c", "paru -Syu && flatpak update"]),
+            exec("sh", &["-c", "yay -Syu && flatpak update"]),
             "Failed to update the system"
         );
         assert!(exec(
@@ -879,7 +879,7 @@ impl Arch {
         assert!(exec("sh", &["-c", "pacman -Sg >> pkgs"]));
         assert!(exec(
             "sh",
-            &["-c", "paru --list  aur | cut -d ' ' -f 2 >> pkgs"]
+            &["-c", "yay --repo  aur | cut -d ' ' -f 2 >> pkgs"]
         ));
         assert!(exec("sh", &["-c", "install -m 644 pkgs /tmp/pkgs"]));
         assert!(exec("sh", &["-c", "rm pkgs"]));
@@ -901,7 +901,7 @@ fn install_packages(pkgs: &[String]) -> i32 {
             continue;
         }
         assert!(
-            exec("sh", &["-c", format!("paru -S --noconfirm {pkg}").as_str()]),
+            exec("sh", &["-c", format!("yay -S --noconfirm {pkg}").as_str()]),
             "{}",
             format!("Failed to install the {pkg} package").as_str()
         );
@@ -924,7 +924,7 @@ fn remove_packages(pkgs: &[String]) -> i32 {
             continue;
         }
         assert!(
-            exec("sh", &["-c", format!("paru -Rns {pkg}").as_str()]),
+            exec("sh", &["-c", format!("yay -Rns {pkg}").as_str()]),
             "{}",
             format!("Failed to install the {pkg} package").as_str()
         );
