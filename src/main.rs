@@ -654,7 +654,17 @@ impl Arch {
         let country = Text::new("Please enter your country ? : ")
             .prompt()
             .unwrap();
-        assert!(exec(
+
+        if country.is_empty() {
+            return self.configure_mirrors();
+        }
+        let confirm_mirror = prompt_confirmation(
+            format!("Set your mirrorlist to the {country} country : ").as_str(),
+        );
+        match confirm_mirror {
+            Ok(false) | Err(_) => self.configure_mirrors(),
+            Ok(true) => {
+                assert!(exec(
             "sh",
             &[
                 "-c",
@@ -664,15 +674,17 @@ impl Arch {
                 .as_str()
             ],
         ),"Failed to generate mirrorlist");
-        assert!(exec(
+                assert!(exec(
             "sh",
             &[
                 "-c",
                 "sudo sed -i 's/#ParallelDownloads = 5/ParallelDownloads = 5/g' /etc/pacman.conf"
             ]
         ),"Failed to set Parallel download to 5");
-        assert!(exec("sh", &["-c", "yay -Syyu"]), "Failed to update mirrors");
-        self
+                assert!(exec("sh", &["-c", "yay -Syyu"]), "Failed to update mirrors");
+                self
+            }
+        }
     }
 
     ///
