@@ -5,8 +5,6 @@ A archlinux installer, manager for advanced arch users.
 - [@documentation](https://github.com/otechdo/arch/blob/main/arch/docs/)
     - [@en](https://raw.githubusercontent.com/otechdo/arch/main/README.md)
     - [@fr](https://github.com/otechdo/arch/blob/main/arch/docs/fr/README.md)
-    - [@es](https://github.com/otechdo/arch/blob/main/arch/docs/es/README.md)
-    - [@it](https://github.com/otechdo/arch/blob/main/arch/docs/it/README.md)
 - [@archlinux](https://archlinux.org)
     - [@guide](https://wiki.archlinux.org/title/Installation_guide)
     - [@wiki](https://wiki.archlinux.org/)
@@ -94,7 +92,7 @@ pacman-key --refresh-keys
 ## Install the base system
 
 ```bash
-pacstrap /mnt base base-devel wget git linux linux-firmware vim git efibootmgr rustup sudo grub networkmanager w3m archiso reflector <shell> <ucode> <graphics_driver>
+pacstrap /mnt base base-devel wget git linux linux-firmware vim efibootmgr rustup sudo grub networkmanager w3m archiso reflector <shell> <ucode> <graphics_driver>
 ```
 
 ##  Generate fstab
@@ -107,12 +105,6 @@ genfstab -U /mnt >> /mnt/etc/fstab
 
 ```bash
 arch-chroot /mnt && cd ~
-```
-
-##  Sync clock
-
-```bash
-timedatectl set-ntp true
 ```
 
 ## Create your account
@@ -156,13 +148,7 @@ rustup default stable
 ## Enabled multilib repository
 
 ```bash
-vim /etc/pacman.conf
-```
-
-## Refresh pacman database 
-
-```bash
-sudo pacman -Sy
+sudo vim /etc/pacman.conf
 ```
 
 ## Refresh pacman database 
@@ -182,31 +168,19 @@ git clone https://aur.archlinux.org/yay && cd yay && makepkg -si && cd .. && rm 
 ### From GitHub
 
 ```bash
-git clone https://github.com/otechdo/arch && cd arch
-```
-
-### Build Setup
-
-```bash
-make setup
+git clone https://github.com/otechdo/arch && cd arch && make setup
 ```
 
 ### From Crates.io
 
 ```bash
-cargo install arch && install -m 755 "$HOME/.cargo/bin/arch" /usr/bin/arch 
+cargo install arch && install -m 755 "$HOME/.cargo/bin/arch" /usr/bin/arch  &&  arch setup
 ```
 
 ### From Aur
 
 ```bash
-paru -Syu manager
-```
-
-## Setup the new arch
-
-```bash
-arch setup
+paru -Syu manager && arch setup
 ```
 
 ## Desktop 
@@ -272,8 +246,6 @@ arch --cancel-reboot
 ```bash
 sudo arch --refresh-cache
 ```
-
-
 
 ## Download updates
 
