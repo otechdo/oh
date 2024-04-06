@@ -88,7 +88,7 @@ pacman-key --refresh-keys
 ## Install the base system
 
 ```bash
-pacstrap /mnt base base-devel wget git linux linux-firmware vim git efibootmgr rustup sudo grub networkmanager reflector <shell> <ucode> <graphics_driver>
+pacstrap /mnt base base-devel wget git linux linux-firmware vim git efibootmgr rustup sudo grub networkmanager w3m archiso reflector <shell> <ucode> <graphics_driver>
 ```
 
 ##  Generate fstab
