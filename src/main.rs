@@ -874,69 +874,62 @@ impl Arch {
     /// # Panics
     ///
     fn install_profile(&mut self) -> &mut Self {
-        match prompt_confirmation(format!("using {} ?", self.profile).as_str()) {
-            Ok(true) => {
-                println!("{}", format!("using {}", self.profile).as_str());
-                assert!(Command::new("wget")
-                    .arg("-q")
-                    .arg(
-                        format!(
-                            "https://raw.githubusercontent.com/otechdo/arch/main/arch/profiles/{}",
-                            self.profile
-                        )
-                        .as_str()
+        println!("{}", format!("using {}", self.profile).as_str());
+        assert!(Command::new("wget")
+            .arg("-q")
+            .arg(
+                format!(
+                    "https://raw.githubusercontent.com/otechdo/arch/main/arch/profiles/{}",
+                    self.profile
+                )
+                .as_str()
+            )
+            .current_dir(".")
+            .spawn()
+            .unwrap()
+            .wait()
+            .unwrap()
+            .success());
+        assert!(
+            exec(
+                "sh",
+                &[
+                    "-c",
+                    format!(
+                        "xargs -d '\n' -a {} yay --noconfirm --needed -Syu",
+                        self.profile
                     )
-                    .current_dir(".")
-                    .spawn()
-                    .unwrap()
-                    .wait()
-                    .unwrap()
-                    .success());
+                    .as_str()
+                ]
+            ),
+            "{}",
+            format!("failed to install {}", self.profile).as_str()
+        );
+        if self.profile.eq("@gnome") {
+            assert!(
+                exec("sh", &["-c", "sudo systemctl enable gdm"]),
+                "Failed to enable gdm"
+            );
+        } else if self.profile.eq("@kde") {
+            assert!(
+                exec("sh", &["-c", "sudo systemctl enable sddm"]),
+                "Failed to enable sddm"
+            );
+        } else if self.profile.eq("@deepin") || self.profile.eq("@xmonad") || self.profile.eq("@i3")
+        {
+            assert!(
+                exec("sh", &["-c", "sudo systemctl enable lightdm"]),
+                "Failed to enable lightdm"
+            );
+            if self.profile.eq("@xmonad") {
                 assert!(
-                    exec(
-                        "sh",
-                        &[
-                            "-c",
-                            format!(
-                                "xargs -d '\n' -a {} yay --noconfirm --needed -Syu",
-                                self.profile
-                            )
-                            .as_str()
-                        ]
-                    ),
-                    "{}",
-                    format!("failed to install {}", self.profile).as_str()
-                );
-                if self.profile.eq("@gnome") {
-                    assert!(
-                        exec("sh", &["-c", "sudo systemctl enable gdm"]),
-                        "Failed to enable gdm"
-                    );
-                } else if self.profile.eq("@kde") {
-                    assert!(
-                        exec("sh", &["-c", "sudo systemctl enable sddm"]),
-                        "Failed to enable sddm"
-                    );
-                } else if self.profile.eq("@deepin")
-                    || self.profile.eq("@xmonad")
-                    || self.profile.eq("@i3")
-                {
-                    assert!(
-                        exec("sh", &["-c", "sudo systemctl enable lightdm"]),
-                        "Failed to enable lightdm"
-                    );
-                    if self.profile.eq("@xmonad") {
-                        assert!(
                             exec("sh", &["-c", "mkdir ~/.xmonad && wget -q https://raw.githubusercontent.com/otechdo/arch/main/arch/config/xmonad/xmonad.hs && mv xmonad.hs ~/.xmonad && touch ~/.xmonad/build && chmod +x ~/.xmonad/build && xmonad --recompile"]),
                             "Failed to configure xmonad"
                             );
-                    }
-                }
-                std::fs::remove_file(self.profile.clone()).expect("failed to profile file");
-                self.choose_packages()
             }
-            Ok(false) | Err(_) => self.choose_profile(),
         }
+        std::fs::remove_file(self.profile.clone()).expect("failed to profile file");
+        self
     }
 
     ///
