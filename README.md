@@ -214,6 +214,8 @@ arch setup
 - [@deepin](https://wiki.archlinux.org/title/Deepin_Desktop_Environment)
 - [@kde](https://wiki.archlinux.org/title/KDE)
 - [@gnome](https://wiki.archlinux.org/title/GNOME)
+- [@xmonad](https://wiki.archlinux.org/title/xmonad)
+- [@i3](https://wiki.archlinux.org/title/i3)
 
 ## Install all selected packages on arch
 
