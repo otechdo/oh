@@ -107,8 +107,8 @@ impl Arch {
             ),
             "Failed to download arch.timer"
         );
-        assert!(exec("sh",&["-c","sudo install -m 644 arch.timer /etc/systemd/system/timers.target.wants/arch.timer"]),"Failed to install arch.timer");
-        assert!(exec("sh",&["-c","sudo install -m 644 arch.service /etc/systemd/system/default.target.wants/arch.service"]),"Failed to install arch.service");
+        assert!(exec("sh",&["-c","sudo install -m 644 arch.timer /etc/systemd/system/arch.timer"]),"Failed to install arch.timer");
+        assert!(exec("sh",&["-c","sudo install -m 644 arch.service /etc/systemd/system/arch.service"]),"Failed to install arch.service");
         assert!(
             exec("sh", &["-c","sudo systemctl enable arch.service"]),
             "Failed to enable arch.service"
