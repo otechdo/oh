@@ -6,8 +6,6 @@ Un installateur d'archlinux aisi qu'un manager pour les utilisateurs et utilisat
 - [@documentation](https://github.com/otechdo/arch/blob/main/arch/docs/)
     - [@en](https://raw.githubusercontent.com/otechdo/arch/main/README.md)
     - [@fr](https://github.com/otechdo/arch/blob/main/arch/docs/fr/README.md)
-    - [@es](https://github.com/otechdo/arch/blob/main/arch/docs/es/README.md)
-    - [@it](https://github.com/otechdo/arch/blob/main/arch/docs/it/README.md)
 - [@archlinux](https://archlinux.org)
     - [@guide](https://wiki.archlinux.org/title/Installation_guide)
     - [@wiki](https://wiki.archlinux.org/)
