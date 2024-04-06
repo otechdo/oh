@@ -6,10 +6,10 @@ use std::collections::HashMap;
 use std::env::args;
 use std::fs::File;
 use std::io;
+use std::io::Write;
 use std::io::{read_to_string, BufRead};
 use std::path::Path;
 use std::process::{exit, Command, ExitCode};
-
 fn exec(cmd: &str, args: &[&str]) -> bool {
     Command::new(cmd)
         .args(args)
@@ -392,13 +392,13 @@ impl Arch {
     /// # Panics
     ///
     pub fn configure_keymap(&mut self) -> &mut Self {
-        assert!(exec(
-            "sh",
-            &[
-                "-c",
-                format!("echo 'KEYMAP={}' > vconsole.conf", self.keymap).as_str()
-            ]
-        ));
+        let mut keymap = File::create("vconsole.conf").expect("failed to cretae the keymap file");
+        keymap
+            .write_all(format!("KEYMAP={}", self.keymap).as_bytes())
+            .expect("failed to write data");
+        keymap.sync_all().expect("failed to sync to disk");
+        keymap.sync_data().expect("failed save to disk");
+
         assert!(exec(
             "sh",
             &["-c", "sudo install -m 644 vconsole.conf /etc/vconsole.conf"]
@@ -412,13 +412,18 @@ impl Arch {
     /// # Panics
     ///
     pub fn configure_locale(&mut self) -> &mut Self {
-        assert!(exec(
-            "sh",
-            &[
-                "-c",
-                format!("echo \"LANG={}\" > locale.conf", self.lang).as_str()
-            ]
-        ));
+        let mut locale = File::create("locale.conf").expect("failed to cretae the locale file");
+        locale
+            .write_all(
+                format!(
+                    "LANG={}\nLC_COLLATE=C\nLANGUAGE={}\nLC_TIME={}",
+                    self.lang, self.lang, self.lang
+                )
+                .as_bytes(),
+            )
+            .expect("failed to write data");
+        locale.sync_all().expect("failed to sync to disk");
+        locale.sync_data().expect("failed save to disk");
 
         assert!(exec(
             "sh",
