@@ -1,8 +1,0 @@
-#!/bin/bash
-
-sudo pacman -Syu rustup git base base-devel
-rustup default stable
-git clone https://aur.archlinux.org/paru && cd paru && makepkg -si && cd .. && rm -rf paru
-paru -Syu arch
-echo "run -> arch setup"
-exit 0
