@@ -199,7 +199,7 @@ arch setup
 arch --install-packages
 ```
 
-## Afin d'installer des dépendences 
+## Afin d'installer des dépendances 
 
 ```bash
 arch --install-dependencies
@@ -223,13 +223,13 @@ arch --update-mirrors
 arch --check-updates
 ```
 
-## Afin de mettre a jour arch
+## Afin de mettre à jour arch
 
 ```bash
 arch --update
 ```
 
-## Afin de mettre a jour et de redémarrer
+## Afin de mettre à jour et de redémarrer
 
 ```bash
 arch --update-and-reboot
@@ -237,19 +237,19 @@ arch --update -r
 arch -r --update
 ```
 
-## Annuller le redémarrage
+## Annuler le redémarrage
 
 ```bash
 arch --cancel-reboot
 ```
 
-## Mise a jour du cache des paquets
+## Mise à jour du cache des paquets
 
 ```bash
 sudo arch --refresh-cache
 ```
 
-## Télécharger les mise à jours sans les installer
+## Télécharger les mise à jours seulement
 
 ```bash
 arch --download-updates
