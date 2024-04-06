@@ -3,11 +3,15 @@ xmonad-contrib
 lightdm
 xmobar
 wmctrl
+xterm
 rxvt-unicode
 dmenu
 rofi
 dzen2
 dunst
+libnotify
 lightdm-slick-greeter
 numlockx
 libnotify
+nerd-fonts
+vi

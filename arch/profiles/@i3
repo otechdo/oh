@@ -8,15 +8,14 @@ xorg-xrandr
 autorandr
 arandr
 lightdm
-picom
 bluez
 xprop
-lxappeanbce
+lxappearance
 vim
 vi
 qutebrowser
 python-adblock
 dunst
 libnotify
-lightdm-slick-greeter
 numlockx
+nerd-fonts
