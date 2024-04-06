@@ -879,7 +879,7 @@ impl Arch {
         assert!(exec("sh", &["-c", "pacman -Sg >> pkgs"]));
         assert!(exec(
             "sh",
-            &["-c", "yay --repo  aur | cut -d ' ' -f 2 >> pkgs"]
+            &["-c", "yay -Sl  aur | cut -d ' ' -f 2 >> pkgs"]
         ));
         assert!(exec("sh", &["-c", "install -m 644 pkgs /tmp/pkgs"]));
         assert!(exec("sh", &["-c", "rm pkgs"]));
