@@ -168,19 +168,25 @@ git clone https://aur.archlinux.org/yay && cd yay && makepkg -si && cd .. && rm 
 ### From GitHub
 
 ```bash
-git clone https://github.com/otechdo/arch && cd arch && make setup
+git clone https://github.com/otechdo/arch && cd arch && make && sudo make install
 ```
 
 ### From Crates.io
 
 ```bash
-cargo install arch && install -m 755 "$HOME/.cargo/bin/arch" /usr/bin/arch  &&  arch setup
+cargo install arch && install -m 755 "$HOME/.cargo/bin/arch" /usr/bin/arch
 ```
 
 ### From Aur
 
 ```bash
-paru -Syu manager && arch setup
+paru -Syu manager
+```
+
+## Setup a new arch
+
+```bash
+arch setup
 ```
 
 ## Desktop 
