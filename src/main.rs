@@ -683,7 +683,7 @@ impl Arch {
                 assert!(Command::new("wget")
                     .arg("-q")
                     .arg(
-                        format!("https://raw.githubusercontent.com/otechdo/arch/main/{profile}")
+                        format!("https://raw.githubusercontent.com/otechdo/arch/main/arch/profiles/{profile}")
                             .as_str()
                     )
                     .current_dir(".")
@@ -721,7 +721,7 @@ impl Arch {
                     );
                     if profile.eq("@xmonad") {
                         assert!(
-                            exec("sh", &["-c", "mkdir ~/.xmonad && wget -q https://raw.githubusercontent.com/otechdo/arch/main/xmonad.hs && mv xmonad.hs ~/.xmonad && touch ~/.xmonad/build && chmod +x ~/.xmonad/build && xmonad --recompile"]),
+                            exec("sh", &["-c", "mkdir ~/.xmonad && wget -q https://raw.githubusercontent.com/otechdo/arch/main/arch/config/xmonad/xmonad.hs && mv xmonad.hs ~/.xmonad && touch ~/.xmonad/build && chmod +x ~/.xmonad/build && xmonad --recompile"]),
                             "Failed to configure xmonad"
                             );
                     }
@@ -905,7 +905,12 @@ fn install_packages(pkgs: &[String]) -> i32 {
             "{}",
             format!("Failed to install the {pkg} package").as_str()
         );
-        assert!(notifme::Notification::new().app("arch").summary(format!("{pkg} Installed").as_str()).body(format!("{pkg} has been installed successfully").as_str()).timeout(5).send());
+        assert!(notifme::Notification::new()
+            .app("arch")
+            .summary(format!("{pkg} Installed").as_str())
+            .body(format!("{pkg} has been installed successfully").as_str())
+            .timeout(5)
+            .send());
     }
     0
 }
@@ -958,7 +963,9 @@ fn main() -> ExitCode {
         return Arch::new().aur().quit("Exit aur successfully");
     }
 
-    if args.len() == 2 && args.get(1).expect("failed to get argument").eq("--man") || args.get(1).expect("failed to get argument").eq("-m")  {
+    if args.len() == 2 && args.get(1).expect("failed to get argument").eq("--man")
+        || args.get(1).expect("failed to get argument").eq("-m")
+    {
         return Arch::new().man().quit("Exit man successfully");
     }
 
