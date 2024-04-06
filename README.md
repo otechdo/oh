@@ -67,6 +67,12 @@ mkdir /mnt/boot/efi
 mount /dev/sda1 /mnt/boot/efi
 ```
 
+## Check device block afer mounting
+
+```bash
+lsblk --fs --paths
+```
+
 ## Change pacman mirror priority
 
 ```bash
