@@ -657,9 +657,7 @@ impl Arch {
     /// # Panics
     ///
     pub fn configure_mirrors(&mut self) -> &mut Self {
-        let country = Text::new("Please enter your country : ")
-            .prompt()
-            .unwrap();
+        let country = Text::new("Please enter your country : ").prompt().unwrap();
 
         if country.is_empty() {
             return self.configure_mirrors();
@@ -1066,7 +1064,10 @@ fn main() -> ExitCode {
     if args.len() == 2 && args.get(1).unwrap().eq("--wiki") || args.get(1).unwrap().eq("-w") {
         return Arch::new().wiki().quit("Wiki exit success");
     }
-    if args.len() == 2 && args.get(1).unwrap().eq("--man") || args.get(1).unwrap().eq("--woman") || args.get(1).unwrap().eq("-m") {
+    if args.len() == 2 && args.get(1).unwrap().eq("--man")
+        || args.get(1).unwrap().eq("--woman")
+        || args.get(1).unwrap().eq("-m")
+    {
         return Arch::new().man().quit("Man exit success");
     }
     if args.len() == 2 && args.get(1).unwrap().eq("--forums") || args.get(1).unwrap().eq("-f") {
