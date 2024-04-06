@@ -751,13 +751,11 @@ impl Arch {
     ///
     pub fn choose_hostname(&mut self) -> &mut Self {
         self.hostname.clear();
-        self.hostname.push_str(
-            Text::new("Please enter your hostname : ")
-                .prompt()
-                .unwrap()
-                .as_str(),
-        );
-
+        let hostname = Text::new("Please enter your hostname : ").prompt().unwrap();
+        if hostname.is_empty() {
+            return self.choose_hostname();
+        }
+        self.hostname.push_str(hostname.as_str());
         self
     }
 
