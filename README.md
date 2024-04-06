@@ -159,10 +159,10 @@ su - <username>
 rustup default stable
 ```
 
-## Install paru
+## Install yay
 
 ```bash
-git clone https://aur.archlinux.org/paru && cd paru && makepkg -si && cd .. && rm -rf paru
+git clone https://aur.archlinux.org/yay && cd yay && makepkg -si && cd .. && rm -rf yay
 ```
 
 ## Install arch
