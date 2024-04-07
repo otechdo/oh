@@ -1,29 +1,28 @@
-<img src="https://raw.githubusercontent.com/otechdo/arch/main/arch/archlinux.svg" alt="archlinux" align="right" width="250">
+> A archlinux installer and manager for advanced linux users
 
-A archlinux installer, manager for advanced arch users.
+[@documentation](https://github.com/otechdo/arch/blob/main/arch/docs/)
 
-- [@documentation](https://github.com/otechdo/arch/blob/main/arch/docs/)
-    - [@en](https://raw.githubusercontent.com/otechdo/arch/main/README.md)
-    - [@fr](https://github.com/otechdo/arch/blob/main/arch/docs/fr/README.md)
+- - [@en](https://raw.githubusercontent.com/otechdo/arch/main/README.md)
+  - [@fr](https://github.com/otechdo/arch/blob/main/arch/docs/fr/README.md)
 - [@archlinux](https://archlinux.org)
-    - [@guide](https://wiki.archlinux.org/title/Installation_guide)
-    - [@wiki](https://wiki.archlinux.org/)
-    - [@download](https://archlinux.org/download/)
+  - [@guide](https://wiki.archlinux.org/title/Installation_guide)
+  - [@wiki](https://wiki.archlinux.org/)
+  - [@download](https://archlinux.org/download/)
 - [@arch](https://github.com/otechdo/arch/)
-    - [@issues](https://github.com/otechdo/arch/issues)
-    - [@discussions](https://discord.gg/jWHjkpRJPw)
+  - [@issues](https://github.com/otechdo/arch/issues)
+  - [@discussions](https://discord.gg/jWHjkpRJPw)
 
-##  Set desired keymap
+> Set desired keymap
 
 ```bash
 loadkeys <keymap>
 ```
 
-##  Create three partitions:
+## Create three partitions:
 
-* 1 1024MB  EFI partition   # ef00
-* 2 4096MB  Linux partition # 8300
-* 3 100%    Linux partition # 8300
+1.  1024MB  EFI partition   # ef00
+2.  4096MB  Linux partition # 8300
+3.  100%    Linux partition # 8300
 
 ```bash
 cgdisk /dev/sda
@@ -49,26 +48,42 @@ mkfs.ext2 /dev/sda2
 mkfs.ext4 /dev/sda3
 ```
 
-## List device block for mounting
+### List device block for mounting
 
 ```bash
 lsblk --fs
 ```
 
-## Mount partitions
+## Mounting
+
+### The root partition
 
 ```bash
 mount /dev/sda3 /mnt
-mkdir /mnt/boot
-mount /dev/sda2 /mnt/boot
-mkdir /mnt/boot/efi
-mount /dev/sda1 /mnt/boot/efi
 ```
 
-## Check device block afer mounting
+### Create the mount point for boot
 
 ```bash
-lsblk --fs --paths
+mkdir /mnt/boot
+```
+
+### The boot partition
+
+```bash
+mount /dev/sda2 /mnt/boot
+```
+
+### Create mount point for efi
+
+```bash
+mkdir /mnt/boot/efi
+```
+
+### EFI partition
+
+```bash
+mount /dev/sda1 /mnt/boot/efi
 ```
 
 ## Change pacman mirror priority
@@ -95,13 +110,13 @@ pacman-key --refresh-keys
 pacstrap /mnt base base-devel wget git linux linux-firmware vim efibootmgr rustup sudo grub networkmanager w3m archiso reflector <shell> <ucode> <graphics_driver>
 ```
 
-##  Generate fstab
+## Generate fstab
 
 ```bash
 genfstab -U /mnt >> /mnt/etc/fstab
 ```
 
-##  Enter inside the new system
+## Enter inside the new system
 
 ```bash
 arch-chroot /mnt && cd ~
@@ -127,7 +142,7 @@ passwd root
 passwd <username>
 ```
 
-### Add your account to sudoers 
+### Add your account to sudoers
 
 ```bash
 echo '<username> ALL=(ALL) ALL' > /etc/sudoers.d/<username>
@@ -151,7 +166,7 @@ rustup default stable
 sudo vim /etc/pacman.conf
 ```
 
-## Refresh pacman database 
+## Refresh pacman database
 
 ```bash
 sudo pacman -Sy
@@ -164,7 +179,7 @@ git clone https://aur.archlinux.org/yay && cd yay && makepkg -si && cd .. && rm 
 ```
 
 ## Install arch
- 
+
 ### From GitHub
 
 ```bash
@@ -189,7 +204,7 @@ paru -Syu manager
 arch setup
 ```
 
-## Desktop 
+## Desktop
 
 - [@deepin](https://wiki.archlinux.org/title/Deepin_Desktop_Environment)
 - [@kde](https://wiki.archlinux.org/title/KDE)
@@ -322,6 +337,178 @@ umount -R /mnt
 reboot
 ```
 
+## Setup a new arch
+
+```bash
+arch -i
+```
+
+```bash
+arch --setup
+```
+
+## Remove packages
+
+| arch -R |     |     |     |
+|:------- | --- | --- | --- |
+|         |     |     |     |
+
+
+
+```bash
+arch -R <pkg> <pkg>
+```
+
+```bash
+arch --uninstall²
+```
+
+```bash
+arch -S <pkg> <pkg>
+```
+
+```bash
+arch --install
+```
+
+```bash
+arch -M
+```
+
+```bash
+arch --mirrors
+```
+
+```bash
+arch -C
+```
+
+```bash
+arch --check
+```
+
+```bash
+arch -d
+```
+
+```bash
+arch --deps
+```
+
+```bash
+arch -u
+```
+
+```bash
+arch --update
+```
+
+```bash
+arch -a
+```
+
+```bash
+arch --aur
+```
+
+```bash
+arch -s
+```
+
+```bash
+arch --search
+```
+
+```bash
+arch -v
+```
+
+```bash
+arch --version
+```
+
+```bash
+arch -d
+```
+
+```bash
+arch --download-updates
+```
+
+```bash
+arch -h
+```
+
+```bash
+arch --help
+```
+
+```bash
+arch -x
+```
+
+```bash
+arch --cancel
+```
+
+```bash
+arch -U
+```
+
+```bash
+arch --upgrade
+```
+
+```bash
+arch -c
+```
+
+```bash
+arch --cache
+```
+
+```bash
+arch -n
+```
+
+```bash
+arch --news
+```
+
+### Navigate in the forum
+
+```bash
+arch -f
+```
+
+```bash
+arch --forum
+```
+
+### Navigate in the man pages
+
+```bash
+arch -m
+```
+
+```bash
+arch --man
+```
+
+```bash
+arch --woman
+```
+
+### Navigate in the wiki
+
+```bash
+arch -w
+```
+
+```bash
+arch --wiki
+```
+
 ## Key Bindings
 
 This file lists all of the key bindings currently registered by prompts.
@@ -331,7 +518,7 @@ This file lists all of the key bindings currently registered by prompts.
 These key bindings may be used with all prompts.
 
 | **command**                      | **description**         |
-|----------------------------------|-------------------------|
+| -------------------------------- | ----------------------- |
 | <kbd>enter</kbd>                 | Submit answer.          |
 | <kbd>esc</kbd>                   | Cancel the prompt\*.    |
 | <kbd>ctrl</kbd>  +  <kbd>c</kbd> | Interrupt the prompt\*. |
@@ -342,19 +529,18 @@ These key bindings may be used with all prompts.
 
 These key bindings may be used with all prompts that ask the user for text input: [`Text`], [`Select`], [`MultiSelect`], [`Confirm`], [`CustomType`] and [`Password`]. The [`Editor`] prompt is not included because it opens a separate text editor for text input.
 
-
-| **command**                          | **description**                                 |
-|--------------------------------------|-------------------------------------------------|
-| <kbd>character</kbd>                 | Insert the character into the input.            |
-| <kbd>left</kbd>                      | Move the cursor back one character.             |
-| <kbd>right</kbd>                     | Move the cursor forward one character.          |
-| <kbd>ctrl</kbd> + <kbd>left</kbd>    | Move one word to the left of the cursor.        |
-| <kbd>ctrl</kbd> + <kbd>right</kbd>   | Move one word to the right of the cursor.       |
-| <kbd>home</kbd>                      | Move cursor to the start of the line*.          |
-| <kbd>end</kbd>                       | Move cursor to the end of the line*.            |
-| <kbd>backspace</kbd>                 | Delete one character to the left of the cursor. |
-| <kbd>delete</kbd>                    | Delete the character at the cursor.             |
-| <kbd>ctrl</kbd> + <kbd>delete</kbd>  | Delete one word to the right of the cursor.     |
+| **command**                         | **description**                                 |
+| ----------------------------------- | ----------------------------------------------- |
+| <kbd>character</kbd>                | Insert the character into the input.            |
+| <kbd>left</kbd>                     | Move the cursor back one character.             |
+| <kbd>right</kbd>                    | Move the cursor forward one character.          |
+| <kbd>ctrl</kbd> + <kbd>left</kbd>   | Move one word to the left of the cursor.        |
+| <kbd>ctrl</kbd> + <kbd>right</kbd>  | Move one word to the right of the cursor.       |
+| <kbd>home</kbd>                     | Move cursor to the start of the line*.          |
+| <kbd>end</kbd>                      | Move cursor to the end of the line*.            |
+| <kbd>backspace</kbd>                | Delete one character to the left of the cursor. |
+| <kbd>delete</kbd>                   | Delete the character at the cursor.             |
+| <kbd>ctrl</kbd> + <kbd>delete</kbd> | Delete one word to the right of the cursor.     |
 
 \* Key bindings not supported on [`Select`] and [`MultiSelect`] prompts.
 
@@ -363,7 +549,7 @@ These key bindings may be used with all prompts that ask the user for text input
 These key bindings may be used in [`Text`] prompts.
 
 | **command**          | **description**                                               |
-|----------------------|---------------------------------------------------------------|
+| -------------------- | ------------------------------------------------------------- |
 | <kbd>enter</kbd>     | Submit the current current text input.                        |
 | <kbd>up</kbd>        | When suggestions are displayed, move cursor one row up.       |
 | <kbd>down</kbd>      | When suggestions are displayed, move cursor one row down.     |
@@ -377,7 +563,7 @@ These key bindings may be used in [`Text`] prompts.
 These key bindings may be used in [`Select`] prompts.
 
 | **command**          | **description**                                               |
-|----------------------|---------------------------------------------------------------|
+| -------------------- | ------------------------------------------------------------- |
 | <kbd>enter</kbd>     | Submit the current highlighted option.                        |
 | <kbd>up</kbd>        | Move cursor one row up.                                       |
 | <kbd>down</kbd>      | Move cursor one row down.                                     |
@@ -394,7 +580,7 @@ These key bindings may be used in [`Select`] prompts.
 These key bindings may be used in [`MultiSelect`] prompts.
 
 | **command**          | **description**                                               |
-|----------------------|---------------------------------------------------------------|
+| -------------------- | ------------------------------------------------------------- |
 | <kbd>enter</kbd>     | Submit the options currently selected.                        |
 | <kbd>space</kbd>     | Toggle the selection of the current highlighted option.       |
 | <kbd>up</kbd>        | Move cursor one row up.                                       |
@@ -413,9 +599,8 @@ These key bindings may be used in [`MultiSelect`] prompts.
 
 These key bindings may be used in the interactive calendar of the [`DateSelect`] prompt.
 
-
 | **command**                              | **description**                                               |
-|------------------------------------------|---------------------------------------------------------------|
+| ---------------------------------------- | ------------------------------------------------------------- |
 | <kbd>space bar</kbd> or <kbd>enter</kbd> | Submit the current highlighted date.                          |
 | <kbd>up</kbd>                            | Move cursor one row up.                                       |
 | <kbd>down</kbd>                          | Move cursor one row down.                                     |
@@ -435,16 +620,6 @@ These key bindings may be used in the interactive calendar of the [`DateSelect`]
 These key bindings may be used in [`Editor`] prompts.
 
 | **command**      | **description**                                                |
-|------------------|----------------------------------------------------------------|
+| ---------------- | -------------------------------------------------------------- |
 | <kbd>e</kbd>     | Open the editor.                                               |
 | <kbd>enter</kbd> | Submit the current content of the temporary file being edited. |
-
-
-[`Text`]: https://docs.rs/inquire/*/inquire/prompts/text/struct.Text.html
-[`DateSelect`]: https://docs.rs/inquire/*/inquire/prompts/dateselect/struct.DateSelect.html
-[`Select`]: https://docs.rs/inquire/*/inquire/prompts/select/struct.Select.html
-[`MultiSelect`]: https://docs.rs/inquire/*/inquire/prompts/multiselect/struct.MultiSelect.html
-[`Confirm`]: https://docs.rs/inquire/*/inquire/prompts/confirm/struct.Confirm.html
-[`Editor`]: https://docs.rs/inquire/*/inquire/prompts/editor/struct.Editor.html
-[`customtype`]: https://docs.rs/inquire/*/inquire/struct.CustomType.html
-[`Password`]: https://docs.rs/inquire/*/inquire/prompts/password/struct.Password.html
