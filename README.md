@@ -1,6 +1,22 @@
-> A archlinux installer and manager for advanced linux users
+<img title="" src="file:///home/otechdo/.var/app/com.github.marktext.marktext/config/marktext/images/2024-04-07-21-27-36-otechdo.png" alt="" width="131" data-align="center">
 
-# Set the installation keymap
+[PDF](https://raw.githubusercontent.com/otechdo/arch/main/arch.pdf)
+
+[EPUB](https://raw.githubusercontent.com/otechdo/arch/main/arch.epub)
+
+
+
+> sha512sum arch.pdf
+
+`269036e9752ef3edb89d8ec0b351bc745d25499b45a0c3f9038ed97b8c6b3caa9f9b7af4d08ef71cab74148b67199e73d221f5dffa6ed6aab50ca0010940f703 arch.pdf`
+
+
+
+> sha512sum arch.epub
+
+`8ddf24144aeb1abfe16d3500ccefa72ab46c9a513dbdc76c3b34d387bc76d66640d54f77a5ce26facde6012110ef9fb257bed04ec87edf087416acfceb9bcb46 arch.epub`
+
+# Set keymap
 
 ```bash
 loadkeys <keymap>
@@ -8,9 +24,9 @@ loadkeys <keymap>
 
 ## Partitioning
 
-1.  1024MB  EFI partition         # ef00      /boot/efi    
-2.  4096MB  Linux partition    # 8300     /boot
-3.  100%       Linux partition    # 8300     /
+1. 1024MB  EFI partition         # ef00      /boot/efi    
+2. 4096MB  Linux partition    # 8300     /boot
+3. 100%       Linux partition    # 8300     /
 
 ```bash
 cgdisk /dev/sda
@@ -36,7 +52,7 @@ mkfs.ext2 /dev/sda2
 mkfs.ext4 /dev/sda3
 ```
 
-### ## Mounting
+## Mounting
 
 ### The root partition
 
@@ -421,6 +437,57 @@ arch -w
 
 ```bash
 arch --wiki
+```
+
+# Toolbox support
+
+[GitHub - toolbx-images/images: Community maintained container images to use with toolbx and distrobox](https://github.com/toolbx-images/images?tab=readme-ov-file)
+
+## List all toolbox
+
+```bash
+os --list
+```
+
+## Create a new toolbox
+
+```bash
+os --add fedora 39 workstation
+os --add fedora 39
+```
+
+## Create a new toolbox from an image
+
+```bash
+os --add-from quay.io/toolbx-images/debian-toolbox:12
+```
+
+## Enter in toolbox
+
+```bash
+os --use workstation
+os --use fedora-toolbox-39
+```
+
+## Run a command in toolbox
+
+```bash
+os --run workstation ls
+os --run fedora-toolbox-39 ls
+```
+
+## Stop a toolbox
+
+```bash
+os --stop workstation
+os --stop fedora-toolbox-39
+```
+
+## Remove a toolbox
+
+```bash
+os --rm workstation
+os --rm fedora-toolbox-39
 ```
 
 ## Key Bindings
