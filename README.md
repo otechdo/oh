@@ -1,6 +1,6 @@
-1. [PDF](https://raw.githubusercontent.com/otechdo/arch/main/arch.pdf) 
+- [PDF](https://raw.githubusercontent.com/otechdo/arch/main/arch.pdf) 
 
-2. [EPUB](https://raw.githubusercontent.com/otechdo/arch/main/arch.epub)
+- [EPUB](https://raw.githubusercontent.com/otechdo/arch/main/arch.epub)
 
 > sha512sum arch.pdf
 
