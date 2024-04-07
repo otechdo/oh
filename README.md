@@ -1,26 +1,6 @@
 > A archlinux installer and manager for advanced linux users
 
-[@documentation](https://github.com/otechdo/arch/blob/main/arch/docs/)
-
-[@en](https://raw.githubusercontent.com/otechdo/arch/main/README.md)
-
-[@fr](https://github.com/otechdo/arch/blob/main/arch/docs/fr/README.md)
-
-[@archlinux](https://archlinux.org)
-
-[@guide](https://wiki.archlinux.org/title/Installation_guide)
-
-[@wiki](https://wiki.archlinux.org/)
-
-[@download](https://archlinux.org/download/)
-
-[@arch](https://github.com/otechdo/arch/)
-
-[@issues](https://github.com/otechdo/arch/issues)
-
-[@discussions](https://discord.gg/jWHjkpRJPw)
-
-## Set the installation keymap
+# Set the installation keymap
 
 ```bash
 loadkeys <keymap>
