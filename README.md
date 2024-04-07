@@ -1,16 +1,12 @@
-<img title="" src="file:///home/otechdo/.var/app/com.github.marktext.marktext/config/marktext/images/2024-04-07-21-27-36-otechdo.png" alt="" width="131" data-align="center">
+<img title="arch" src="https://raw.githubusercontent.com/otechdo/arch/main/otechdo.png" alt="otechdo" width="131" data-align="center">
 
 [PDF](https://raw.githubusercontent.com/otechdo/arch/main/arch.pdf)
 
 [EPUB](https://raw.githubusercontent.com/otechdo/arch/main/arch.epub)
 
-
-
 > sha512sum arch.pdf
 
 `269036e9752ef3edb89d8ec0b351bc745d25499b45a0c3f9038ed97b8c6b3caa9f9b7af4d08ef71cab74148b67199e73d221f5dffa6ed6aab50ca0010940f703 arch.pdf`
-
-
 
 > sha512sum arch.epub
 
