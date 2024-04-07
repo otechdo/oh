@@ -2,27 +2,28 @@
 
 [@documentation](https://github.com/otechdo/arch/blob/main/arch/docs/)
 
-- - [@en](https://raw.githubusercontent.com/otechdo/arch/main/README.md)
-  - [@fr](https://github.com/otechdo/arch/blob/main/arch/docs/fr/README.md)
+- [@en](https://raw.githubusercontent.com/otechdo/arch/main/README.md)
+  
+  [@fr](https://github.com/otechdo/arch/blob/main/arch/docs/fr/README.md)
 - [@archlinux](https://archlinux.org)
-  - [@guide](https://wiki.archlinux.org/title/Installation_guide)
-  - [@wiki](https://wiki.archlinux.org/)
-  - [@download](https://archlinux.org/download/)
+- [@guide](https://wiki.archlinux.org/title/Installation_guide)
+- [@wiki](https://wiki.archlinux.org/)
+- [@download](https://archlinux.org/download/)
 - [@arch](https://github.com/otechdo/arch/)
-  - [@issues](https://github.com/otechdo/arch/issues)
-  - [@discussions](https://discord.gg/jWHjkpRJPw)
+- [@issues](https://github.com/otechdo/arch/issues)
+- [@discussions](https://discord.gg/jWHjkpRJPw)
 
-> Set desired keymap
+## Set the installation keymap
 
 ```bash
 loadkeys <keymap>
 ```
 
-## Create three partitions:
+## Partitioning
 
-1.  1024MB  EFI partition   # ef00
-2.  4096MB  Linux partition # 8300
-3.  100%    Linux partition # 8300
+1.  1024MB  EFI partition         # ef00      /boot/efi    
+2.  4096MB  Linux partition    # 8300     /boot
+3.  100%       Linux partition    # 8300     /
 
 ```bash
 cgdisk /dev/sda
@@ -30,31 +31,25 @@ cgdisk /dev/sda
 
 ## Formatting
 
-### /boot/efi
+> /boot/efi
 
 ```bash
 mkfs.vfat -F 32 /dev/sda1
 ```
 
-### /boot
+> /boot
 
 ```bash
 mkfs.ext2 /dev/sda2
 ```
 
-### /
+> /
 
 ```bash
 mkfs.ext4 /dev/sda3
 ```
 
-### List device block for mounting
-
-```bash
-lsblk --fs
-```
-
-## Mounting
+### ## Mounting
 
 ### The root partition
 
@@ -62,134 +57,138 @@ lsblk --fs
 mount /dev/sda3 /mnt
 ```
 
-### Create the mount point for boot
+### Create the boot mount point
 
 ```bash
 mkdir /mnt/boot
 ```
 
-### The boot partition
+### Mounting the boot partition
 
 ```bash
 mount /dev/sda2 /mnt/boot
 ```
 
-### Create mount point for efi
+### Create the EFI mount point
 
 ```bash
 mkdir /mnt/boot/efi
 ```
 
-### EFI partition
+### Mounting the EFI partition
 
 ```bash
 mount /dev/sda1 /mnt/boot/efi
 ```
 
-## Change pacman mirror priority
+## Update mirrorlist
 
 ```bash
 reflector -c <country> --sort delay --save /etc/pacman.d/mirrorlist -p https
 ```
 
-## Update package signing keys
+## Init pacman
 
 ```bash
 pacman-key --init && pacman-key --populate archlinux
 ```
 
-## Refresh package signing keys
+# Installation
 
-```bash
-pacman-key --refresh-keys
-```
-
-## Install the base system
+## The base system
 
 ```bash
 pacstrap /mnt base base-devel wget git linux linux-firmware vim efibootmgr rustup sudo grub networkmanager w3m archiso reflector <shell> <ucode> <graphics_driver>
 ```
 
-## Generate fstab
+# Generate fstab
 
 ```bash
 genfstab -U /mnt >> /mnt/etc/fstab
 ```
 
-## Enter inside the new system
+# Enter in the new system
 
 ```bash
 arch-chroot /mnt && cd ~
 ```
 
+# Manage accounts
+
 ## Create your account
 
-### Create user
-
 ```bash
-useradd -m -U -c 'REAL NAME' -s <shell> <username>
+useradd -m -U -c 'YOUR REAL NAME' -s <shell> <username>
 ```
 
-### Create root password
+## Generate root password
 
 ```bash
 passwd root
 ```
 
-### Create user password
+### Generate your password
 
 ```bash
 passwd <username>
 ```
 
-### Add your account to sudoers
+### Add your account to sudoers file
 
 ```bash
 echo '<username> ALL=(ALL) ALL' > /etc/sudoers.d/<username>
 ```
 
-## Checkout on your account
+# Sign in
 
 ```bash
 su - <username>
 ```
 
-## Configure the toolchain
+# Configure rust
 
 ```bash
 rustup default stable
 ```
 
-## Enabled multilib repository
+# Modify pacman.conf
 
 ```bash
 sudo vim /etc/pacman.conf
 ```
 
-## Refresh pacman database
+# Refresh repositories
 
 ```bash
 sudo pacman -Sy
 ```
 
-## Install yay
+# Installation of yay
 
 ```bash
-git clone https://aur.archlinux.org/yay && cd yay && makepkg -si && cd .. && rm -rf yay
+git clone https://aur.archlinux.org/yay 
+cd yay
+makepkg -si 
+cd ..
+rm -rf yay
 ```
 
-## Install arch
+# Install arch
 
-### From GitHub
+## From GitHub
 
 ```bash
-git clone https://github.com/otechdo/arch && cd arch && make && sudo make install
+git clone https://github.com/otechdo/arch 
+cd arch 
+make 
+sudo make install
 ```
 
 ### From Crates.io
 
 ```bash
-cargo install arch && install -m 755 "$HOME/.cargo/bin/arch" /usr/bin/arch
+cargo install arch 
+install -m 755 "$HOME/.cargo/bin/arch" /usr/bin/arch
 ```
 
 ### From Aur
@@ -201,7 +200,7 @@ paru -Syu manager
 ## Setup a new arch
 
 ```bash
-arch setup
+arch --setup
 ```
 
 ## Desktop
@@ -219,123 +218,25 @@ arch --install
 arch -S <pkg> <pkg>
 ```
 
-## Install all selected packages as deps on arch
-
-```bash
-arch --install-dependencies
-```
-
-## Remove all selected packages on arch
-
-```bash
-arch --uninstall
-arch -R <pkg> <pkg> 
-```
-
-## Update all mirrors to the enter country
-
-```bash
-arch --update-mirrors
-```
-
-## Check updates
-
-```bash
-arch --check-updates
-```
-
-## Update arch
-
-```bash
-arch --update
-```
-
-## Update and reboot arch
-
-```bash
-arch --update-and-reboot
-arch --update -r
-arch -r --update
-```
-
-## Cancel the reboot task
-
-```bash
-arch --cancel-reboot
-```
-
-## Refrech cache
-
-```bash
-sudo arch --refresh-cache
-```
-
-## Show help
-
-```bash
-arch --help
-arch -h
-```
-
-## Show arch news using w3m
-
-```bash
-arch --news
-arch -n
-```
-
-## Show arch wiki using w3m
-
-```bash
-arch --wiki
-arch -w
-```
-
-## Show arch manpages using w3m
-
-```bash
-arch --man
-arch --woman
-arch -m
-```
-
-## Show arch formum using w3m
-
-```bash
-arch --forums
-arch -f
-```
-
-## Show aur packages formum using w3m
-
-```bash
-arch --aur
-arch -a
-```
-
-## Download updates
-
-```bash
-arch --download-updates
-```
-
-## Exit chroot
+# Quit the fresh new system
 
 ```bash
 exit
 ```
 
-## Umount partitions
+# Umount all mounted partitions
 
 ```bash
 umount -R /mnt
 ```
 
-## Restart on the new system
+# Reboot
 
 ```bash
 reboot
 ```
+
+# Arch commands
 
 ## Setup a new arch
 
@@ -349,19 +250,15 @@ arch --setup
 
 ## Remove packages
 
-| arch -R |     |     |     |
-|:------- | --- | --- | --- |
-|         |     |     |     |
-
-
-
 ```bash
 arch -R <pkg> <pkg>
 ```
 
 ```bash
-arch --uninstall²
+arch --uninstall
 ```
+
+## Install new packages
 
 ```bash
 arch -S <pkg> <pkg>
@@ -371,6 +268,8 @@ arch -S <pkg> <pkg>
 arch --install
 ```
 
+## Update mirrorlist
+
 ```bash
 arch -M
 ```
@@ -378,6 +277,8 @@ arch -M
 ```bash
 arch --mirrors
 ```
+
+## Check updates
 
 ```bash
 arch -C
@@ -387,12 +288,20 @@ arch -C
 arch --check
 ```
 
+## Install packages as dependencies
+
 ```bash
 arch -d
 ```
 
 ```bash
 arch --deps
+```
+
+# Update archlinux
+
+```bash
+arch
 ```
 
 ```bash
@@ -403,21 +312,17 @@ arch -u
 arch --update
 ```
 
+## Search a package
+
 ```bash
-arch -a
+arch -s <pkg>
 ```
 
 ```bash
-arch --aur
+arch --search <pkg>
 ```
 
-```bash
-arch -s
-```
-
-```bash
-arch --search
-```
+## Show arch current version
 
 ```bash
 arch -v
@@ -427,6 +332,8 @@ arch -v
 arch --version
 ```
 
+## Download updates
+
 ```bash
 arch -d
 ```
@@ -434,6 +341,8 @@ arch -d
 ```bash
 arch --download-updates
 ```
+
+## Show help message
 
 ```bash
 arch -h
@@ -443,6 +352,8 @@ arch -h
 arch --help
 ```
 
+## Cancel the upgrade reboot
+
 ```bash
 arch -x
 ```
@@ -450,6 +361,8 @@ arch -x
 ```bash
 arch --cancel
 ```
+
+## Upgrade the system and reboot
 
 ```bash
 arch -U
@@ -459,6 +372,8 @@ arch -U
 arch --upgrade
 ```
 
+## Generate arch packages cache
+
 ```bash
 arch -c
 ```
@@ -466,6 +381,8 @@ arch -c
 ```bash
 arch --cache
 ```
+
+## Navigate on news
 
 ```bash
 arch -n
@@ -475,7 +392,17 @@ arch -n
 arch --news
 ```
 
-### Navigate in the forum
+## Navigate on the Aur
+
+```bash
+arch -a
+```
+
+```bash
+arch --aur
+```
+
+### Navigate on the forum
 
 ```bash
 arch -f
@@ -485,7 +412,7 @@ arch -f
 arch --forum
 ```
 
-### Navigate in the man pages
+### Navigate on the man pages
 
 ```bash
 arch -m
@@ -499,7 +426,7 @@ arch --man
 arch --woman
 ```
 
-### Navigate in the wiki
+### Navigate on the wiki
 
 ```bash
 arch -w
