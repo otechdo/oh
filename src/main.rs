@@ -976,7 +976,27 @@ impl Arch {
 }
 
 fn help() -> i32 {
-    println!("arch setup                    : Configure a new arch\narch --help                   : Display help\narch --install-packages       : Install packages as inplicit\narch --install-dependencies   : Install packages as dependencies\narch --remove-packages        : Remove selected packages\narch --update-mirrors         : Update arch mirrors\narch --update                 : Update arch\narch --update-and-reboot      : Update arch and reboot after five minutes\narch --download-updates       : Download all updates\narch --check-updates          : Check and print all available updates\narch --cancel-reboot          : Cancel rebooting after five minutes");
+    println!(
+        "\narch -i --setup Setup a new arch\n
+arch -R --uninstall Uninstall all selected packages\n
+arch -S --install Install all selected packages\n
+arch -M --mirrors Update the arch mirrors\n
+arch -C --check Check for available arch update\n
+arch -d --deps Install all selected packages as deps\n
+arch -u --update Update the system\n
+arch -a --aur Show aur packages\n
+arch -s --search Search a package\n
+arch -v --version Display version information\n
+arch -d --download-updates Dowload all arch updates\n
+arch -h --help Display the help message\n
+arch -x --cancel Cancel the reboot\n
+arch -U --upgrade Update arch and reboot after 5 min\n
+arch -c --cache Refresh arch packages cache\n
+arch -n --news Show aur news\n
+arch -f --forum Show arch forum\n
+arch -m --man --woman  Show arch manpages\n
+arch -w --wiki Show arch wiki\n"
+    );
     1
 }
 
@@ -1041,6 +1061,7 @@ fn install() -> ExitCode {
 }
 fn main() -> ExitCode {
     let args: Vec<String> = args().collect();
+
     if args.len() == 1 {
         return Arch::new().upgrade();
     }
@@ -1061,6 +1082,17 @@ fn main() -> ExitCode {
             .choose_packages()
             .install_package()
             .quit("Packages installed successfully");
+    }
+
+    if args.len() == 3 && args.get(1).unwrap().eq("-s") || args.get(1).unwrap().eq("--search") {
+        assert!(exec(
+            "sh",
+            &[
+                "-c",
+                format!("yay -Ss {} | more", args.get(2).unwrap()).as_str()
+            ]
+        ));
+        exit(0);
     }
 
     if args.len() >= 2 && args.get(1).expect("failed to get argument").eq("-R") {
@@ -1095,7 +1127,7 @@ fn main() -> ExitCode {
     if args.len() == 3 && args.get(1).unwrap().eq("-r") && args.get(2).unwrap().eq("--update") {
         return Arch::new().upgrade_and_reboot();
     }
-    if args.len() == 2 && args.get(1).unwrap().eq("-U") || args.get(2).unwrap().eq("--upgrade") {
+    if args.len() == 2 && args.get(1).unwrap().eq("-U") || args.get(1).unwrap().eq("--upgrade") {
         return Arch::new().upgrade_and_reboot();
     }
     if args.len() == 2 && args.get(1).unwrap().eq("-w") || args.get(1).unwrap().eq("--wiki") {
@@ -1127,10 +1159,7 @@ fn main() -> ExitCode {
             .install_dependencies()
             .quit("Dependencies has been installed successfully");
     }
-    if args.len() == 2
-        && args.get(1).unwrap().eq("--download-updates")
-        && args.get(1).unwrap().eq("-d")
-    {
+    if args.len() == 2 && args.get(1).unwrap().eq("--download-updates") {
         return Arch::new().download_update();
     }
     if args.len() == 2 && args.get(1).unwrap().eq("--cancel") || args.get(1).unwrap().eq("-x") {
