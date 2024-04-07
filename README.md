@@ -1,8 +1,6 @@
-<img title="arch" src="https://raw.githubusercontent.com/otechdo/arch/main/otechdo.png" alt="otechdo" width="131" data-align="center">
+1. [PDF](https://raw.githubusercontent.com/otechdo/arch/main/arch.pdf) 
 
-[PDF](https://raw.githubusercontent.com/otechdo/arch/main/arch.pdf)
-
-[EPUB](https://raw.githubusercontent.com/otechdo/arch/main/arch.epub)
+2. [EPUB](https://raw.githubusercontent.com/otechdo/arch/main/arch.epub)
 
 > sha512sum arch.pdf
 
