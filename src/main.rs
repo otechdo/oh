@@ -1038,98 +1038,96 @@ fn install() -> ExitCode {
 }
 fn main() -> ExitCode {
     let args: Vec<String> = args().collect();
+    if args.len() == 1 {
+        return Arch::new().upgrade();
+    }
     if args.len() >= 2 && args.get(1).expect("failed to get argument").eq("-S") {
         exit(install_packages(&args));
     }
-    if args.len() >= 2 && args.get(1).expect("failed to get argument").eq("-R") {
-        exit(remove_packages(&args));
-    }
-
-    if args.len() == 2 && args.get(1).expect("failed to get argument").eq("-a") {
-        return Arch::new().aur().quit("Exit aur successfully");
-    }
-
-    if args.len() == 2 && args.get(1).expect("failed to get argument").eq("--man")
-        || args.get(1).expect("failed to get argument").eq("-m")
-    {
-        return Arch::new().man().quit("Exit man successfully");
-    }
-
-    if args.len() == 2 && args.get(1).unwrap().eq("setup") {
+    if args.len() == 2 && args.get(1).unwrap().eq("-i") || args.get(1).unwrap().eq("--setup") {
         return install();
     }
-    if args.len() == 2 && args.get(1).unwrap().eq("--news") || args.get(1).unwrap().eq("-n") {
-        return Arch::new().news().quit("News exit success");
-    }
-    if args.len() == 2 && args.get(1).unwrap().eq("--wiki") || args.get(1).unwrap().eq("-w") {
-        return Arch::new().wiki().quit("Wiki exit success");
-    }
-    if args.len() == 2 && args.get(1).unwrap().eq("--man")
-        || args.get(1).unwrap().eq("--woman")
-        || args.get(1).unwrap().eq("-m")
-    {
-        return Arch::new().man().quit("Man exit success");
-    }
-    if args.len() == 2 && args.get(1).unwrap().eq("--forums") || args.get(1).unwrap().eq("-f") {
-        return Arch::new().forums().quit("Forums exit success");
-    }
-    if args.len() == 2 && args.get(1).expect("failed to get argument").eq("-a")
-        || args.get(1).unwrap().eq("--aur")
-    {
-        return Arch::new().aur().quit("Exit aur successfully");
+
+    if args.len() == 2 && args.get(1).unwrap().eq("-h") || args.get(1).unwrap().eq("--help") {
+        let _ = help();
+        exit(0);
     }
 
-    if args.len() == 2 && args.get(1).unwrap().eq("--install") || args.get(1).unwrap().eq("-i") {
+    if args.len() == 2 && args.get(1).unwrap().eq("-S") || args.get(1).unwrap().eq("--install") {
         return Arch::new()
             .choose_packages()
             .install_package()
-            .quit("Packages installed success");
+            .quit("Packages installed successfully");
     }
-    if args.len() == 2 && args.get(1).unwrap().eq("--install-dependencies") {
-        return Arch::new()
-            .choose_packages()
-            .install_dependencies()
-            .quit("Dependencies as been installed successfully");
+
+    if args.len() >= 2 && args.get(1).expect("failed to get argument").eq("-R") {
+        exit(remove_packages(&args));
     }
-    if args.len() == 2 && args.get(1).unwrap().eq("--uninstall") {
+    if args.len() == 2 && args.get(1).unwrap().eq("-R") || args.get(1).unwrap().eq("--uninstall") {
         return Arch::new()
             .choose_packages()
             .remove_package()
-            .quit("Packages has been removed successfully");
+            .quit("Packages uninstalled successfully");
     }
-    if args.len() == 2 && args.get(1).unwrap().eq("--update-mirrors") {
+    if args.len() == 2 && args.get(1).unwrap().eq("-M") || args.get(1).unwrap().eq("--mirrors") {
         return Arch::new()
             .check_network()
             .configure_mirrors()
             .quit("Mirrors has been updated successfully");
     }
-    if args.len() == 2 && args.get(1).unwrap().eq("--help") || args.get(1).unwrap().eq("-h") {
-        let _ = help();
-        exit(0);
-    }
-    if args.len() == 2 && args.get(1).unwrap().eq("--update") {
-        return Arch::new().upgrade();
+
+    if args.len() == 2 && args.get(1).unwrap().eq("-C") || args.get(1).unwrap().eq("--check") {
+        return Arch::new().check_update();
     }
 
-    if args.len() == 2 && args.get(1).unwrap().eq("--refresh-cache") {
-        return Arch::new().refresh_cache();
+    if args.len() == 2 && args.get(1).unwrap().eq("-U") || args.get(1).unwrap().eq("--update") {
+        return Arch::new().upgrade();
     }
     if args.len() == 3 && args.get(1).unwrap().eq("--update") && args.get(2).unwrap().eq("-r") {
+        return Arch::new().upgrade_and_reboot();
+    }
+    if args.len() == 2 && args.get(1).unwrap().eq("--upgrade") || args.get(1).unwrap().eq("-u") {
         return Arch::new().upgrade_and_reboot();
     }
     if args.len() == 3 && args.get(1).unwrap().eq("-r") && args.get(2).unwrap().eq("--update") {
         return Arch::new().upgrade_and_reboot();
     }
-    if args.len() == 2 && args.get(1).unwrap().eq("--update-and-reboot") {
-        return Arch::new().upgrade_and_reboot();
+    if args.len() == 2 && args.get(1).unwrap().eq("-w") || args.get(1).unwrap().eq("--wiki") {
+        return Arch::new().wiki().quit("Wiki exit success");
     }
-    if args.len() == 2 && args.get(1).unwrap().eq("--check-updates") {
-        return Arch::new().check_update();
+    if args.len() == 2 && args.get(1).unwrap().eq("-m")
+        || args.get(1).unwrap().eq("--man")
+        || args.get(1).unwrap().eq("--woman")
+    {
+        return Arch::new().man().quit("Man exit success");
     }
-    if args.len() == 2 && args.get(1).unwrap().eq("--download-updates") {
+
+    if args.len() == 2 && args.get(1).unwrap().eq("-f") || args.get(1).unwrap().eq("--forum") {
+        return Arch::new().forums().quit("Forum exit successfully");
+    }
+
+    if args.len() == 2 && args.get(1).unwrap().eq("-a") || args.get(1).unwrap().eq("--aur") {
+        return Arch::new().aur().quit("Aur exit successfully");
+    }
+    if args.len() == 2 && args.get(1).unwrap().eq("-n") || args.get(1).unwrap().eq("--news") {
+        return Arch::new().news().quit("News exit successfully");
+    }
+    if args.len() == 2 && args.get(1).unwrap().eq("-c") || args.get(1).unwrap().eq("--cache") {
+        return Arch::new().refresh_cache();
+    }
+    if args.len() == 2 && args.get(1).unwrap().eq("-d") || args.get(1).unwrap().eq("--deps") {
+        return Arch::new()
+            .choose_packages()
+            .install_dependencies()
+            .quit("Dependencies has been installed successfully");
+    }
+    if args.len() == 2
+        && args.get(1).unwrap().eq("--download-updates")
+        && args.get(1).unwrap().eq("-d")
+    {
         return Arch::new().download_update();
     }
-    if args.len() == 2 && args.get(1).unwrap().eq("--cancel-reboot") {
+    if args.len() == 2 && args.get(1).unwrap().eq("--cancel") || args.get(1).unwrap().eq("-x") {
         return Arch::new().cancel_reboot();
     }
     exit(help());
