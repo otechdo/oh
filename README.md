@@ -4,7 +4,9 @@
 
 [@en](https://raw.githubusercontent.com/otechdo/arch/main/README.md)
 
-[@fr](https://github.com/otechdo/arch/blob/main/arch/docs/fr/README.md)[@archlinux](https://archlinux.org)
+[@fr](https://github.com/otechdo/arch/blob/main/arch/docs/fr/README.md)
+
+[@archlinux](https://archlinux.org)
 
 [@guide](https://wiki.archlinux.org/title/Installation_guide)
 
