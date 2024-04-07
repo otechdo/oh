@@ -10,6 +10,9 @@ use std::io::Write;
 use std::io::{read_to_string, BufRead};
 use std::path::Path;
 use std::process::{exit, Command, ExitCode};
+
+const VERSION: &str = "0.4.0";
+
 fn exec(cmd: &str, args: &[&str]) -> bool {
     Command::new(cmd)
         .args(args)
@@ -1080,7 +1083,7 @@ fn main() -> ExitCode {
         return Arch::new().check_update();
     }
 
-    if args.len() == 2 && args.get(1).unwrap().eq("-U") || args.get(1).unwrap().eq("--update") {
+    if args.len() == 2 && args.get(1).unwrap().eq("-u") || args.get(1).unwrap().eq("--update") {
         return Arch::new().upgrade();
     }
     if args.len() == 3 && args.get(1).unwrap().eq("--update") && args.get(2).unwrap().eq("-r") {
@@ -1090,6 +1093,9 @@ fn main() -> ExitCode {
         return Arch::new().upgrade_and_reboot();
     }
     if args.len() == 3 && args.get(1).unwrap().eq("-r") && args.get(2).unwrap().eq("--update") {
+        return Arch::new().upgrade_and_reboot();
+    }
+    if args.len() == 2 && args.get(1).unwrap().eq("-U") || args.get(2).unwrap().eq("--upgrade") {
         return Arch::new().upgrade_and_reboot();
     }
     if args.len() == 2 && args.get(1).unwrap().eq("-w") || args.get(1).unwrap().eq("--wiki") {
@@ -1129,6 +1135,11 @@ fn main() -> ExitCode {
     }
     if args.len() == 2 && args.get(1).unwrap().eq("--cancel") || args.get(1).unwrap().eq("-x") {
         return Arch::new().cancel_reboot();
+    }
+
+    if args.len() == 2 && args.get(1).unwrap().eq("--version") || args.get(1).unwrap().eq("-v") {
+        println!("arch version : {VERSION}");
+        exit(0);
     }
     exit(help());
 }
