@@ -14,4 +14,4 @@ completions: shells
 	@install -m 644 os/completions/os.fish /etc/fish/completions/os.fish
 	@install -m 644 arch/completions/arch.zsh /usr/share/zsh/site-functions/_arch
 shells:
-	@sudo pacman -S --noconfirm fish zsh zsh-completions
+	@sudo pacman -S --needed --noconfirm fish zsh zsh-completions
