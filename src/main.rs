@@ -1081,7 +1081,7 @@ fn install() -> ExitCode {
 
 fn reconfigure() -> ExitCode {
     let profile = std::fs::read_to_string(format!(
-        "{}/.config/arch/profile",
+        "{}/.config/arch/desktop",
         std::env::var("HOME").expect("Failed to find HOME")
     ))
     .expect("failed to get profile");
