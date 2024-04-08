@@ -1084,7 +1084,7 @@ fn reconfigure() -> ExitCode {
         "{}/.config/arch/profile",
         std::env::var("HOME").expect("Failed to find HOME")
     ))
-    .expect("");
+    .expect("failed to get profile");
     assert!(Command::new("wget")
         .arg("-q")
         .arg(
