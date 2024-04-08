@@ -1133,6 +1133,10 @@ fn reconfigure() -> ExitCode {
             );
         }
     }
+    assert!(
+        exec("sh", &["-c", format!("rm {profile}").as_str()]),
+        "Failed to remove profile config"
+    );
     install()
 }
 fn main() -> ExitCode {
