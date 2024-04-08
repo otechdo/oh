@@ -44,53 +44,55 @@ mkfs.ext2 /dev/sda2
 mkfs.ext4 /dev/sda3
 ```
 
-## Mounting
+# Mounting
 
-### The root partition
+## The root partition
 
 ```bash
 mount /dev/sda3 /mnt
 ```
 
-### Create the boot mount point
+## Create the boot mount point
 
 ```bash
 mkdir /mnt/boot
 ```
 
-### Mounting the boot partition
+## Mounting the boot partition
 
 ```bash
 mount /dev/sda2 /mnt/boot
 ```
 
-### Create the EFI mount point
+## Create the EFI mount point
 
 ```bash
 mkdir /mnt/boot/efi
 ```
 
-### Mounting the EFI partition
+## Mounting the EFI partition
 
 ```bash
 mount /dev/sda1 /mnt/boot/efi
 ```
 
-# Update mirrorlist
+# Pacman 
+
+## Update mirrorlist
 
 ```bash
 reflector -c <country> --sort delay --save /etc/pacman.d/mirrorlist -p https
 ```
 
-# Init pacman
+## Initialise keyring
 
 ```bash
 pacman-key --init && pacman-key --populate archlinux
 ```
 
-# GPU drivers
+# GPU
 
-## NVIDIA GPU
+## Nvidia code name
 
 [NVIDIA - ArchWiki](https://wiki.archlinux.org/title/NVIDIA) 
 
@@ -245,27 +247,103 @@ pacman-key --init && pacman-key --populate archlinux
 | GeForce 400/500/600 series cards [NVCx and NVDx] | any                         | nvidia-390xx-dkms | nvidia-390xx-utils | lib32-nvidia-390xx-utils |
 | Tesla (NV50/G80-90-GT2XX)                        | any                         | nvidia-340xx-dkms | nvidia-340xx-utils | lib32-nvidia-340xx-utils |
 
-## AMD GPU
+## Amdgpu code name
 
 [AMDGPU - ArchWiki](https://wiki.archlinux.org/title/AMDGPU)
 
-| Family           | Chipset name                                | Microarchitecture[[4]](https://wiki.gentoo.org/wiki/AMDGPU#cite_note-4) | ISA[[5]](https://wiki.gentoo.org/wiki/AMDGPU#cite_note-5) | Product name                                                                                                              |
-| ---------------- | ------------------------------------------- | ----------------------------------------------------------------------- | --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
-| Southern Islands | CAPE VERDE, PITCAIRN, TAHITI, OLAND, HAINAN | GCN1.0+                                                                 | DCE 6.x                                                   | HD7750-HD7970, R9 270, R9 280, R9 370X, R7 240, R7 250                                                                    |
-| Sea Islands      | BONAIRE, KABINI, KAVERI, HAWAII, MULLINS    | GCN2.x                                                                  | DCE 8.x                                                   | HD7790, R7 260, R9 290, R7 360, R9 390                                                                                    |
-| Volcanic Islands | CARRIZO, FIJI, STONEY, TONGA, TOPAZ, WANI   | GCN3.x                                                                  | DCE 10/11.x                                               | R9 285, R9 380, R9 380X, R9 Fury, R9 Nano, R9 Fury X, Pro Duo                                                             |
-| Arctic Islands   | POLARIS10/11/12, VEGAM                      | GCN4.x                                                                  | DCE 11.2                                                  | RX 460, RX 470, RX 480, RX 540, RX 550, RX 560, RX 570, RX 580, RX 590, Pro WX 3200                                       |
-| Vega             | VEGA10/11/12/20                             | GCN5.x                                                                  | DCE 12.x                                                  | RX Vega 56, RX Vega 64, Radeon Vega II, Radeon VII                                                                        |
-| Vega             | RAVEN                                       | GCN5.x                                                                  | DCN 1.0                                                   | Raven Ridge APU series                                                                                                    |
-| Vega             | RENOIR                                      | GCN5.x                                                                  | DCN 2.1                                                   | Renoir, Lucienne, and Cezanne APU series                                                                                  |
-| Navi             | NAVI10/14                                   | RDNA                                                                    | DCN 2.0                                                   | RX 5500, RX 5500 XT, RX 5600, RX 5600 XT, RX 5700, RX 5700 XT                                                             |
-| Navi             | NAVI21/22/23/24                             | RDNA2                                                                   | DCN 3.0                                                   | RX 6500 XT, RX 6600, RX 6600 XT, RX 6650 XT, RX 6700, RX 6700 XT, RX 6750 XT, RX 6800, RX 6800 XT, RX 6900 XT, RX 6950 XT |
+| Family           | Chipset name                                | Microarchitecture[[4]](https://wiki.gentoo.org/wiki/AMDGPU#cite_note-4) | ISA[[5]](https://wiki.gentoo.org/wiki/AMDGPU#cite_note-5) | Product name                                                 |
+| ---------------- | ------------------------------------------- | ------------------------------------------------------------ | --------------------------------------------------------- | ------------------------------------------------------------ |
+| Southern Islands | CAPE VERDE, PITCAIRN, TAHITI, OLAND, HAINAN | GCN1.0+                                                      | DCE 6.x                                                   | HD7750-HD7970, R9 270, R9 280, R9 370X, R7 240, R7 250       |
+| Sea Islands      | BONAIRE, KABINI, KAVERI, HAWAII, MULLINS    | GCN2.x                                                       | DCE 8.x                                                   | HD7790, R7 260, R9 290, R7 360, R9 390                       |
+| Volcanic Islands | CARRIZO, FIJI, STONEY, TONGA, TOPAZ, WANI   | GCN3.x                                                       | DCE 10/11.x                                               | R9 285, R9 380, R9 380X, R9 Fury, R9 Nano, R9 Fury X, Pro Duo |
+| Arctic Islands   | POLARIS10/11/12, VEGAM                      | GCN4.x                                                       | DCE 11.2                                                  | RX 460, RX 470, RX 480, RX 540, RX 550, RX 560, RX 570, RX 580, RX 590, Pro WX 3200 |
+| Vega             | VEGA10/11/12/20                             | GCN5.x                                                       | DCE 12.x                                                  | RX Vega 56, RX Vega 64, Radeon Vega II, Radeon VII           |
+| Vega             | RAVEN                                       | GCN5.x                                                       | DCN 1.0                                                   | Raven Ridge APU series                                       |
+| Vega             | RENOIR                                      | GCN5.x                                                       | DCN 2.1                                                   | Renoir, Lucienne, and Cezanne APU series                     |
+| Navi             | NAVI10/14                                   | RDNA                                                         | DCN 2.0                                                   | RX 5500, RX 5500 XT, RX 5600, RX 5600 XT, RX 5700, RX 5700 XT |
+| Navi             | NAVI21/22/23/24                             | RDNA2                                                        | DCN 3.0                                                   | RX 6500 XT, RX 6600, RX 6600 XT, RX 6650 XT, RX 6700, RX 6700 XT, RX 6750 XT, RX 6800, RX 6800 XT, RX 6900 XT, RX 6950 XT |
+
+## Drivers installation
+
+#### Nvidia
+
+##### Maxwell (NV110) series and newer
+
+###### Base driver
 
 ```bash
-os --help
+pacstrap /mnt nvidia-dkms linux linux-firmware
 ```
 
-# Key bindings
+###### OpenGL
+
+```bash
+pacstrap /mnt nvidia-utils linux linux-firmware
+```
+
+#### Kepler (NVE0) series
+
+##### Base driver
+
+```bash
+pacstrap /mnt nvidia-470xx-dkms linux linux-firmware
+```
+
+##### OpenGL
+
+```bash
+pacstrap /mnt nvidia-470xx-utils linux linux-firmware
+```
+
+##### GeForce 400/500/600 series cards [NVCx and NVDx]
+
+###### Base driver
+
+```bash
+pacstrap /mnt nvidia-390xx-dkms
+```
+
+###### OpenGL
+
+```bash
+pacstrap /mnt nvidia-390xx-utils
+```
+
+##### Tesla (NV50/G80-90-GT2XX)
+
+###### Base driver
+
+```bash
+pacstrap /mnt nvidia-340xx-dkms linux linux-firmware
+```
+
+###### OpenGL
+
+```bash
+pacstrap /mnt nvidia-340xx-utils linux linux-firmware
+```
+
+#### AMD
+
+##### Base driver
+
+```bash
+pacstrap /mnt xf86-video-amdgpu linux linux-firmware mesa
+```
+
+##### Vulkan support
+
+```bash
+pacstrap /mnt linux linux-firmware mesa vulkan-radeon
+```
+
+##### Accelerated video decoding support
+
+```bash
+pacstrap /mnt mesa-vdpau libva-mesa-driver lib32-libva-mesa-driver lib32-mesa-vdpau 
+```
+
+# Installer key bindings
 
 This file lists all of the key bindings currently registered by prompts.
 
@@ -751,9 +829,9 @@ arch -w
 arch --wiki
 ```
 
-## Distrobox management
+# Distrobox management
 
-### Containers
+## Containers
 
 Distrobox guests tested successfully with the following container images:
 

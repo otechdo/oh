@@ -147,10 +147,7 @@ fn stop_all() -> ExitCode {
 fn pause(name: &str) -> ExitCode {
     exec!(
         "sh",
-        &[
-            "-c",
-            format!("distrobox stop {name} --root --yes").as_str()
-        ]
+        &["-c", format!("distrobox stop {name} --root --yes").as_str()]
     );
     exit(0);
 }

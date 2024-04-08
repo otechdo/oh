@@ -866,6 +866,34 @@ impl Arch {
     ///
     fn install_profile(&mut self) -> &mut Self {
         println!("{}", format!("using {}", self.profile).as_str());
+        if !std::path::Path::new(
+            format!(
+                "{}/.config/arch",
+                std::env::var("HOME").expect("Failed to find HOME")
+            )
+            .as_str(),
+        )
+        .exists()
+        {
+            assert!(std::fs::create_dir(qq
+                format!(
+                    "{}/.config/arch",
+                    std::env::var("HOME").expect("Failed to find HOME")
+                )
+                .as_str()
+            )
+            .is_ok());
+        }
+        let mut p = std::fs::File::create(
+            format!(
+                "{}/.config/arch/desktop",
+                std::env::var("HOME").expect("Failed to find HOME")
+            )
+            .as_str(),
+        )
+        .expect("failed to save profile");
+        assert!(p.write_all(self.profile.as_bytes()).is_ok());
+        assert!(p.sync_all().is_ok());
         assert!(Command::new("wget")
             .arg("-q")
             .arg(
@@ -978,6 +1006,7 @@ arch -c --cache Refresh arch packages cache\n
 arch -n --news Show aur news\n
 arch -f --forum Show arch forum\n
 arch -m --man --woman  Show arch manpages\n
+arch --new-config Clean arch and reconfigure\n
 arch -w --wiki Show arch wiki\n"
     );
     1
@@ -1143,5 +1172,7 @@ fn main() -> ExitCode {
         println!("arch version : {VERSION}");
         exit(0);
     }
+
+    if args.len() == 2 && args.get(1).unwrap().eq("--setup-new-config") {}
     exit(help());
 }
