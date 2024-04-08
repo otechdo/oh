@@ -982,7 +982,7 @@ impl Arch {
         ));
         assert!(exec("sh", &["-c", "pacman -Sg >> pkgs"]));
         assert!(exec("sh", &["-c", "yay -Sl aur | cut -d ' ' -f 2 >> pkgs"]));
-        assert!(exec("sh", &["-c", "install -m 644 pkgs /tmp/pkgs"]));
+        assert!(exec("sh", &["-c", "sudo install -m 644 pkgs /tmp/pkgs"]));
         assert!(exec("sh", &["-c", "rm pkgs"]));
         self
     }
