@@ -1072,16 +1072,16 @@ fn install() -> ExitCode {
 }
 
 fn reconfigure() -> ExitCode {
-    let profile = std::fs::read_to_string(
-        format!(
-            "{}/.config/arch/profile",
-            std::env::var("HOME").expect("Failed to find HOME")
-        )).expect("");
+    let profile = std::fs::read_to_string(format!(
+        "{}/.config/arch/profile",
+        std::env::var("HOME").expect("Failed to find HOME")
+    ))
+    .expect("");
     assert!(Command::new("wget")
         .arg("-q")
         .arg(
-            format!(
-                "https://raw.githubusercontent.com/otechdo/arch/main/arch/profiles/{profile}").as_str()
+            format!("https://raw.githubusercontent.com/otechdo/arch/main/arch/profiles/{profile}")
+                .as_str()
         )
         .current_dir(".")
         .spawn()

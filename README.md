@@ -633,7 +633,7 @@ arch -i
 arch --setup
 ```
 
-### Setup a new config
+### Setup aOS Install ISO:	 new config
 
 ```bash
 arch --setup-new-config
