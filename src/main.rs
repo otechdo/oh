@@ -10,7 +10,6 @@ use std::io::Write;
 use std::io::{read_to_string, BufRead};
 use std::path::Path;
 use std::process::{exit, Command, ExitCode};
-
 const VERSION: &str = "0.4.0";
 
 #[must_use]
@@ -875,7 +874,7 @@ impl Arch {
         )
         .exists()
         {
-            assert!(std::fs::create_dir(qq
+            assert!(std::fs::create_dir(
                 format!(
                     "{}/.config/arch",
                     std::env::var("HOME").expect("Failed to find HOME")
@@ -1071,6 +1070,38 @@ fn install() -> ExitCode {
         .configure_users()
         .confirm()
 }
+
+fn reconfigure() -> ExitCode {
+    let profile = std::fs::read_to_string(
+        format!(
+            "{}/.config/arch/profile",
+            std::env::var("HOME").expect("Failed to find HOME")
+        )).expect("");
+    assert!(Command::new("wget")
+        .arg("-q")
+        .arg(
+            format!(
+                "https://raw.githubusercontent.com/otechdo/arch/main/arch/profiles/{profile}").as_str()
+        )
+        .current_dir(".")
+        .spawn()
+        .unwrap()
+        .wait()
+        .unwrap()
+        .success());
+    assert!(
+        exec(
+            "sh",
+            &[
+                "-c",
+                format!("xargs -d '\n' -a {profile} yay --noconfirm -Rns").as_str()
+            ]
+        ),
+        "{}",
+        format!("failed to remove {profile}").as_str()
+    );
+    install()
+}
 fn main() -> ExitCode {
     let args: Vec<String> = args().collect();
     if args.len() == 1 {
@@ -1173,6 +1204,8 @@ fn main() -> ExitCode {
         exit(0);
     }
 
-    if args.len() == 2 && args.get(1).unwrap().eq("--setup-new-config") {}
+    if args.len() == 2 && args.get(1).unwrap().eq("--setup-new-config") {
+        return reconfigure();
+    }
     exit(help());
 }
