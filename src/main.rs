@@ -971,7 +971,7 @@ impl Arch {
     ///
     /// # Panics
     ///
-    pub fn refresh_cache(&mut self) -> ExitCode {
+    pub fn refresh_cache(&mut self) -> &mut Self {
         assert!(exec(
             "sh",
             &["-c", "pacman -Sl core | cut -d ' ' -f 2 > pkgs"]
@@ -988,7 +988,7 @@ impl Arch {
         assert!(exec("sh", &["-c", "yay -Sl aur | cut -d ' ' -f 2 >> pkgs"]));
         assert!(exec("sh", &["-c", "install -m 644 pkgs /tmp/pkgs"]));
         assert!(exec("sh", &["-c", "rm pkgs"]));
-        self.quit("Packages cache updated successfully")
+        self
     }
 }
 
@@ -1064,6 +1064,7 @@ fn remove_packages(pkgs: &[String]) -> i32 {
 fn install() -> ExitCode {
     Arch::new()
         .check_network()
+        .refresh_cache()
         .systemd()
         .news()
         .forums()
@@ -1193,7 +1194,7 @@ fn main() -> ExitCode {
         return Arch::new().news().quit("News exit successfully");
     }
     if args.len() == 2 && args.get(1).unwrap().eq("-c") || args.get(1).unwrap().eq("--cache") {
-        return Arch::new().refresh_cache();
+        return Arch::new().refresh_cache().quit("Cache udate successfully");
     }
     if args.len() == 2 && args.get(1).unwrap().eq("-d") || args.get(1).unwrap().eq("--deps") {
         return Arch::new()
