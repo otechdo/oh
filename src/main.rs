@@ -269,12 +269,9 @@ impl Arch {
                 "sudo systemctl enable NetworkManager-wait-online.service"
             ]
         ));
-         assert!(exec(
+        assert!(exec(
             "sh",
-            &[
-                "-c",
-                "rm arch.service arch.timer locale.conf"
-            ]
+            &["-c", "rm arch.service arch.timer locale.conf"]
         ));
         0
     }
@@ -571,7 +568,6 @@ impl Arch {
                 .configure_locale()
                 .configure_keymap()
                 .configure_hostname()
-                .systemd()
                 .quit_installer();
         }
         install()
@@ -1109,6 +1105,34 @@ fn reconfigure() -> ExitCode {
         "{}",
         format!("failed to remove {profile}").as_str()
     );
+    if profile.eq("@gnome") {
+        assert!(
+            exec("sh", &["-c", "sudo systemctl disable --now gdm"]),
+            "Failed to disable gdm"
+        );
+    } else if profile.eq("@kde") {
+        assert!(
+            exec("sh", &["-c", "sudo systemctl disable --now sddm"]),
+            "Failed to disable sddm"
+        );
+    } else if profile.eq("@deepin") || profile.eq("@xmonad") || profile.eq("@i3") {
+        assert!(
+            exec("sh", &["-c", "sudo systemctl disable --now lightdm"]),
+            "Failed to disable lightdm"
+        );
+        if profile.eq("@xmonad") {
+            assert!(
+                exec("sh", &["-c", "rm -rf ~/.xmonad "]),
+                "Failed to remove xmonad config"
+            );
+        }
+        if profile.eq("@i3") {
+            assert!(
+                exec("sh", &["-c", "rm -rf ~/.config/i3 "]),
+                "Failed to remove i3 config"
+            );
+        }
+    }
     install()
 }
 fn main() -> ExitCode {
