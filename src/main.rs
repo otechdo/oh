@@ -13,6 +13,7 @@ use std::process::{exit, Command, ExitCode};
 
 const VERSION: &str = "0.4.0";
 
+#[must_use]
 fn exec(cmd: &str, args: &[&str]) -> bool {
     Command::new(cmd)
         .args(args)
@@ -273,7 +274,7 @@ impl Arch {
     }
 
     ///
-    /// if failed to get locale
+    /// # Panics
     ///
     pub fn choose_language(&mut self) -> &mut Self {
         let mut locales: Vec<String> = Vec::new();
@@ -291,14 +292,14 @@ impl Arch {
         if locale.is_empty() {
             self.choose_language()
         } else {
-            self.lang = locale.to_string();
+            self.lang = locale;
 
             self
         }
     }
 
     ///
-    /// if failed to get locale
+    /// # Panics
     ///
     pub fn choose_locales(&mut self) -> &mut Self {
         let mut locales: Vec<String> = Vec::new();
@@ -438,11 +439,8 @@ impl Arch {
                 "sh",
                 &[
                     "-c",
-                    format!(
-                        "sudo sed -i 's/#{} UTF-8/{} UTF-8/g' /etc/locale.gen",
-                        locale, locale
-                    )
-                    .as_str()
+                    format!("sudo sed -i 's/#{locale} UTF-8/{locale} UTF-8/g' /etc/locale.gen")
+                        .as_str()
                 ]
             ));
         }
@@ -516,21 +514,21 @@ impl Arch {
     ///
     pub fn create_users(&mut self) -> &mut Self {
         for user in &self.users {
+            assert!(
+                exec(
+                    "sh",
+                    &[
+                        "-c",
+                        format!(
+                            "sudo useradd -m -U -p {} {} -s {}",
+                            user.password, user.name, user.shell
+                        )
+                        .as_str()
+                    ]
+                ),
+                "Failed to create the new user"
+            );
             if user.sudoers {
-                assert!(
-                    exec(
-                        "sh",
-                        &[
-                            "-c",
-                            format!(
-                                "sudo useradd -m -U -p {} {} -s {}",
-                                user.password, user.name, user.shell
-                            )
-                            .as_str()
-                        ]
-                    ),
-                    "Failed to create the new user"
-                );
                 assert!(
                     exec(
                         "sh",
@@ -539,21 +537,6 @@ impl Arch {
                             format!(
                                 "sudo echo '{} ALL=(ALL) ALL' > /etc/sudoers.d/{} ",
                                 user.name, user.name
-                            )
-                            .as_str()
-                        ]
-                    ),
-                    "Failed to create the new user"
-                );
-            } else {
-                assert!(
-                    exec(
-                        "sh",
-                        &[
-                            "-c",
-                            format!(
-                                "sudo useradd -m -U -p {} {} -s {}",
-                                user.password, user.name, user.shell
                             )
                             .as_str()
                         ]
@@ -1061,7 +1044,6 @@ fn install() -> ExitCode {
 }
 fn main() -> ExitCode {
     let args: Vec<String> = args().collect();
-
     if args.len() == 1 {
         return Arch::new().upgrade();
     }
@@ -1071,19 +1053,16 @@ fn main() -> ExitCode {
     if args.len() == 2 && args.get(1).unwrap().eq("-i") || args.get(1).unwrap().eq("--setup") {
         return install();
     }
-
     if args.len() == 2 && args.get(1).unwrap().eq("-h") || args.get(1).unwrap().eq("--help") {
         let _ = help();
         exit(0);
     }
-
     if args.len() == 2 && args.get(1).unwrap().eq("-S") || args.get(1).unwrap().eq("--install") {
         return Arch::new()
             .choose_packages()
             .install_package()
             .quit("Packages installed successfully");
     }
-
     if args.len() == 3 && args.get(1).unwrap().eq("-s") || args.get(1).unwrap().eq("--search") {
         assert!(exec(
             "sh",
@@ -1094,7 +1073,6 @@ fn main() -> ExitCode {
         ));
         exit(0);
     }
-
     if args.len() >= 2 && args.get(1).expect("failed to get argument").eq("-R") {
         exit(remove_packages(&args));
     }
@@ -1110,11 +1088,9 @@ fn main() -> ExitCode {
             .configure_mirrors()
             .quit("Mirrors has been updated successfully");
     }
-
     if args.len() == 2 && args.get(1).unwrap().eq("-C") || args.get(1).unwrap().eq("--check") {
         return Arch::new().check_update();
     }
-
     if args.len() == 2 && args.get(1).unwrap().eq("-u") || args.get(1).unwrap().eq("--update") {
         return Arch::new().upgrade();
     }
@@ -1139,11 +1115,9 @@ fn main() -> ExitCode {
     {
         return Arch::new().man().quit("Man exit success");
     }
-
     if args.len() == 2 && args.get(1).unwrap().eq("-f") || args.get(1).unwrap().eq("--forum") {
         return Arch::new().forums().quit("Forum exit successfully");
     }
-
     if args.len() == 2 && args.get(1).unwrap().eq("-a") || args.get(1).unwrap().eq("--aur") {
         return Arch::new().aur().quit("Aur exit successfully");
     }
@@ -1165,7 +1139,6 @@ fn main() -> ExitCode {
     if args.len() == 2 && args.get(1).unwrap().eq("--cancel") || args.get(1).unwrap().eq("-x") {
         return Arch::new().cancel_reboot();
     }
-
     if args.len() == 2 && args.get(1).unwrap().eq("--version") || args.get(1).unwrap().eq("-v") {
         println!("arch version : {VERSION}");
         exit(0);

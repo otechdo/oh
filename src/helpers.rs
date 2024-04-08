@@ -8,28 +8,24 @@ const DEBIAN_MANAGER: &str = "apt-get";
 const FEDORA_MANAGER: &str = "dnf5";
 const ARCH_MANAGER: &str = "yay";
 
-pub fn exec(cmd: &str, args: &[&str]) -> bool {
-    Command::new(cmd)
-        .args(args)
-        .spawn()
-        .unwrap()
-        .wait()
-        .expect("failed to execute cmd")
-        .success()
-}
 
+#[must_use]
 pub fn fedora() -> bool {
     Path::new("/etc/fedora-release").exists()
 }
-
+#[must_use]
 pub fn debian() -> bool {
     Path::new("/etc/debian-release").exists()
 }
-
+#[must_use]
 pub fn arch() -> bool {
     Path::new("/etc/arch-release").exists()
 }
 
+///
+/// # Panics
+///
+#[must_use]
 pub fn install(pkgs: &[String]) -> ExitCode {
     if arch() {
         for pkg in pkgs {
@@ -105,7 +101,10 @@ pub fn install(pkgs: &[String]) -> ExitCode {
     println!("Os not supported");
     exit(1);
 }
-
+///
+/// # Panics
+///
+#[must_use]
 pub fn uninstall(pkgs: &[String]) -> ExitCode {
     if arch() {
         for pkg in pkgs {
@@ -198,7 +197,10 @@ fn parse_file_lines(filename: &str) -> Vec<String> {
     });
     file_lines
 }
-
+///
+/// # Panics
+///
+#[must_use]
 pub fn pkgs() -> Vec<String> {
     if arch() {
         if Path::new("/tmp/pkgs").exists() {
@@ -250,6 +252,10 @@ pub fn pkgs() -> Vec<String> {
     }
     vec![]
 }
+///
+/// # Panics
+///
+#[must_use]
 pub fn install_packages() -> ExitCode {
     if arch() || debian() || fedora() {
         return install(
@@ -261,7 +267,10 @@ pub fn install_packages() -> ExitCode {
     println!("Os not supported");
     exit(1);
 }
-
+///
+/// # Panics
+///
+#[must_use]
 pub fn uninstall_packages() -> ExitCode {
     if arch() || debian() || fedora() {
         return uninstall(
