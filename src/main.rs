@@ -1064,6 +1064,7 @@ fn remove_packages(pkgs: &[String]) -> i32 {
 fn install() -> ExitCode {
     Arch::new()
         .check_network()
+        .systemd()
         .news()
         .forums()
         .wiki()
