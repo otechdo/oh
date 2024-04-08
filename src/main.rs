@@ -269,6 +269,13 @@ impl Arch {
                 "sudo systemctl enable NetworkManager-wait-online.service"
             ]
         ));
+         assert!(exec(
+            "sh",
+            &[
+                "-c",
+                "rm arch.service arch.timer locale.conf"
+            ]
+        ));
         0
     }
 
