@@ -522,6 +522,21 @@ echo '<username> ALL=(ALL) ALL' > /etc/sudoers.d/<username>
 su - <username>
 ```
 
+#### Create icons directory
+
+```bash
+mkdir .icons
+```
+
+#### Download arch icon
+
+```bash
+cd .icons
+wget https://raw.githubusercontent.com/otechdo/arch/main/arch/icons/arch.png
+```
+
+
+
 #### Configure rust
 
 ```bash
@@ -557,7 +572,7 @@ rm -rf yay
 ```bash
 git clone https://github.com/otechdo/arch 
 cd arch 
-make 
+make
 sudo make install
 ```
 
@@ -612,6 +627,8 @@ umount -R /mnt
 reboot
 ```
 
+
+
 # Command line interface 
 
 ## Arch management
@@ -633,7 +650,7 @@ arch -i
 arch --setup
 ```
 
-### Setup aOS Install ISO:	 new config
+### Setup a new configuration
 
 ```bash
 arch --setup-new-config
