@@ -238,6 +238,7 @@ fn main() -> ExitCode {
     }
     if args.len() == 2 && args.get(1).unwrap().eq("--list") {
         exec!("sh", &["-c", "distrobox list --root"]);
+        exit(0);
     }
     if args.len() == 2 && args.get(1).unwrap().eq("--stop") {
         return stop_all();

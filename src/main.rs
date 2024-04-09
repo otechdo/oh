@@ -1,6 +1,7 @@
 #![allow(clippy::multiple_crate_versions)]
 
 use inquire::{prompt_confirmation, Confirm, MultiSelect, Password, Select, Text};
+use notifme::Notification;
 use regex::Regex;
 use std::collections::HashMap;
 use std::env::args;
@@ -10,7 +11,8 @@ use std::io::Write;
 use std::io::{read_to_string, BufRead};
 use std::path::Path;
 use std::process::{exit, Command, ExitCode};
-const VERSION: &str = "0.4.0";
+
+const VERSION: &str = "1.0.0";
 
 #[must_use]
 fn exec(cmd: &str, args: &[&str]) -> bool {
@@ -830,9 +832,34 @@ impl Arch {
     /// # Panics
     ///
     pub fn check_update(&mut self) -> ExitCode {
-        assert!(exec("sh", &["-c", "checkupdates"]), "System is up to date");
-        self.quit("Run -> arch --update in order to update your system")
+        let o = File::create("/tmp/updates").expect("failed to create update");
+        let output = Command::new("checkupdates")
+            .stdout(o)
+            .current_dir(".")
+            .output()
+            .unwrap();
+        if output.status.success() {
+            assert!(Notification::new()
+                .app("arch")
+                .summary("Update has been founded")
+                .body(
+                    std::fs::read_to_string("/tmp/updates")
+                        .expect("failed to parse update file")
+                        .as_str()
+                )
+                .icon("arch")
+                .send());
+            return self.quit("Run -> arch --update in order to update your system");
+        }
+        assert!(Notification::new()
+            .app("arch")
+            .summary("Update")
+            .body("System is up to date")
+            .icon("arch")
+            .send());
+        self.quit("Up to date")
     }
+
     ///
     /// # Panics
     ///
@@ -970,20 +997,21 @@ impl Arch {
     pub fn refresh_cache(&mut self) -> &mut Self {
         assert!(exec(
             "sh",
-            &["-c", "pacman -Sl core | cut -d ' ' -f 2 > pkgs"]
+            &["-c", "pacman -Sl core | cut -d ' ' -f 2 > /tmp/pkgs"]
         ));
         assert!(exec(
             "sh",
-            &["-c", "pacman -Sl extra | cut -d ' ' -f 2 >> pkgs"]
+            &["-c", "pacman -Sl extra | cut -d ' ' -f 2 >> /tmp/pkgs"]
         ));
         assert!(exec(
             "sh",
-            &["-c", "pacman -Sl multilib | cut -d ' ' -f 2 >> pkgs"]
+            &["-c", "pacman -Sl multilib | cut -d ' ' -f 2 >> /tmp/pkgs"]
         ));
-        assert!(exec("sh", &["-c", "pacman -Sg >> pkgs"]));
-        assert!(exec("sh", &["-c", "yay -Sl aur | cut -d ' ' -f 2 >> pkgs"]));
-        assert!(exec("sh", &["-c", "sudo install -m 644 pkgs /tmp/pkgs"]));
-        assert!(exec("sh", &["-c", "rm pkgs"]));
+        assert!(exec("sh", &["-c", "pacman -Sg >> /tmp/pkgs"]));
+        assert!(exec(
+            "sh",
+            &["-c", "yay -Sl aur | cut -d ' ' -f 2 >> /tmp/pkgs"]
+        ));
         self
     }
 }
@@ -1060,7 +1088,6 @@ fn remove_packages(pkgs: &[String]) -> i32 {
 fn install() -> ExitCode {
     Arch::new()
         .check_network()
-        .refresh_cache()
         .systemd()
         .news()
         .forums()

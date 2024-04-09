@@ -495,9 +495,9 @@ arch-chroot /mnt && cd ~
 #### Create your account
 
 ```bash
-useradd -m -U -c 'YOUR REAL NAME' -s <shell> <username>
+useradd -m -g wheel -U -c 'YOUR REAL NAME' -s <shell> <username>
 ```
-
+us
 #### Generate root password
 
 ```bash

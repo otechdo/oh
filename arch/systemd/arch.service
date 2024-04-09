@@ -5,7 +5,7 @@ ConditionPathExists=/usr/bin/arch
  
 [Service]
 Type=oneshot
-ExecStart=/usr/bin/arch --refresh-cache
+ExecStart=/usr/bin/arch --cache
 Restart=true
  
 [Install]

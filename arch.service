@@ -1,11 +1,11 @@
 [Unit]
-Description=Check update for arch
+Description=Regenerate the packages lists for arch
 After=network.target
 ConditionPathExists=/usr/bin/arch
  
 [Service]
 Type=oneshot
-ExecStart=/usr/bin/arch --check-updates && notify-send "update available" || notify-send 'up to date'
+ExecStart=/usr/bin/arch --refresh-cache
 Restart=true
  
 [Install]

@@ -1,0 +1,7 @@
+[Unit]
+Description=Regenerate the packages cache for arch
+[Timer]
+OnBootSec=15
+OnUnitActiveSec=1h
+[Install]
+WantedBy=timers.target
