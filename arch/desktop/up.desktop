@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=Up
+GenericName=Up
+Comment=Upgrade the system and boxes
+Path=/tmp
+Exec=/usr/bin/up
+Icon=Up
+StartupWMClass=Up
+Terminal=true

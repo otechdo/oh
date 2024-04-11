@@ -343,6 +343,20 @@ pacstrap /mnt linux linux-firmware mesa vulkan-radeon
 pacstrap /mnt mesa-vdpau libva-mesa-driver lib32-libva-mesa-driver lib32-mesa-vdpau 
 ```
 
+## Minimum system
+
+```bash
+pacstrap /mnt base base-devel pacman-contrib linux linux-firmware vim efibootmgr sudo grub networkmanager reflector amd-ucode|intel-ucode rustup
+```
+
+##  Arch dependencies
+
+```bash
+pacstrap /mnt
+```
+
+
+
 # Installer key bindings
 
 This file lists all of the key bindings currently registered by prompts.
@@ -460,18 +474,6 @@ These key bindings may be used in [`Editor`] prompts.
 
 # Installation
 
-## Minimum system
-
-```bash
-pacstrap /mnt base base-devel linux linux-firmware vim efibootmgr sudo grub networkmanager reflector amd-ucode|intel-ucode
-```
-
-##  Arch dependencies
-
-```bash
-pacstrap /mnt distrobox git vim w3m fish|zsh podman docker archiso
-```
-
 ## GPU driver
 
 ```bash
@@ -495,9 +497,9 @@ arch-chroot /mnt && cd ~
 #### Create your account
 
 ```bash
-useradd -m -g wheel -U -c 'YOUR REAL NAME' -s <shell> <username>
+useradd -m -g wheel -c 'YOUR REAL NAME' -s <shell> <username>
 ```
-us
+
 #### Generate root password
 
 ```bash
@@ -535,8 +537,6 @@ cd .icons
 wget https://raw.githubusercontent.com/otechdo/arch/main/arch/icons/arch.png
 ```
 
-
-
 #### Configure rust
 
 ```bash
@@ -555,14 +555,14 @@ sudo vim /etc/pacman.conf
 sudo pacman -Sy
 ```
 
-#### Installation of yay
+#### Installation of paru
 
 ```bash
-git clone https://aur.archlinux.org/yay 
-cd yay
+git clone https://aur.archlinux.org/paru 
+cd paru
 makepkg -si 
 cd ..
-rm -rf yay
+rm -rf paru
 ```
 
 ### Installation of arch
@@ -848,7 +848,7 @@ arch --wiki
 
 # Distrobox management
 
-## Containers
+## Distrobox containers 
 
 Distrobox guests tested successfully with the following container images:
 

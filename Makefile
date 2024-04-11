@@ -4,10 +4,20 @@ arch: update
 	@cargo build --release
 	@echo -e "\033[1;32m    Finished\033[1;39m the arch executable has been builded successfully\033[39m"
 install: completions
+	@install -m 644  arch/icons/Up.svg  /usr/share/icons/Up.svg
+	@echo -e "\033[1;32m    Finished\033[1;39m the arch upgrade icon is now installed\033[39m"
+	@install -m 755  arch/extras/up  /usr/bin/up
+	@echo -e "\033[1;32m    Finished\033[1;39m the arch upgrade icon is now installed\033[39m"
+	@install -m 644  arch/desktop/up.desktop /usr/share/applications/up.desktop
+	@echo -e "\033[1;32m    Finished\033[1;39m the arch upgrade app is now installed\033[39m"
 	@install -m 644  arch/systemd/arch.service /usr/lib/systemd/system/arch.service
-	@echo -e "\033[1;32m    Finished\033[1;39m the arch service is installed successfully\033[39m"
+	@echo -e "\033[1;32m    Finished\033[1;39m the arch service is now installed\033[39m"
 	@install -m 644  arch/systemd/arch.timer /usr/lib/systemd/system/arch.timer
-	@echo -e "\033[1;32m    Finished\033[1;39m the arch timer is installed successfully\033[39m"
+	@echo -e "\033[1;32m    Finished\033[1;39m the arch timer is now installed\033[39m"
+	@install -m 644  arch/systemd/arch-update.service /usr/lib/systemd/system/arch-update.service
+	@echo -e "\033[1;32m    Finished\033[1;39m the arch update service is now installed\033[39m"
+	@install -m 644  arch/systemd/arch-update.timer /usr/lib/systemd/system/arch-update.timer
+	@echo -e "\033[1;32m    Finished\033[1;39m the arch update timer is now installed\033[39m"
 	@target/release/arch --cache > /dev/null || @echo -e "\033[1;32m    Finished\033[1;39m the arch cache is not configured successfully\033[39m"
 	@echo -e "\033[1;32m    Finished\033[1;39m the arch packages cache has been successfully created\033[39m"
 	@install -m 755 target/release/arch /usr/bin/arch

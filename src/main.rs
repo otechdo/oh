@@ -1,7 +1,6 @@
 #![allow(clippy::multiple_crate_versions)]
 
 use inquire::{prompt_confirmation, Confirm, MultiSelect, Password, Select, Text};
-use notifme::Notification;
 use regex::Regex;
 use std::collections::HashMap;
 use std::env::args;
@@ -205,7 +204,7 @@ impl Arch {
     fn install_package(&mut self) -> &mut Self {
         for pkg in &self.packages {
             assert!(
-                exec("sh", &["-c", format!("yay -S --noconfirm {pkg}").as_str()]),
+                exec("sh", &["-c", format!("paru -S --noconfirm {pkg}").as_str()]),
                 "{}",
                 format!("Failed to install the {pkg}").as_str()
             );
@@ -221,7 +220,7 @@ impl Arch {
             assert!(
                 exec(
                     "sh",
-                    &["-c", format!("yay -S {pkg} --noconfirm --asdeps").as_str()]
+                    &["-c", format!("paru -S {pkg} --noconfirm --asdeps").as_str()]
                 ),
                 "{}",
                 format!("Failed to install {pkg} dependency").as_str()
@@ -236,7 +235,7 @@ impl Arch {
     fn remove_package(&mut self) -> &mut Self {
         for pkg in &self.packages {
             assert!(
-                exec("sh", &["-c", format!("yay -Rns {pkg}").as_str()]),
+                exec("sh", &["-c", format!("paru -Rns {pkg}").as_str()]),
                 "{}",
                 format!("Failed to remove {pkg} dependency").as_str()
             );
@@ -495,7 +494,7 @@ impl Arch {
             &["-c", "sudo pacman -Sl multilib | cut -d ' ' -f 2 >> pkgs"]
         ));
         assert!(exec("sh", &["-c", "sudo pacman -Sg >> pkgs"]));
-        assert!(exec("sh", &["-c", "yay -Sl aur | cut -d ' ' -f 2 >> pkgs"]));
+        assert!(exec("sh", &["-c", "paru -Sl aur | cut -d ' ' -f 2 >> pkgs"]));
         assert!(exec("sh", &["-c", "sudo install -m 644 pkgs /tmp/pkgs"]));
         assert!(exec("sh", &["-c", "rm pkgs"]));
         self.choose_packages()
@@ -675,7 +674,7 @@ impl Arch {
                 "sudo sed -i 's/#ParallelDownloads = 5/ParallelDownloads = 5/g' /etc/pacman.conf"
             ]
         ),"Failed to set Parallel download to 5");
-                assert!(exec("sh", &["-c", "yay -Syyu"]), "Failed to update mirrors");
+                assert!(exec("sh", &["-c", "paru -Syyu"]), "Failed to update mirrors");
                 self
             }
         }
@@ -793,7 +792,7 @@ impl Arch {
     ///
     pub fn upgrade(&mut self) -> ExitCode {
         assert!(
-            exec("sh", &["-c", "yay -Syu && flatpak update"]),
+            exec("sh", &["-c", "paru -Syu && flatpak update"]),
             "Failed to update the system"
         );
         self.quit("Updated successfully")
@@ -804,7 +803,7 @@ impl Arch {
     ///
     pub fn upgrade_and_reboot(&mut self) -> ExitCode {
         assert!(
-            exec("sh", &["-c", "yay -Syu && flatpak update"]),
+            exec("sh", &["-c", "paru -Syu && flatpak update"]),
             "Failed to update the system"
         );
         assert!(exec(
@@ -833,31 +832,23 @@ impl Arch {
     ///
     pub fn check_update(&mut self) -> ExitCode {
         let o = File::create("/tmp/updates").expect("failed to create update");
-        let output = Command::new("checkupdates")
+        let output = Command::new("paru")
+            .arg("-Q")
+            .arg("-u")
             .stdout(o)
             .current_dir(".")
             .output()
             .unwrap();
         if output.status.success() {
-            assert!(Notification::new()
-                .app("arch")
-                .summary("Update has been founded")
-                .body(
-                    std::fs::read_to_string("/tmp/updates")
-                        .expect("failed to parse update file")
-                        .as_str()
-                )
-                .icon("arch")
-                .send());
-            return self.quit("Run -> arch --update in order to update your system");
+        let up = std::fs::read_to_string("/tmp/updates")
+                        .expect("failed to parse update file");
+            let lines : Vec<String> = up.lines().map(String::from).collect();
+            for line   in lines  {
+                println!("{line}");
+            }
+            return self.quit("Run arch to update");
         }
-        assert!(Notification::new()
-            .app("arch")
-            .summary("Update")
-            .body("System is up to date")
-            .icon("arch")
-            .send());
-        self.quit("Up to date")
+      self.quit("System is up to date")
     }
 
     ///
@@ -944,7 +935,7 @@ impl Arch {
                 &[
                     "-c",
                     format!(
-                        "xargs -d '\n' -a {} yay --noconfirm --needed -Syu",
+                        "xargs -d '\n' -a {} paru --noconfirm --needed -Syu",
                         self.profile
                     )
                     .as_str()
@@ -1010,7 +1001,7 @@ impl Arch {
         assert!(exec("sh", &["-c", "pacman -Sg >> /tmp/pkgs"]));
         assert!(exec(
             "sh",
-            &["-c", "yay -Sl aur | cut -d ' ' -f 2 >> /tmp/pkgs"]
+            &["-c", "paru -Sl aur | cut -d ' ' -f 2 >> /tmp/pkgs"]
         ));
         self
     }
@@ -1051,7 +1042,7 @@ fn install_packages(pkgs: &[String]) -> i32 {
             continue;
         }
         assert!(
-            exec("sh", &["-c", format!("yay -S --noconfirm {pkg}").as_str()]),
+            exec("sh", &["-c", format!("paru -S --noconfirm {pkg}").as_str()]),
             "{}",
             format!("Failed to install the {pkg} package").as_str()
         );
@@ -1074,7 +1065,7 @@ fn remove_packages(pkgs: &[String]) -> i32 {
             continue;
         }
         assert!(
-            exec("sh", &["-c", format!("yay -Rns {pkg}").as_str()]),
+            exec("sh", &["-c", format!("paru -Rns {pkg}").as_str()]),
             "{}",
             format!("Failed to install the {pkg} package").as_str()
         );
@@ -1126,7 +1117,7 @@ fn reconfigure() -> ExitCode {
             "sh",
             &[
                 "-c",
-                format!("xargs -d '\n' -a {profile} yay --noconfirm -Rns").as_str()
+                format!("xargs -d '\n' -a {profile} paru --noconfirm -Rns").as_str()
             ]
         ),
         "{}",
@@ -1192,7 +1183,7 @@ fn main() -> ExitCode {
             "sh",
             &[
                 "-c",
-                format!("yay -Ss {} | more", args.get(2).unwrap()).as_str()
+                format!("paru -Ss {} | more", args.get(2).unwrap()).as_str()
             ]
         ));
         exit(0);
@@ -1273,3 +1264,4 @@ fn main() -> ExitCode {
     }
     exit(help());
 }
+

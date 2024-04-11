@@ -10,7 +10,7 @@ rofi
 dzen2
 dunst
 libnotify
-lightdm-slick-greeter
+lightdm-gtk-greeter
 numlockx
 libnotify
 nerd-fonts
