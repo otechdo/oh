@@ -1192,7 +1192,7 @@ fn reconfigure() -> ExitCode {
             "sh",
             &[
                 "-c",
-                format!("xargs -d '\n' -a {profile} paru --noconfirm -Rns").as_str()
+                format!("xargs -d '\n' -a {profile} paru --noconfirm -Rdd").as_str()
             ]
         ),
         "{}",
