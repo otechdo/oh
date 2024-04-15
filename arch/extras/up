@@ -1,6 +1,6 @@
 #!/bin/bash
 
-UPDATES=$(paru -Qu)
+UPDATES=$(paru -Qu && checkupdates)
 ORPHANS=$(paru -Qdtq)
 CACHES=$()
 PACNEW=$()

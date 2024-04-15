@@ -6,6 +6,6 @@ GenericName=Up
 Comment=Upgrade the system and boxes
 Path=/tmp
 Exec=/usr/bin/up
-Icon=Upe
+Icon=Up
 StartupWMClass=Up
 Terminal=true
