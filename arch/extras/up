@@ -1,6 +1,6 @@
 #!/bin/bash
 
-UPDATES=$(paru -Qu && checkupdates)
+UPDATES=$(paru -Qu)
 ORPHANS=$(paru -Qdtq)
 CACHES=$()
 PACNEW=$()
@@ -28,7 +28,6 @@ then
 	 ;;
  	 *)
 	 	echo "The update has been aborted nothing"
-
 	 	exit 0
  	;;
  	esac
