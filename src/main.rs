@@ -456,11 +456,11 @@ impl Arch {
     /// if failed to remove file
     ///
     pub fn choose_packages(&mut self) -> &mut Self {
-        if Path::new("/tmp/pkgs").exists() {
+        if Path::new("/tmp/packages").exists() {
             self.packages.clear();
             assert!(self.packages.is_empty());
             loop {
-                let p = MultiSelect::new("Select packages : ", parse_file_lines("/tmp/pkgs"))
+                let p = MultiSelect::new("Select packages : ", parse_file_lines("/tmp/packages"))
                     .with_help_message("Packages to install on the system")
                     .prompt()
                     .expect("Failed to get packages");
@@ -480,23 +480,23 @@ impl Arch {
         }
         assert!(exec(
             "sh",
-            &["-c", "sudo pacman -Sl core | cut -d ' ' -f 2 > pkgs"]
+            &["-c", "sudo pacman -Sl core | cut -d ' ' -f 2 > packages"]
         ));
         assert!(exec(
             "sh",
-            &["-c", "sudo pacman -Sl extra | cut -d ' ' -f 2 >> pkgs"]
+            &["-c", "sudo pacman -Sl extra | cut -d ' ' -f 2 >> packages"]
         ));
         assert!(exec(
             "sh",
-            &["-c", "sudo pacman -Sl multilib | cut -d ' ' -f 2 >> pkgs"]
+            &["-c", "sudo pacman -Sl multilib | cut -d ' ' -f 2 >> packages"]
         ));
-        assert!(exec("sh", &["-c", "sudo pacman -Sg >> pkgs"]));
+        assert!(exec("sh", &["-c", "sudo pacman -Sg >> packages"]));
         assert!(exec(
             "sh",
-            &["-c", "paru -Sl aur | cut -d ' ' -f 2 >> pkgs"]
+            &["-c", "paru -Sl aur | cut -d ' ' -f 2 >> packages"]
         ));
-        assert!(exec("sh", &["-c", "sudo install -m 644 pkgs /tmp/pkgs"]));
-        assert!(exec("sh", &["-c", "rm pkgs"]));
+        assert!(exec("sh", &["-c", "sudo install -m 644 packages /tmp/packages"]));
+        assert!(exec("sh", &["-c", "rm packages"]));
         self.choose_packages()
     }
 
@@ -990,26 +990,26 @@ impl Arch {
     pub fn refresh_cache(&mut self) -> &mut Self {
         assert!(exec(
             "sh",
-            &["-c", "pacman -Sl core | cut -d ' ' -f 2 > pkgs"]
+            &["-c", "pacman -Sl core | cut -d ' ' -f 2 > packages"]
         ));
         assert!(exec(
             "sh",
-            &["-c", "pacman -Sl extra | cut -d ' ' -f 2 >> pkgs"]
+            &["-c", "pacman -Sl extra | cut -d ' ' -f 2 >> packages"]
         ));
         assert!(exec(
             "sh",
-            &["-c", "pacman -Sl multilib | cut -d ' ' -f 2 >> pkgs"]
+            &["-c", "pacman -Sl multilib | cut -d ' ' -f 2 >> packages"]
         ));
-        assert!(exec("sh", &["-c", "pacman -Sg >> pkgs"]));
+        assert!(exec("sh", &["-c", "pacman -Sg >> packages"]));
         assert!(exec(
             "sh",
-            &["-c", "paru -Sl aur | cut -d ' ' -f 2 >> pkgs"]
+            &["-c", "paru -Sl aur | cut -d ' ' -f 2 >> packages"]
         ));
         assert!(exec(
             "sh",
-            &["-c", "sudo install -m 644 pkgs /tmp/packages"]
+            &["-c", "sudo install -m 644 packages /tmp/packages"]
         ));
-        assert!(exec("sh", &["-c", "rm pkgs"]));
+        assert!(exec("sh", &["-c", "rm packages"]));
         self
     }
 }
@@ -1043,13 +1043,13 @@ arch -w --wiki Show arch wiki\n"
 ///
 /// # Panics
 ///
-fn install_packages(pkgs: &[String]) -> i32 {
-    for pkg in pkgs {
+fn install_packages(packages: &[String]) -> i32 {
+    for pkg in packages {
         if pkg.contains("arch") || pkg.contains("-S") {
             continue;
         }
         assert!(
-            exec("sh", &["-c", format!("paru -S --noconfirm {pkg}").as_str()]),
+            exec("sh", &["-c", format!("paru -S {pkg}").as_str()]),
             "{}",
             format!("Failed to install the {pkg} package").as_str()
         );
@@ -1066,8 +1066,8 @@ fn install_packages(pkgs: &[String]) -> i32 {
 ///
 /// # Panics
 ///
-fn remove_packages(pkgs: &[String]) -> i32 {
-    for pkg in pkgs {
+fn remove_packages(packages: &[String]) -> i32 {
+    for pkg in packages {
         if pkg.contains("arch") || pkg.contains("-R") {
             continue;
         }
