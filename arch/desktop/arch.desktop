@@ -1,11 +1,11 @@
 [Desktop Entry]
 Type=Application
 Version=1.0
-Name=Up
-GenericName=Up
+Name=Arch
+GenericName=Arch
 Comment=Upgrade the system and boxes
 Path=/tmp
-Exec=/usr/bin/up
-Icon=Upe
-StartupWMClass=Up
+Exec=/usr/bin/arch --setup
+Icon=Arch
+StartupWMClass=Arch
 Terminal=true
