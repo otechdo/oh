@@ -1,4 +1,4 @@
-complete -c arch -f -a "(cat /tmp/pkgs)"
+complete -c arch -f -a "(cat /tmp/packages)"
 complete -c arch -s i -l setup -d 'Setup a new arch'
 complete -c arch -s h -l help -d 'Display the help message'
 complete -c arch -s S -l install -d 'Install all selected packages'
