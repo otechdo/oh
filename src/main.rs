@@ -49,6 +49,7 @@ pub struct Arch {
     packages: Vec<String>,
     root: HashMap<bool, String>,
     users: Vec<Users>,
+    user: String,
     users_table: Vec<Users>,
     timezone: String,
     keymap: String,
@@ -89,6 +90,7 @@ impl Default for Arch {
             keymap: String::new(),
             profile: String::new(),
             hostname: String::new(),
+            user: String::new(),
         }
     }
 }
@@ -488,14 +490,20 @@ impl Arch {
         ));
         assert!(exec(
             "sh",
-            &["-c", "sudo pacman -Sl multilib | cut -d ' ' -f 2 >> packages"]
+            &[
+                "-c",
+                "sudo pacman -Sl multilib | cut -d ' ' -f 2 >> packages"
+            ]
         ));
         assert!(exec("sh", &["-c", "sudo pacman -Sg >> packages"]));
         assert!(exec(
             "sh",
             &["-c", "paru -Sl aur | cut -d ' ' -f 2 >> packages"]
         ));
-        assert!(exec("sh", &["-c", "sudo install -m 644 packages /tmp/packages"]));
+        assert!(exec(
+            "sh",
+            &["-c", "sudo install -m 644 packages /tmp/packages"]
+        ));
         assert!(exec("sh", &["-c", "rm packages"]));
         self.choose_packages()
     }
@@ -987,6 +995,42 @@ impl Arch {
     ///
     /// # Panics
     ///
+    pub fn save_user(&mut self, username: String) -> &mut Self {
+        self.user.clear();
+        self.user.push_str(username.as_str());
+        self
+    }
+
+    pub fn create_new_user(&mut self) -> &mut Self {
+        assert!(exec(
+            "sh",
+            &["-c", "sudo useradd -m -g wheel --password arch -c 'arch' -s /usr/bin/bash arch"]
+        ));
+        assert!(exec(
+            "sh",
+            &["-c", "sudo echo 'arch ALL=(ALL) ALL' > /etc/sudoers.d/arch"]
+        ));
+        self
+    }
+    pub fn checkout_new_user(&mut self) -> &mut Self {
+        assert!(exec("sh", &["-c", "sudo su - arch"]));
+        self
+    }
+
+    pub fn remove_user(&mut self) -> &mut Self {
+        assert!(exec(
+            "sh",
+            &[
+                "-c",
+                format!("sudo userdel --force --remove {}", self.user).as_str()
+            ]
+        ));
+        self
+    }
+
+    ///
+    /// # Panics
+    ///
     pub fn refresh_cache(&mut self) -> &mut Self {
         assert!(exec(
             "sh",
@@ -1103,6 +1147,28 @@ fn install() -> ExitCode {
         .confirm()
 }
 
+fn reinstall() -> ExitCode {
+    Arch::new()
+        .check_network()
+        .systemd()
+        .news()
+        .forums()
+        .wiki()
+        .save_user(std::env::var("USER").expect("Failed to fin username"))
+        .create_new_user()
+        .checkout_new_user()
+        .remove_user()
+        .configure_mirrors()
+        .choose_language()
+        .choose_locales()
+        .choose_keymap()
+        .choose_timezone()
+        .choose_hostname()
+        .choose_profile()
+        .configure_users()
+        .confirm()
+}
+
 fn reconfigure() -> ExitCode {
     let profile = std::fs::read_to_string(format!(
         "{}/.config/arch/desktop",
@@ -1164,7 +1230,7 @@ fn reconfigure() -> ExitCode {
         exec("sh", &["-c", format!("rm {profile}").as_str()]),
         "Failed to remove profile config"
     );
-    install()
+    reinstall()
 }
 fn main() -> ExitCode {
     let args: Vec<String> = args().collect();
