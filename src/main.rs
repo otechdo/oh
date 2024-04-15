@@ -204,7 +204,7 @@ impl Arch {
     fn install_package(&mut self) -> &mut Self {
         for pkg in &self.packages {
             assert!(
-                exec("sh", &["-c", format!("paru -S --noconfirm {pkg}").as_str()]),
+                exec("sh", &["-c", format!("paru -S {pkg}").as_str()]),
                 "{}",
                 format!("Failed to install the {pkg}").as_str()
             );
@@ -218,10 +218,7 @@ impl Arch {
     fn install_dependencies(&mut self) -> &mut Self {
         for pkg in &self.packages {
             assert!(
-                exec(
-                    "sh",
-                    &["-c", format!("paru -S {pkg} --noconfirm --asdeps").as_str()]
-                ),
+                exec("sh", &["-c", format!("paru -S {pkg} --asdeps").as_str()]),
                 "{}",
                 format!("Failed to install {pkg} dependency").as_str()
             );
@@ -494,7 +491,10 @@ impl Arch {
             &["-c", "sudo pacman -Sl multilib | cut -d ' ' -f 2 >> pkgs"]
         ));
         assert!(exec("sh", &["-c", "sudo pacman -Sg >> pkgs"]));
-        assert!(exec("sh", &["-c", "paru -Sl aur | cut -d ' ' -f 2 >> pkgs"]));
+        assert!(exec(
+            "sh",
+            &["-c", "paru -Sl aur | cut -d ' ' -f 2 >> pkgs"]
+        ));
         assert!(exec("sh", &["-c", "sudo install -m 644 pkgs /tmp/pkgs"]));
         assert!(exec("sh", &["-c", "rm pkgs"]));
         self.choose_packages()
@@ -674,7 +674,10 @@ impl Arch {
                 "sudo sed -i 's/#ParallelDownloads = 5/ParallelDownloads = 5/g' /etc/pacman.conf"
             ]
         ),"Failed to set Parallel download to 5");
-                assert!(exec("sh", &["-c", "paru -Syyu"]), "Failed to update mirrors");
+                assert!(
+                    exec("sh", &["-c", "paru -Syyu"]),
+                    "Failed to update mirrors"
+                );
                 self
             }
         }
@@ -840,15 +843,14 @@ impl Arch {
             .output()
             .unwrap();
         if output.status.success() {
-        let up = std::fs::read_to_string("/tmp/updates")
-                        .expect("failed to parse update file");
-            let lines : Vec<String> = up.lines().map(String::from).collect();
-            for line   in lines  {
+            let up = std::fs::read_to_string("/tmp/updates").expect("failed to parse update file");
+            let lines: Vec<String> = up.lines().map(String::from).collect();
+            for line in lines {
                 println!("{line}");
             }
             return self.quit("Run arch to update");
         }
-      self.quit("System is up to date")
+        self.quit("System is up to date")
     }
 
     ///
@@ -988,21 +990,26 @@ impl Arch {
     pub fn refresh_cache(&mut self) -> &mut Self {
         assert!(exec(
             "sh",
-            &["-c", "pacman -Sl core | cut -d ' ' -f 2 > /tmp/pkgs"]
+            &["-c", "pacman -Sl core | cut -d ' ' -f 2 > pkgs"]
         ));
         assert!(exec(
             "sh",
-            &["-c", "pacman -Sl extra | cut -d ' ' -f 2 >> /tmp/pkgs"]
+            &["-c", "pacman -Sl extra | cut -d ' ' -f 2 >> pkgs"]
         ));
         assert!(exec(
             "sh",
-            &["-c", "pacman -Sl multilib | cut -d ' ' -f 2 >> /tmp/pkgs"]
+            &["-c", "pacman -Sl multilib | cut -d ' ' -f 2 >> pkgs"]
         ));
-        assert!(exec("sh", &["-c", "pacman -Sg >> /tmp/pkgs"]));
+        assert!(exec("sh", &["-c", "pacman -Sg >> pkgs"]));
         assert!(exec(
             "sh",
-            &["-c", "paru -Sl aur | cut -d ' ' -f 2 >> /tmp/pkgs"]
+            &["-c", "paru -Sl aur | cut -d ' ' -f 2 >> pkgs"]
         ));
+        assert!(exec(
+            "sh",
+            &["-c", "sudo install -m 644 pkgs /tmp/packages"]
+        ));
+        assert!(exec("sh", &["-c", "rm pkgs"]));
         self
     }
 }
@@ -1072,7 +1079,9 @@ fn remove_packages(pkgs: &[String]) -> i32 {
     }
     0
 }
-
+fn create_iso() -> ExitCode {
+    exit(0);
+}
 ///
 /// # Panics
 ///
@@ -1162,7 +1171,7 @@ fn main() -> ExitCode {
     if args.len() == 1 {
         return Arch::new().upgrade();
     }
-    if args.len() >= 2 && args.get(1).expect("failed to get argument").eq("-S") {
+    if args.len() > 1 && args.get(1).expect("failed to get argument").eq("-S") {
         exit(install_packages(&args));
     }
     if args.len() == 2 && args.get(1).unwrap().eq("-i") || args.get(1).unwrap().eq("--setup") {
@@ -1172,7 +1181,7 @@ fn main() -> ExitCode {
         let _ = help();
         exit(0);
     }
-    if args.len() == 2 && args.get(1).unwrap().eq("-S") || args.get(1).unwrap().eq("--install") {
+    if args.len() == 2 && args.get(1).unwrap().eq("--install") {
         return Arch::new()
             .choose_packages()
             .install_package()
@@ -1262,6 +1271,8 @@ fn main() -> ExitCode {
     if args.len() == 2 && args.get(1).unwrap().eq("--setup-new-config") {
         return reconfigure();
     }
+    if args.len() == 2 && args.get(1).unwrap().eq("--create-iso") {
+        return create_iso();
+    }
     exit(help());
 }
-
