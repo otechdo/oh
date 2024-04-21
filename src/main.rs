@@ -764,7 +764,6 @@ impl Arch {
                 "@i3",
                 "@xmonad",
                 "@admin",
-                "@ai",
                 "@3d-printing",
                 "@containers",
                 "@virtualisation",
