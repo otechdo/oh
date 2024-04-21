@@ -1,6 +1,5 @@
 #![allow(clippy::multiple_crate_versions)]
 
-use tabled::Table;
 use inquire::{prompt_confirmation, Confirm, MultiSelect, Password, Select, Text};
 use regex::Regex;
 use std::collections::HashMap;
@@ -12,6 +11,8 @@ use std::io::Write;
 use std::io::{read_to_string, BufRead};
 use std::path::Path;
 use std::process::{exit, Command, ExitCode};
+use tabled::builder::Builder;
+use tabled::{settings::Style, Table};
 const VERSION: &str = "1.0.0";
 
 #[must_use]
@@ -96,17 +97,14 @@ impl Default for Arch {
 ///
 /// # Panics
 ///
-fn install_profile(profile:&str) -> bool {
+fn install_profile(profile: &str) -> bool {
     println!("{}", format!("Installing the {profile} profile").as_str());
 
     assert!(Command::new("wget")
         .arg("-q")
         .arg(
-            format!(
-                "https://raw.githubusercontent.com/otechdo/arch/main/arch/profiles/{profile}"
-
-            )
-            .as_str()
+            format!("https://raw.githubusercontent.com/otechdo/arch/main/arch/profiles/{profile}")
+                .as_str()
         )
         .current_dir(".")
         .spawn()
@@ -125,7 +123,7 @@ fn install_profile(profile:&str) -> bool {
         "{}",
         format!("failed to install {profile}").as_str()
     );
-    std::fs::remove_file(profile).expect("failed to profile file");
+    std::fs::remove_file(profile).expect("failed to remove profile file");
     true
 }
 
@@ -358,13 +356,9 @@ impl Arch {
         let locale = MultiSelect::new("Choose your system locales : ", locales.clone())
             .prompt()
             .expect("Failed to get locales");
-        if locales.is_empty() {
+        if locale.is_empty() {
             self.choose_locales()
         } else {
-            for l in locale {
-                self.locales.push(l.to_string());
-            }
-
             self
         }
     }
@@ -616,10 +610,7 @@ impl Arch {
             .prompt()
             .unwrap();
         if run {
-            return self
-                .install_package()
-                .create_users()
-                .quit_installer();
+            return self.install_package().create_users().quit_installer();
         }
         install()
     }
@@ -711,13 +702,13 @@ impl Arch {
         if country.is_empty() {
             return self.configure_mirrors();
         }
-        let confirm_mirror = prompt_confirmation(
-            format!("Set your mirrorlist to the {country} country : ").as_str(),
-        );
-        match confirm_mirror {
-            Ok(false) | Err(_) => self.configure_mirrors(),
-            Ok(true) => {
-                assert!(exec(
+        let confirm_mirror =
+            Confirm::new(format!("Set your mirrorlist to the {country} country : ").as_str())
+                .with_default(true)
+                .prompt()
+                .unwrap();
+        if confirm_mirror {
+            assert!(exec(
             "sh",
             &[
                 "-c",
@@ -727,20 +718,20 @@ impl Arch {
                 .as_str()
             ],
         ),"Failed to generate mirrorlist");
-                assert!(exec(
+            assert!(exec(
             "sh",
             &[
                 "-c",
                 "sudo sed -i 's/#ParallelDownloads = 5/ParallelDownloads = 5/g' /etc/pacman.conf"
             ]
         ),"Failed to set Parallel download to 5");
-                assert!(
-                    exec("sh", &["-c", "paru -Syyu"]),
-                    "Failed to update mirrors"
-                );
-                self
-            }
+            assert!(
+                exec("sh", &["-c", "paru -Syyu"]),
+                "Failed to update mirrors"
+            );
+            return self;
         }
+        self.configure_mirrors()
     }
 
     ///
@@ -764,9 +755,21 @@ impl Arch {
     /// # Panics
     ///
     pub fn choose_profile(&mut self) -> &mut Self {
-        let profiles : Vec<&str> = MultiSelect::new(
+        let profiles: Vec<&str> = MultiSelect::new(
             "Select profiles",
-            vec!["@gnome", "@deepin", "@kde", "@i3", "@xmonad", "@admin", "@ai", "@3d-printing", "@containers", "@virtualisation","@none"],
+            vec![
+                "@gnome",
+                "@deepin",
+                "@kde",
+                "@i3",
+                "@xmonad",
+                "@admin",
+                "@ai",
+                "@3d-printing",
+                "@containers",
+                "@virtualisation",
+                "@none",
+            ],
         )
         .prompt()
         .unwrap();
@@ -777,16 +780,21 @@ impl Arch {
             return self.choose_packages();
         }
 
-        let installing_profiles = Table::new(&profiles).to_string();
-        println!("{installing_profiles}\n");
+        let mut builder = Builder::default();
+        for profile in &profiles {
+            builder.push_record([profile.to_string()]);
+        }
+        let table = builder.build().with(Style::modern()).to_string();
+
+        println!("{table}");
         match prompt_confirmation("Install profiles ?") {
             Ok(true) => {
-                for profile in &profiles{
+                for profile in &profiles {
                     assert!(install_profile(profile));
                 }
                 return self.choose_packages();
-            },
-          Ok(false)| Err(_) => self.choose_profile(),
+            }
+            Ok(false) | Err(_) => self.choose_profile(),
         }
     }
 
@@ -952,7 +960,6 @@ impl Arch {
         self
     }
 
-
     ///
     /// # Panics
     ///
@@ -1109,12 +1116,12 @@ fn install() -> ExitCode {
         exit(1);
     }
 
-    println!(
-        "{}",
-        fs::read_to_string("/usr/share/licenses/arch/LICENSE")
-            .expect("No license has been found")
-            .as_str(),
-    );
+    let license = Table::new([fs::read_to_string("/usr/share/licenses/arch/LICENSE")
+        .expect("No license has been found")
+        .as_str()])
+    .with(Style::modern())
+    .to_string();
+    println!("{license}\n",);
 
     let license = Confirm::new("Accept license ?")
         .with_default(false)
