@@ -19,4 +19,6 @@ complete -c arch -s d -l download-updates -d 'Dowload all arch updates'
 complete -c arch -s x -l cancel -d 'Cancel arch reboot'
 complete -c arch -s v -l version -d 'Display arch version'
 complete -c arch -s s -l search -d 'Search a package'
+complete -c arch -l remove-profiles -d 'Ask and remove profiles'
+complete -c arch -l install-profiles -d 'Ask and install profiles'
 complete -c arch -l setup-new-config  -d "Clean current profile and relaunch setup"

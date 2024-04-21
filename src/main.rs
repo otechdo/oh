@@ -127,6 +127,99 @@ fn install_profile(profile: &str) -> bool {
     true
 }
 
+///
+/// # Panics
+///
+fn install_profiles() -> bool {
+    let profiles: Vec<&str> = MultiSelect::new(
+        "Select profiles to install : ",
+        vec![
+            "@gnome",
+            "@deepin",
+            "@kde",
+            "@i3",
+            "@xmonad",
+            "@admin",
+            "@3d-printing",
+            "@containers",
+            "@virtualisation",
+            "@none",
+        ],
+    )
+    .prompt()
+    .unwrap();
+    for profile in &profiles {
+        if Confirm::new(format!("Install the {profile} profile ? ").as_str())
+            .with_default(true)
+            .prompt()
+            .unwrap()
+        {
+            assert!(install_profile(profile));
+        }
+    }
+    true
+}
+
+///
+/// # Panics
+///
+
+fn remove_profile() -> bool {
+    let profiles: Vec<&str> = MultiSelect::new(
+        "Select profiles to remove",
+        vec![
+            "@gnome",
+            "@deepin",
+            "@kde",
+            "@i3",
+            "@xmonad",
+            "@admin",
+            "@3d-printing",
+            "@containers",
+            "@virtualisation",
+            "@none",
+        ],
+    )
+    .prompt()
+    .unwrap();
+
+    for profile in &profiles {
+        if Confirm::new(format!("Remove the {profile} profile").as_str())
+            .with_default(true)
+            .prompt()
+            .unwrap()
+        {
+            assert!(Command::new("wget")
+                .arg("-q")
+                .arg(
+                    format!(
+                    "https://raw.githubusercontent.com/otechdo/arch/main/arch/profiles/{profile}"
+                )
+                    .as_str()
+                )
+                .current_dir(".")
+                .spawn()
+                .unwrap()
+                .wait()
+                .unwrap()
+                .success());
+            assert!(
+                exec(
+                    "sh",
+                    &[
+                        "-c",
+                        format!("xargs -d '\n' -a {profile} paru -Rdd").as_str()
+                    ]
+                ),
+                "{}",
+                format!("Failed to remove {profile}").as_str()
+            );
+            std::fs::remove_file(profile).expect("Failed to remove profile file");
+        }
+    }
+    true
+}
+
 impl Arch {
     #[must_use]
     pub fn new() -> Self {
@@ -1347,7 +1440,14 @@ fn main() -> ExitCode {
         println!("arch version : {VERSION}");
         exit(0);
     }
-
+    if args.len() == 2 && args.get(1).unwrap().eq("--remove-profiles") {
+        assert!(remove_profile(), "Failed to remove a profile");
+        exit(0);
+    }
+    if args.len() == 2 && args.get(1).unwrap().eq("--install-profiles") {
+        assert!(install_profiles(), "Failed to install a profile");
+        exit(0);
+    }
     if args.len() == 2 && args.get(1).unwrap().eq("--setup-new-config") {
         return reconfigure();
     }
