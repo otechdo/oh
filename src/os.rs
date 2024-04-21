@@ -1,6 +1,8 @@
 use inquire::prompt_confirmation;
 use inquire::{Select, Text};
 use regex as _;
+use tabled as _;
+
 use std::env::args;
 use std::process::{exit, Command, ExitCode};
 const IMAGES: [&str; 80] = [
@@ -251,3 +253,4 @@ fn main() -> ExitCode {
     }
     exit(1);
 }
+

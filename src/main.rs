@@ -1,5 +1,6 @@
 #![allow(clippy::multiple_crate_versions)]
 
+use tabled::Table;
 use inquire::{prompt_confirmation, Confirm, MultiSelect, Password, Select, Text};
 use regex::Regex;
 use std::collections::HashMap;
@@ -44,7 +45,6 @@ fn parse_file_lines(filename: &str) -> Vec<String> {
 }
 pub struct Arch {
     locales: Vec<String>,
-    profile: String,
     lang: String,
     packages: Vec<String>,
     root: HashMap<bool, String>,
@@ -88,12 +88,47 @@ impl Default for Arch {
             users_table: Vec::new(),
             timezone: String::new(),
             keymap: String::new(),
-            profile: String::new(),
             hostname: String::new(),
             user: String::new(),
         }
     }
 }
+///
+/// # Panics
+///
+fn install_profile(profile:&str) -> bool {
+    println!("{}", format!("Installing the {profile} profile").as_str());
+
+    assert!(Command::new("wget")
+        .arg("-q")
+        .arg(
+            format!(
+                "https://raw.githubusercontent.com/otechdo/arch/main/arch/profiles/{profile}"
+
+            )
+            .as_str()
+        )
+        .current_dir(".")
+        .spawn()
+        .unwrap()
+        .wait()
+        .unwrap()
+        .success());
+    assert!(
+        exec(
+            "sh",
+            &[
+                "-c",
+                format!("xargs -d '\n' -a {profile} paru --needed -Syu").as_str()
+            ]
+        ),
+        "{}",
+        format!("failed to install {profile}").as_str()
+    );
+    std::fs::remove_file(profile).expect("failed to profile file");
+    true
+}
+
 impl Arch {
     #[must_use]
     pub fn new() -> Self {
@@ -582,7 +617,6 @@ impl Arch {
             .unwrap();
         if run {
             return self
-                .install_profile()
                 .install_package()
                 .create_users()
                 .quit_installer();
@@ -730,22 +764,30 @@ impl Arch {
     /// # Panics
     ///
     pub fn choose_profile(&mut self) -> &mut Self {
-        let profile = Select::new(
-            "Select a profile",
-            vec!["@gnome", "@deepin", "@kde", "@i3", "@xmonad", "@none"],
+        let profiles : Vec<&str> = MultiSelect::new(
+            "Select profiles",
+            vec!["@gnome", "@deepin", "@kde", "@i3", "@xmonad", "@admin", "@ai", "@3d-printing", "@containers", "@virtualisation","@none"],
         )
         .prompt()
         .unwrap();
-        if profile.is_empty() {
+        if profiles.is_empty() {
             return self.choose_profile();
         }
-        if profile.eq("@none") {
+        if profiles.get(1).unwrap().eq(&"@none") {
             return self.choose_packages();
         }
-        self.profile.clear();
-        self.profile.push_str(profile);
 
-        self.choose_packages()
+        let installing_profiles = Table::new(&profiles).to_string();
+        println!("{installing_profiles}\n");
+        match prompt_confirmation("Install profiles ?") {
+            Ok(true) => {
+                for profile in &profiles{
+                    assert!(install_profile(profile));
+                }
+                return self.choose_packages();
+            },
+          Ok(false)| Err(_) => self.choose_profile(),
+        }
     }
 
     ///
@@ -812,11 +854,7 @@ impl Arch {
         if !ok_hostname {
             return self.choose_hostname().confirm();
         }
-        let ok_profile =
-            prompt_confirmation(format!("Use profile : {}", self.profile).as_str()).unwrap();
-        if !ok_profile {
-            return self.choose_profile().confirm();
-        }
+
         self.run()
     }
 
@@ -913,91 +951,7 @@ impl Arch {
         );
         self
     }
-    ///
-    /// # Panics
-    ///
-    fn install_profile(&mut self) -> &mut Self {
-        println!("{}", format!("using {}", self.profile).as_str());
-        if !std::path::Path::new(
-            format!(
-                "{}/.config/arch",
-                std::env::var("HOME").expect("Failed to find HOME")
-            )
-            .as_str(),
-        )
-        .exists()
-        {
-            assert!(std::fs::create_dir(
-                format!(
-                    "{}/.config/arch",
-                    std::env::var("HOME").expect("Failed to find HOME")
-                )
-                .as_str()
-            )
-            .is_ok());
-        }
-        let mut p = std::fs::File::create(
-            format!(
-                "{}/.config/arch/desktop",
-                std::env::var("HOME").expect("Failed to find HOME")
-            )
-            .as_str(),
-        )
-        .expect("failed to save profile");
-        assert!(p.write_all(self.profile.as_bytes()).is_ok());
-        assert!(p.sync_all().is_ok());
-        assert!(Command::new("wget")
-            .arg("-q")
-            .arg(
-                format!(
-                    "https://raw.githubusercontent.com/otechdo/arch/main/arch/profiles/{}",
-                    self.profile
-                )
-                .as_str()
-            )
-            .current_dir(".")
-            .spawn()
-            .unwrap()
-            .wait()
-            .unwrap()
-            .success());
-        assert!(
-            exec(
-                "sh",
-                &[
-                    "-c",
-                    format!("xargs -d '\n' -a {} paru --needed -Syu", self.profile).as_str()
-                ]
-            ),
-            "{}",
-            format!("failed to install {}", self.profile).as_str()
-        );
-        if self.profile.eq("@gnome") {
-            assert!(
-                exec("sh", &["-c", "sudo systemctl enable gdm"]),
-                "Failed to enable gdm"
-            );
-        } else if self.profile.eq("@kde") {
-            assert!(
-                exec("sh", &["-c", "sudo systemctl enable sddm"]),
-                "Failed to enable sddm"
-            );
-        } else if self.profile.eq("@deepin") || self.profile.eq("@xmonad") || self.profile.eq("@i3")
-        {
-            assert!(
-                exec("sh", &["-c", "sudo systemctl enable lightdm"]),
-                "Failed to enable lightdm"
-            );
-            if self.profile.eq("@xmonad") {
-                assert!(
-                            exec("sh", &["-c", "mkdir ~/.xmonad && wget -q https://raw.githubusercontent.com/otechdo/arch/main/arch/config/xmonad/xmonad.hs && mv xmonad.hs ~/.xmonad && touch ~/.xmonad/build && chmod +x ~/.xmonad/build && xmonad --recompile"]),
-                            "Failed to configure xmonad"
-                            );
-            }
-        }
-        std::fs::remove_file(self.profile.clone()).expect("failed to profile file");
-        self
-    }
+
 
     ///
     /// # Panics
