@@ -8,6 +8,8 @@ xorg-xrandr
 autorandr
 arandr
 lightdm
+lightdm-gtk-greeter
+lightdm-slick-greeter
 bluez
 lxappearance
 vim

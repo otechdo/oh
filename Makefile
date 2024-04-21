@@ -28,8 +28,8 @@ install: completions
 	@echo -e "\033[1;32m    Finished\033[1;39m the arch executable is ready to use\033[39m"
 	@install -m 755 target/release/os /usr/bin/os
 	@echo -e "\033[1;32m    Finished\033[1;39m the os executable is ready to use\033[39m"
-	@update-desktop-database
-	@echo -e "\033[1;32m    Finished\033[1;39m the desktop database has been updated successfully\033[39m"
+	@install -m 755 arch/configuration/keymaps /tmp/keymaps
+	@echo -e "\033[1;32m    Finished\033[1;39m the keymaps list is ready to use\033[39m"
 setup: arch
 	@echo -e "\033[1;32m    Finished\033[1;39m enter your password in order to refreshing the packages cache\033[39m"
 	@sudo -k target/release/arch --cache

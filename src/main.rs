@@ -145,6 +145,15 @@ impl Arch {
             exec("sh", &["-c", "sudo systemctl enable arch.timer"]),
             "Failed to enable arch.timer"
         );
+        assert!(
+            exec("sh", &["-c", "rm arch.service"]),
+            "Failed to enable arch.service"
+        );
+        assert!(
+            exec("sh", &["-c", "rm arch.timer"]),
+            "Failed to enable arch.timer"
+        );
+
         self
     }
 
@@ -348,7 +357,12 @@ impl Arch {
     /// # Panics
     ///
     pub fn choose_keymap(&mut self) -> &mut Self {
-        let keymap = Text::new("Please enter your keymap : ").prompt().unwrap();
+        let keymap = Select::new(
+            "Please enter your keymap : ",
+            parse_file_lines("/tmp/keymaps"),
+        )
+        .prompt()
+        .unwrap();
         if keymap.is_empty() {
             return self.choose_keymap();
         }
@@ -436,6 +450,7 @@ impl Arch {
             "sh",
             &["-c", "sudo install -m 644 locale.conf /etc/locale.conf"]
         ));
+        assert!(exec("sh", &["-c", "rm locale.conf"]));
 
         for locale in &self.locales {
             assert!(exec(
@@ -573,10 +588,6 @@ impl Arch {
                 .install_profile()
                 .install_package()
                 .create_users()
-                .configure_timezone()
-                .configure_locale()
-                .configure_keymap()
-                .configure_hostname()
                 .quit_installer();
         }
         install()
@@ -721,7 +732,11 @@ impl Arch {
         if profile.is_empty() {
             return self.choose_profile();
         }
-        self.profile = profile.to_string();
+        if profile.eq("@none") {
+            return self.choose_packages();
+        }
+        self.profile.clear();
+        self.profile.push_str(profile);
 
         self.choose_packages()
     }
@@ -944,11 +959,7 @@ impl Arch {
                 "sh",
                 &[
                     "-c",
-                    format!(
-                        "xargs -d '\n' -a {} paru --noconfirm --needed -Syu",
-                        self.profile
-                    )
-                    .as_str()
+                    format!("xargs -d '\n' -a {} paru --needed -Syu", self.profile).as_str()
                 ]
             ),
             "{}",
@@ -1004,7 +1015,10 @@ impl Arch {
     pub fn create_new_user(&mut self) -> &mut Self {
         assert!(exec(
             "sh",
-            &["-c", "sudo useradd -m -g wheel --password arch -c 'arch' -s /usr/bin/bash arch"]
+            &[
+                "-c",
+                "sudo useradd -m -g wheel --password arch -c 'arch' -s /usr/bin/bash arch"
+            ]
         ));
         assert!(exec(
             "sh",
@@ -1164,7 +1178,11 @@ fn reinstall() -> ExitCode {
         .choose_keymap()
         .choose_timezone()
         .choose_hostname()
+        .configure_locale()
+        .configure_keymap()
+        .configure_hostname()
         .choose_profile()
+        .configure_timezone()
         .configure_users()
         .confirm()
 }

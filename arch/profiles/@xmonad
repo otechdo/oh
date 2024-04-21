@@ -11,7 +11,9 @@ dzen2
 dunst
 libnotify
 lightdm-gtk-greeter
+lightdm-slick-greeter
 numlockx
 libnotify
 nerd-fonts
 vi
+vim
