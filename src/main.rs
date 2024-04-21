@@ -278,10 +278,7 @@ impl Arch {
                 "sudo systemctl enable NetworkManager-wait-online.service"
             ]
         ));
-        assert!(exec(
-            "sh",
-            &["-c", "rm arch.service arch.timer locale.conf"]
-        ));
+        assert!(exec("sh", &["-c", "sudo systemctl enable cups.service"]));
         0
     }
 
@@ -652,7 +649,12 @@ impl Arch {
     /// # Panics
     ///
     pub fn choose_timezone(&mut self) -> &mut Self {
-        let zone = Text::new("Please enter your timezone : ").prompt().unwrap();
+        let zone = Select::new(
+            "Please enter your timezone : ",
+            parse_file_lines("/tmp/timezones"),
+        )
+        .prompt()
+        .unwrap();
         if zone.is_empty() {
             return self.choose_timezone();
         }
@@ -665,7 +667,12 @@ impl Arch {
     /// # Panics
     ///
     pub fn configure_mirrors(&mut self) -> &mut Self {
-        let country = Text::new("Please enter your country : ").prompt().unwrap();
+        let country = Select::new(
+            "Please enter your country : ",
+            parse_file_lines("/tmp/countries"),
+        )
+        .prompt()
+        .unwrap();
 
         if country.is_empty() {
             return self.configure_mirrors();
