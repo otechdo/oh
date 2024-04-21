@@ -4,13 +4,13 @@ use inquire::{prompt_confirmation, Confirm, MultiSelect, Password, Select, Text}
 use regex::Regex;
 use std::collections::HashMap;
 use std::env::args;
+use std::fs;
 use std::fs::File;
 use std::io;
 use std::io::Write;
 use std::io::{read_to_string, BufRead};
 use std::path::Path;
 use std::process::{exit, Command, ExitCode};
-
 const VERSION: &str = "1.0.0";
 
 #[must_use]
@@ -1024,9 +1024,10 @@ impl Arch {
             "sh",
             &[
                 "-c",
-                "sudo useradd -m -g wheel --password arch -c 'arch' -s /usr/bin/bash arch"
+                "sudo useradd -m -g wheel -c 'arch' -s /usr/bin/bash arch"
             ]
         ));
+        assert!(exec("sh", &["-c", "sudo passwd arch"]));
         assert!(exec(
             "sh",
             &["-c", "sudo echo 'arch ALL=(ALL) ALL' > /etc/sudoers.d/arch"]
@@ -1118,12 +1119,6 @@ fn install_packages(packages: &[String]) -> i32 {
             "{}",
             format!("Failed to install the {pkg} package").as_str()
         );
-        assert!(notifme::Notification::new()
-            .app("arch")
-            .summary(format!("{pkg} Installed").as_str())
-            .body(format!("{pkg} has been installed successfully").as_str())
-            .timeout(5)
-            .send());
     }
     0
 }
@@ -1151,6 +1146,35 @@ fn create_iso() -> ExitCode {
 /// # Panics
 ///
 fn install() -> ExitCode {
+    let start = Confirm::new("Start installation")
+        .with_default(false)
+        .prompt()
+        .unwrap();
+    if start.eq(&false) {
+        println!("Bye");
+        exit(1);
+    }
+
+    println!(
+        "{}",
+        fs::read_to_string("/usr/share/licenses/arch/LICENSE")
+            .expect("No license has been found")
+            .as_str(),
+    );
+
+    let license = Confirm::new("Accept license ?")
+        .with_default(false)
+        .prompt()
+        .unwrap();
+    if start.eq(&false) {
+        println!("Bye");
+        exit(1);
+    }
+
+    if license.eq(&false) {
+        println!("Bye");
+        exit(1);
+    }
     Arch::new()
         .check_network()
         .systemd()
@@ -1263,6 +1287,7 @@ fn reconfigure() -> ExitCode {
 }
 fn main() -> ExitCode {
     let args: Vec<String> = args().collect();
+
     if args.len() == 1 {
         return Arch::new().upgrade();
     }

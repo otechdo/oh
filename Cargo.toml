@@ -15,7 +15,5 @@ name = "os"
 path = "src/os.rs"
 
 [dependencies]
-crossterm = "0.27.0"
 inquire = { version = "0.7.4", features = ["date", "editor"] }
-notifme = "0.0.2"
 regex = "1.10.3"

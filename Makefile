@@ -34,6 +34,8 @@ install: completions
 	@echo -e "\033[1;32m    Finished\033[1;39m the timezones list is ready to use\033[39m"
 	@install -m 644  arch/configuration/countries /tmp/countries
 	@echo -e "\033[1;32m    Finished\033[1;39m the countries list is ready to use\033[39m"
+	@install -Dm644 LICENSE "/usr/share/licenses/arch/LICENSE"
+	@echo -e "\033[1;32m    Finished\033[1;39m the LICENSE is ready to use\033[39m"
 setup: arch
 	@echo -e "\033[1;32m    Finished\033[1;39m enter your password in order to refreshing the packages cache\033[39m"
 	@sudo -k target/release/arch --cache
