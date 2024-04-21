@@ -15,7 +15,6 @@ kubeadm
 kubelet
 kubectl
 containerd
-wireguard-tools	
 ufw
 minikube
 bind

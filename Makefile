@@ -36,13 +36,9 @@ install: completions
 	@echo -e "\033[1;32m    Finished\033[1;39m the countries list is ready to use\033[39m"
 	@install -Dm644 LICENSE "/usr/share/licenses/arch/LICENSE"
 	@echo -e "\033[1;32m    Finished\033[1;39m the LICENSE is ready to use\033[39m"
-setup: arch
-	@echo -e "\033[1;32m    Finished\033[1;39m enter your password in order to refreshing the packages cache\033[39m"
-	@sudo -k target/release/arch --cache
-	@echo -e "\033[1;32m    Finished\033[1;39m package cache generated successfully\033[39m"
-	@echo -e "\033[1;32m    Finished\033[1;39m setup is starting\033[39m"
-	@target/release/arch --setup
+setup:
 	@clear
+	@/usr/bin/arch --setup
 	@echo -e "\033[1;32m    Finished\033[1;39m congratulations\033[39m"
 update:
 	@echo -e "\033[1;32m    Starting\033[1;39m updating the repository\033[30m"
