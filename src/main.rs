@@ -1013,9 +1013,9 @@ impl Arch {
     ///
     /// # Panics
     ///
-    pub fn save_user(&mut self, username: String) -> &mut Self {
+    pub fn save_user(&mut self, username: &str) -> &mut Self {
         self.user.clear();
-        self.user.push_str(username.as_str());
+        self.user.push_str(username);
         self
     }
 
@@ -1175,7 +1175,11 @@ fn reinstall() -> ExitCode {
         .news()
         .forums()
         .wiki()
-        .save_user(std::env::var("USER").expect("Failed to fin username"))
+        .save_user(
+            std::env::var("USER")
+                .expect("Failed to fin username")
+                .as_str(),
+        )
         .create_new_user()
         .checkout_new_user()
         .remove_user()
