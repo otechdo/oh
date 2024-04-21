@@ -23,7 +23,6 @@ virtualbox-host-modules-arch
 virtualbox-guest-iso
 linux-headers
 openshift-client-bin
-minishift
 incus
 polkit
 edk2-ovmf
