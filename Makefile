@@ -60,3 +60,6 @@ ifeq ($(findstring zsh,$(SHELLS)),zsh)
 	@echo -e "\033[1;32m    Finished\033[1;39m completions installation finnish for zsh\033[30m"
 endif
 
+test:
+	@docker-compose up
+	@docker-compose down

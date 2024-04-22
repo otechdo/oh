@@ -874,7 +874,7 @@ impl Arch {
 
         let mut builder = Builder::default();
         for profile in &profiles {
-            builder.push_record([profile.to_string()]);
+            builder.push_record([(*profile).to_string()]);
         }
         let table = builder.build().with(Style::modern()).to_string();
 
@@ -1003,22 +1003,20 @@ impl Arch {
     ///
     pub fn check_update(&mut self) -> ExitCode {
         let o = File::create("/tmp/updates").expect("failed to create update");
-        let output = Command::new("paru")
-            .arg("-Q")
-            .arg("-u")
+        assert!(Command::new("up")
             .stdout(o)
             .current_dir(".")
-            .output()
-            .unwrap();
-        if output.status.success() {
+            .spawn()
+            .expect("up not founded")
+            .wait()
+            .unwrap().success());
+            
             let up = std::fs::read_to_string("/tmp/updates").expect("failed to parse update file");
             let lines: Vec<String> = up.lines().map(String::from).collect();
             for line in lines {
                 println!("{line}");
             }
-            return self.quit("Run arch to update");
-        }
-        self.quit("System is up to date")
+        self.quit("Run arch to update")
     }
 
     ///
