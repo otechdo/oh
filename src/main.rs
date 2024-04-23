@@ -31,8 +31,8 @@ const LOCALES: &str = "/usr/share/applications/arch/locales";
 const PACKAGES: &str = "/usr/share/applications/arch/packages";
 const TIME_ZONES: &str = "/usr/share/applications/arch/timezones";
 const PROFILES: &str = "/usr/share/applications/arch/profiles";
-const SERVICES_DISABLED: &str = "/usr/share/applications/arch/services/disabled";
-const SERVICES_ENABLED: &str = "/usr/share/applications/arch/services/enabled";
+const ROOT_SERVICES_DISABLED: &str = "/usr/share/applications/arch/services/root/disabled";
+const ROOT_SERVICES_ENABLED: &str = "/usr/share/applications/arch/services/root/enabled";
 const COUNTRIES: &str = "/usr/share/applications/arch/countries";
 const BOOT: &str = "/usr/share/applications/arch/boot";
 const SHELLS: &str = "/usr/share/applications/arch/shells";
@@ -155,13 +155,14 @@ fn choose_packages() -> Vec<String> {
             pkgs.push(p.to_string());
         }
         println!("\n{}\n", builder.clone().build().with(Style::modern()));
-        if Confirm::new("Install selected packages ?")
+        if Confirm::new("Add packages ?")
             .with_default(false)
             .prompt()
             .unwrap()
         {
-            return pkgs;
+            continue;
         }
+        return pkgs;
     }
 }
 
@@ -169,30 +170,17 @@ fn choose_packages() -> Vec<String> {
 /// # Panics
 ///
 fn remove_packages(packages: &[String]) -> i32 {
-    let mut builder = Builder::new();
-    for p in packages {
-        builder.push_record([p.to_string()]);
-    }
-    println!("\n{}\n", builder.clone().build().with(Style::modern()));
-    if Confirm::new("Remove packages ? ")
-        .with_default(false)
-        .prompt()
-        .unwrap()
-        .eq(&true)
-    {
-        for pkg in packages {
-            if pkg.contains("arch") || pkg.contains("-R") {
-                continue;
-            }
-            assert!(
-                exec("sh", &["-c", format!("paru -Rns {pkg}").as_str()]),
-                "{}",
-                format!("Failed to install the {pkg} package").as_str()
-            );
+    for pkg in packages {
+        if pkg.contains("arch") || pkg.contains("-R") {
+            continue;
         }
-        return 0;
+        assert!(
+            exec("sh", &["-c", format!("paru -Rns {pkg}").as_str()]),
+            "{}",
+            format!("Failed to install the {pkg} package").as_str()
+        );
     }
-    1
+    0
 }
 
 ///
@@ -459,13 +447,13 @@ fn install_language(lang: &str) -> i32 {
 
 fn choose_enabled_services() -> Vec<String> {
     let mut builder = Builder::new();
+    let mut services: Vec<String> = Vec::new();
+    services.append(&mut parse_file_lines(ROOT_SERVICES_DISABLED));
     loop {
-        let services: Vec<String> = MultiSelect::new(
-            "Select services to disabled : ",
-            parse_file_lines(SERVICES_ENABLED),
-        )
-        .prompt()
-        .unwrap();
+        let services: Vec<String> =
+            MultiSelect::new("Select services to disabled : ", services.clone())
+                .prompt()
+                .unwrap();
 
         if services.is_empty() {
             continue;
@@ -488,13 +476,13 @@ fn choose_enabled_services() -> Vec<String> {
 
 fn choose_disabled_services() -> Vec<String> {
     let mut builder = Builder::new();
+    let mut services: Vec<String> = Vec::new();
+    services.append(&mut parse_file_lines(ROOT_SERVICES_ENABLED));
     loop {
-        let services: Vec<String> = MultiSelect::new(
-            "Select all unit to enable : ",
-            parse_file_lines(SERVICES_DISABLED),
-        )
-        .prompt()
-        .unwrap();
+        let services: Vec<String> =
+            MultiSelect::new("Select all unit to enable : ", services.clone())
+                .prompt()
+                .unwrap();
 
         if services.is_empty() {
             continue;
@@ -595,7 +583,7 @@ arch -w --wiki Show arch wiki\n"
     1
 }
 
-fn cache() -> i32 {
+fn cache_package() -> i32 {
     assert!(exec(
         "sh",
         &["-c", "sudo pacman -Sl core | cut -d ' ' -f 2 > packages"]
@@ -624,45 +612,54 @@ fn cache() -> i32 {
         ]
     ));
     assert!(exec("sh", &["-c", "rm packages"]));
+    0
+}
+
+fn cache_services() -> i32 {
+    assert!(exec(
+        "sh",
+        &["-c", "systemctl list-unit-files --type=service --state=disabled | cut -d ' ' -f 1 > root_disabled"]
+    ));
+    assert!(exec(
+        "sh",
+        &["-c", "systemctl list-unit-files --type=socket --state=disabled | cut -d ' ' -f 1 >> root_disabled"]
+    ));
 
     assert!(exec(
         "sh",
-        &["-c", "systemctl list-unit-files --type=service --state=disabled | cut -d ' ' -f 1 > disabled"]
-    ));
-    assert!(exec(
-        "sh",
-        &["-c", "systemctl list-unit-files --type=socket --state=disabled | cut -d ' ' -f 1 >> disabled"]
-    ));
-    assert!(exec(
-        "sh",
         &[
             "-c",
-            format!("sudo install -m 644 disabled {SERVICES_DISABLED}").as_str()
+            format!("sudo install -m 644 root_disabled {ROOT_SERVICES_DISABLED}").as_str()
         ]
     ));
     assert!(exec(
         "sh",
         &[
             "-c",
-            "systemctl list-unit-files --type=service --state=enabled | cut -d ' ' -f 1 > enabled"
+            "systemctl list-unit-files --type=service --state=enabled | cut -d ' ' -f 1 > root_enabled"
         ]
     ));
     assert!(exec(
         "sh",
         &[
             "-c",
-            "systemctl list-unit-files --type=socket --state=enabled | cut -d ' ' -f 1 >> enabled"
+            "systemctl list-unit-files --type=socket --state=enabled | cut -d ' ' -f 1 >> root_enabled"
         ]
     ));
+
     assert!(exec(
         "sh",
         &[
             "-c",
-            format!("sudo install -m 644 enabled {SERVICES_ENABLED}").as_str()
+            format!("sudo install -m 644 root_enabled {ROOT_SERVICES_ENABLED}").as_str()
         ]
     ));
-    assert!(exec("sh", &["-c", "rm disabled"]));
-    assert!(exec("sh", &["-c", "rm enabled"]));
+    assert!(exec("sh", &["-c", "rm  root_enabled root_disabled"]));
+    0
+}
+fn cache() -> i32 {
+    assert!(cache_package().eq(&0));
+    assert!(cache_services().eq(&0));
     0
 }
 
@@ -1194,7 +1191,7 @@ fn main() -> ExitCode {
     if args.len() == 2 && args.get(1).unwrap().eq("--reconfigure") {
         exit(installer())
     }
-    if args.len() == 2 && args.get(1).unwrap().eq("--remove-packages") {
+    if args.len() == 2 && args.get(1).unwrap().eq("--uninstall") {
         exit(remove_packages(&choose_packages()))
     }
     if args.len() == 2 && args.get(1).unwrap().eq("--install-dependencies")

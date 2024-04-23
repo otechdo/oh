@@ -1,38 +1,5 @@
 #!/bin/bash
 
-
-UPDATES=$(checkupdates)
-ORPHANS=$(paru -Qdtq)
-CACHES=$()
-PACNEW=$()
-REBOOT=$()
-FLATPAK=$(command -v flatpak)
-OS=$(command -v distrobox)
-
-if [ -n "${UPDATES}" ]
-then
-	echo -e "${UPDATES}\n"
-	echo -e "Proceed with update ? [Y/n]"
-	read -r -p "" response
-	case $response in
-	 ""|y|yes|Y)
-	 	paru -Syyu || exit 1
-	 	if [ -n "${FLATPAK}" ]
-	 	then
-	 		flatpak update --noninteractive || exit 1
-	 	fi
- 		if [ -n "${OS}" ]
-	 	then
-	 		  distrobox-upgrade --all --root || exit 1
-	 	fi
-		exit 0
-	 ;;
- 	 *)
-	 	echo "The update has been aborted nothing"
-	 	exit 0
- 	;;
- 	esac
-else
-	echo "System is up do date"
-	exit 0
-fi
+arch-update
+distrobox upgrade --all --root
+exit 0
