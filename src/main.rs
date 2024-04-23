@@ -671,9 +671,6 @@ fn cache() -> i32 {
 ///
 fn install_packages(packages: &[String]) -> i32 {
     for pkg in packages {
-        if pkg.contains("arch") || pkg.contains("-S") {
-            continue;
-        }
         assert!(
             exec("sh", &["-c", format!("paru -S {pkg}").as_str()]),
             "{}",
