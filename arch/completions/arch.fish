@@ -1,4 +1,4 @@
-complete -c arch -f -a "(cat /tmp/packages)"
+complete -c arch -f -a "(cat /usr/share/applications/arch/packages)"
 complete -c arch -s i -l setup -d 'Setup a new arch'
 complete -c arch -s h -l help -d 'Display the help message'
 complete -c arch -s S -l install -d 'Install all selected packages'
@@ -22,3 +22,5 @@ complete -c arch -s s -l search -d 'Search a package'
 complete -c arch -l remove-profiles -d 'Ask and remove profiles'
 complete -c arch -l install-profiles -d 'Ask and install profiles'
 complete -c arch -l setup-new-config  -d "Clean current profile and relaunch setup"
+complete -c arch -l enable-services  -d "Enable selected services"
+complete -c arch -l disable-services  -d "Disabled selected services"

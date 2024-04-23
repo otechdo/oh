@@ -1,0 +1,4 @@
+grub
+systemd-boot
+efistub
+syslinux

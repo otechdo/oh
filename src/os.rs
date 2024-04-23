@@ -1,6 +1,5 @@
 use inquire::prompt_confirmation;
 use inquire::{Select, Text};
-use regex as _;
 use tabled as _;
 
 use std::env::args;

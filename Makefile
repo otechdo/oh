@@ -22,20 +22,27 @@ install: completions
 	@echo -e "\033[1;32m    Finished\033[1;39m the arch app is now installed\033[39m"
 	@install -m 644  arch/icons/Arch.svg /usr/share/icons/Arch.svg
 	@echo -e "\033[1;32m    Finished\033[1;39m the arch app is now installed\033[39m"
-	@target/release/arch --cache > /dev/null
-	@echo -e "\033[1;32m    Finished\033[1;39m the arch packages cache has been successfully created\033[39m"
 	@install -m 755 target/release/arch /usr/bin/arch
 	@echo -e "\033[1;32m    Finished\033[1;39m the arch executable is ready to use\033[39m"
+	@target/release/arch --cache > /dev/null
+	@echo -e "\033[1;32m    Finished\033[1;39m the cache is ready to use\033[39m"
 	@install -m 755 target/release/os /usr/bin/os
 	@echo -e "\033[1;32m    Finished\033[1;39m the os executable is ready to use\033[39m"
-	@install -m 644 arch/configuration/keymaps /tmp/keymaps
+	@mkdir -p /usr/share/applications/arch/services
+	@echo -e "\033[1;32m    Finished\033[1;39m the arch applications directory is ready to use\033[39m"
+	@echo -e "\033[1;32m    Finished\033[1;39m the arch cache is ready to use\033[39m"
+	@install -m 644 arch/configuration/keymaps /usr/share/applications/arch/keymaps
 	@echo -e "\033[1;32m    Finished\033[1;39m the keymaps list is ready to use\033[39m"
-	@install -m 644  arch/configuration/timezones /tmp/timezones
+	@install -m 644  arch/configuration/timezones /usr/share/applications/arch/timezones
 	@echo -e "\033[1;32m    Finished\033[1;39m the timezones list is ready to use\033[39m"
-	@install -m 644  arch/configuration/countries /tmp/countries
+	@install -m 644  arch/configuration/countries /usr/share/applications/arch/countries
 	@echo -e "\033[1;32m    Finished\033[1;39m the countries list is ready to use\033[39m"
+	@install -m 644  arch/configuration/locales /usr/share/applications/arch/locales
+	@echo -e "\033[1;32m    Finished\033[1;39m the locales list is ready to use\033[39m"
 	@install -Dm644 LICENSE "/usr/share/licenses/arch/LICENSE"
 	@echo -e "\033[1;32m    Finished\033[1;39m the LICENSE is ready to use\033[39m"
+	@install -Dm644 arch/configuration/boot "/usr/share/applications/arch/boot"
+	@echo -e "\033[1;32m    Finished\033[1;39m the boot configuration is ready to use\033[39m"
 setup:
 	@clear
 	@/usr/bin/arch --setup

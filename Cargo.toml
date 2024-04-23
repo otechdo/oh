@@ -16,5 +16,4 @@ path = "src/os.rs"
 
 [dependencies]
 inquire = { version = "0.7.4", features = ["date", "editor"] }
-regex = "1.10.3"
 tabled = "0.15.0"
