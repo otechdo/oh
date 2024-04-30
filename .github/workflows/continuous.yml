@@ -16,7 +16,7 @@ jobs:
     - name: docker
       run:  curl -fsSL https://get.docker.com -o get-docker.sh && sudo sh get-docker.sh
     - name: rustup
-      run:  curl -fsSL https://sh.rustup.rs  -o rustup.sh && sudo sh rustup.sh -y
+      run:  curl -fsSL https://sh.rustup.rs -o rustup.sh && sudo sh rustup.sh -y
     - name: toolchain
       run:  rustup default stable
     - name: plugins
