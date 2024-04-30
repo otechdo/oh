@@ -1,12 +1,10 @@
-[TOC]
-
-
-
-# Achlinux installer
+# Archlinux installer
 
 It's a project to install archlinux manually.
 
 It's require to know archlinux system.
+
+![donate](otechdo.png)
 
 [![zuu](https://github.com/otechdo/arch/actions/workflows/zuu.yml/badge.svg)](https://github.com/otechdo/arch/actions/workflows/zuu.yml) [![continuous](https://github.com/otechdo/arch/actions/workflows/continuous.yml/badge.svg?branch=main)](https://github.com/otechdo/arch/actions/workflows/continuous.yml)
 
