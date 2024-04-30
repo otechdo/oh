@@ -16,7 +16,7 @@ jobs:
     - name: docker
       run:  curl -fsSL https://get.docker.com -o get-docker.sh && sudo sh get-docker.sh
     - name: rustup
-      run: curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+      run: curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs && ls
     - name: plugins
       run: packer plugins install github.com/hashicorp/docker
     - name: continuous
