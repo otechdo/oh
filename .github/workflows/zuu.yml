@@ -1,0 +1,18 @@
+name: zuu
+on:
+  push:
+    branches: [ "main" , "master" , "develop" ]
+  pull_request:
+    branches: [ "main",  "master" , "develop" ]
+env:
+  CARGO_TERM_COLOR: always
+  TERM: xterm-256color
+jobs:
+  zuu:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: deps
+      run: cargo install cargo-audit zuu 
+    - name: zuu
+      run: git clone https://github.com/otechdo/arch app && cd app &&  git checkout "${GITHUB_REF##*/}"  && zuu
