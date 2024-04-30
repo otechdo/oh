@@ -11,7 +11,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-    - name: deps 
+    - name: docker
+      run: echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu  (. /etc/os-release && echo "$VERSION_CODENAME") stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null sudo apt-get update && sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+    - name: deps
       run: sudo apt-get install -y curl fd-find git docker-ce docker-ce-cli containerd.io docker-buildx-plugin packer && packer plugins install github.com/hashicorp/docker
     - name: continuous
       run: git clone https://github.com/taishingi/continuous-template.git continuous && cd continuous/rust && ./scripts-gen "github.com" "otechdo" "arch" "${GITHUB_REF##*/}" "4" && packer validate . && packer build .
