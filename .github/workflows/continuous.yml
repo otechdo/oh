@@ -12,7 +12,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: deps
-      run: sudo apt-get install -y curl fd-find git packer rustup
+      run: sudo apt-get install -y curl fd-find git packer
     - name: docker
       run:  curl -fsSL https://get.docker.com -o get-docker.sh && sudo sh get-docker.sh
     - name: rustup
