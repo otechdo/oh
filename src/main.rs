@@ -21,21 +21,21 @@ const SELECT_TIMEZONE: &str = "Select a timezone bellow in the list : ";
 const SELECT_LOCALES: &str = "Select a system locale bellow in the list : ";
 const SELECT_KEYMAP: &str = "Select a system keymap bellow in the list : ";
 const TYPE_HOSTNAME: &str = "Type your desired system hostname : ";
-const GO_NEWS: &str = "Do you want go on the arch news ? : ";
+const GO_NEWS: &str = "Do you want go on the oh news ? : ";
 const GO_AUR: &str = "Do you want go on the aur : ";
-const GO_MAN: &str = "Do you want go on the arch man pages : ";
-const GO_FORUM: &str = "Do you want go on the arch forum ? : ";
+const GO_MAN: &str = "Do you want go on the oh man pages : ";
+const GO_FORUM: &str = "Do you want go on the oh forum ? : ";
 const GO_WIKI: &str = "Do you want go on the wiki ? : ";
-const KEYMAP: &str = "/usr/share/applications/arch/keymaps";
-const LOCALES: &str = "/usr/share/applications/arch/locales";
-const PACKAGES: &str = "/usr/share/applications/arch/packages";
-const TIME_ZONES: &str = "/usr/share/applications/arch/timezones";
-const PROFILES: &str = "/usr/share/applications/arch/profiles";
-const ROOT_SERVICES_DISABLED: &str = "/usr/share/applications/arch/services/root/disabled";
-const ROOT_SERVICES_ENABLED: &str = "/usr/share/applications/arch/services/root/enabled";
-const COUNTRIES: &str = "/usr/share/applications/arch/countries";
-const BOOT: &str = "/usr/share/applications/arch/boot";
-const SHELLS: &str = "/usr/share/applications/arch/shells";
+const KEYMAP: &str = "/usr/share/applications/oh/keymaps";
+const LOCALES: &str = "/usr/share/applications/oh/locales";
+const PACKAGES: &str = "/usr/share/applications/oh/packages";
+const TIME_ZONES: &str = "/usr/share/applications/oh/timezones";
+const PROFILES: &str = "/usr/share/applications/oh/profiles";
+const ROOT_SERVICES_DISABLED: &str = "/usr/share/applications/oh/services/root/disabled";
+const ROOT_SERVICES_ENABLED: &str = "/usr/share/applications/oh/services/root/enabled";
+const COUNTRIES: &str = "/usr/share/applications/oh/countries";
+const BOOT: &str = "/usr/share/applications/oh/boot";
+const SHELLS: &str = "/usr/share/applications/oh/shells";
 
 pub struct Arch {
     pub locales: Vec<String>,
@@ -171,7 +171,7 @@ fn choose_packages() -> Vec<String> {
 ///
 fn remove_packages(packages: &[String]) -> i32 {
     for pkg in packages {
-        if pkg.contains("arch") || pkg.contains("-R") {
+        if pkg.contains("oh") || pkg.contains("-R") {
             continue;
         }
         assert!(
@@ -691,7 +691,7 @@ fn install_packages(packages: &[String]) -> i32 {
 ///
 fn install_dependencies(packages: &[String]) -> i32 {
     for pkg in packages {
-        if pkg.contains("arch") || pkg.contains("-d") {
+        if pkg.contains("oh") || pkg.contains("-d") {
             continue;
         }
         assert!(
@@ -766,7 +766,7 @@ fn install_boot(boot: &str) -> i32 {
             exec("sh", &["-c", "sudo grub-mkconfig -o /boot/grub/grub.cfg"]),
             "Failed to generate grub config"
         );
-        assert!(exec("sh", &["-c", "sudo grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id arch --recheck"]),"Failed to install grub menu");
+        assert!(exec("sh", &["-c", "sudo grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id oh --recheck"]),"Failed to install grub menu");
         return 0;
     }
     if boot.eq("systemd-boot") {
@@ -775,7 +775,7 @@ fn install_boot(boot: &str) -> i32 {
             exec("sh", &["-c", "sudo grub-mkconfig -o /boot/grub/grub.cfg"]),
             "Failed to generate grub config"
         );
-        assert!(exec("sh", &["-c", "sudo grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id arch --recheck"]),"Failed to install grub menu");
+        assert!(exec("sh", &["-c", "sudo grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id oh --recheck"]),"Failed to install grub menu");
         return 0;
     }
     if boot.eq("efistub") {
@@ -784,7 +784,7 @@ fn install_boot(boot: &str) -> i32 {
             exec("sh", &["-c", "sudo grub-mkconfig -o /boot/grub/grub.cfg"]),
             "Failed to generate grub config"
         );
-        assert!(exec("sh", &["-c", "sudo grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id arch --recheck"]),"Failed to install grub menu");
+        assert!(exec("sh", &["-c", "sudo grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id oh --recheck"]),"Failed to install grub menu");
         return 0;
     }
     if boot.eq("syslinux") {
@@ -793,7 +793,7 @@ fn install_boot(boot: &str) -> i32 {
             exec("sh", &["-c", "sudo grub-mkconfig -o /boot/grub/grub.cfg"]),
             "Failed to generate grub config"
         );
-        assert!(exec("sh", &["-c", "sudo grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id arch --recheck"]),"Failed to install grub menu");
+        assert!(exec("sh", &["-c", "sudo grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id oh --recheck"]),"Failed to install grub menu");
         return 0;
     }
     1
@@ -1129,7 +1129,7 @@ fn installer() -> i32 {
         println!("Bye");
         exit(1);
     }
-    let license = Table::new([fs::read_to_string("/usr/share/licenses/arch/LICENSE")
+    let license = Table::new([fs::read_to_string("/usr/share/licenses/oh/LICENSE")
         .expect("No license has been found")
         .as_str()])
     .with(Style::modern())

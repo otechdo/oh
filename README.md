@@ -1,5 +1,5 @@
 <!-- TOC -->
-* [Arch](#arch)
+* [Oh](#oh)
 * [Command line interface](#command-line-interface)
   * [What it's?](#what-its)
   * [Why ?](#why-)
@@ -21,7 +21,7 @@
   * [Install the base system](#install-the-base-system)
     * [Uefi system](#uefi-system)
     * [Bios system](#bios-system)
-  * [Install the arch dependencies](#install-the-arch-dependencies)
+  * [Install the oh dependencies](#install-the-oh-dependencies)
     * [Setup mode](#setup-mode)
     * [After install mode](#after-install-mode)
   * [Generate fstab](#generate-fstab)
@@ -36,13 +36,13 @@
     * [Modify the pacman configuration](#modify-the-pacman-configuration)
     * [Refresh repositories](#refresh-repositories)
     * [Paru](#paru)
-    * [Arch](#arch-1)
+    * [Oh](#oh-1)
       * [From GitHub](#from-github)
       * [From Aur](#from-aur)
 * [Supported desktop](#supported-desktop)
 * [Supported window manager](#supported-window-manager)
     * [Run the setup](#run-the-setup)
-      * [Rebuild a complete arch](#rebuild-a-complete-arch)
+      * [Rebuild a complete oh](#rebuild-a-complete-oh)
       * [Quit the fresh new system](#quit-the-fresh-new-system)
       * [Unmounted all partitions](#unmounted-all-partitions)
       * [Reboot](#reboot)
@@ -61,58 +61,61 @@
     * [Display help](#display-help)
 <!-- TOC -->
 
-# Arch
+# Oh
 
-| Code checkup                                                                                                                             | Continuous testing                                                                                                                                                        | version |
-|------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------|
-| [![zuu](https://github.com/otechdo/arch/actions/workflows/zuu.yml/badge.svg)](https://github.com/otechdo/arch/actions/workflows/zuu.yml) | [![continuous](https://github.com/otechdo/arch/actions/workflows/continuous.yml/badge.svg?branch=main)](https://github.com/otechdo/arch/actions/workflows/continuous.yml) | `1.0.0` |
+| Code checkup                                                                                                                         | Continuous testing                                                                                                                                                    | version |
+|--------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------|
+| [![zuu](https://github.com/otechdo/oh/actions/workflows/zuu.yml/badge.svg)](https://github.com/otechdo/oh/actions/workflows/zuu.yml) | [![continuous](https://github.com/otechdo/oh/actions/workflows/continuous.yml/badge.svg?branch=main)](https://github.com/otechdo/oh/actions/workflows/continuous.yml) | `1.0.0` |
 
 # Command line interface
 
-| command                            | alias                   | do                                        |
-|------------------------------------|-------------------------|-------------------------------------------|
-| `arch`                             | `arch`                  | Run installer in update mode              |
-| `arch --setup`                     | `arch -s`               | Run installer in first install mode       |
-| `arch --new`                       | `arch -n`               | Run installer in new config mode          |
-| `arch --install`                   | `arch -i`               | Run arch in packages installer mode       |
-| `arch --deps`                      | `arch -d`               | Run arch in dependencies installer mode   |
-| `arch --uninstall`                 | `arch -u`               | Run arch in packages uninstaller mode     |
-| `arch --mirrors`                   | `arch -m`               | Run arch in mirrors updater mode          |
-| `arch --check`                     | `arch -c`               | Run arch in check updates mode            |
-| `arch --download`                  | `arch -d`               | Run arch in download iso mode             |
-| `arch --help`                      | `arch -h`               | Display the help message                  |
-| `arch --cache`                     | `arch -C`               | Generate cache files                      |
-| `arch --wiki`                      | `arch -w`               | Navigate to the wiki                      |
-| `arch --news`                      | `arch -n`               | Navigate to the news                      |
-| `arch --aur`                       | `arch -a`               | Navigate to the aur                       |
-| `arch --forum`                     | `arch -f`               | Navigate to the forum                     |
-| `arch --man`                       | `arch -m`               | Navigate to the man pages                 |
-| `arch --vote <pkg>`                | `arch -v <pkg>`         | Vote for a aur package                    |
-| `arch --search pkg`                | `arch -S pkg`           | Run arch in search package mode           |
-| `arch --create-usb <device_path> ` | `arch -U <devive_path>` | Create usb with the current configuration |
+| command                          | alias                 | do                                        |
+|----------------------------------|-----------------------|-------------------------------------------|
+| `oh`                             | `oh`                  | Run installer in update mode              |
+| `oh --setup`                     | `oh -s`               | Run installer in first install mode       |
+| `oh --new`                       | `oh -n`               | Run installer in new config mode          |
+| `oh --install`                   | `oh -i`               | Run oh in packages installer mode         |
+| `oh --deps`                      | `oh -d`               | Run oh in dependencies installer mode     |
+| `oh --uninstall`                 | `oh -u`               | Run oh in packages uninstaller mode       |
+| `oh --mirrors`                   | `oh -m`               | Run oh in mirrors updater mode            |
+| `oh --check`                     | `oh -c`               | Run oh in check updates mode              |
+| `oh --download`                  | `oh -d`               | Run oh in download iso mode               |
+| `oh --help`                      | `oh -h`               | Display the help message                  |
+| `oh --cache`                     | `oh -C`               | Generate cache files                      |
+| `oh --wiki`                      | `oh -w`               | Navigate to the wiki                      |
+| `oh --news`                      | `oh -n`               | Navigate to the news                      |
+| `oh --aur`                       | `oh -a`               | Navigate to the aur                       |
+| `oh --forum`                     | `oh -f`               | Navigate to the forum                     |
+| `oh --man`                       | `oh -m`               | Navigate to the man pages                 |
+| `oh --vote <pkg>`                | `oh -v <pkg>`         | Vote for a aur package                    |
+| `oh --seoh pkg`                  | `oh -S pkg`           | Run oh in seoh package mode               |
+| `oh --create-usb <device_path> ` | `oh -U <devive_path>` | Create usb with the current configuration |
 
 ## What it's?
 
-It's a project to install archlinux manually.
+It's a project to install ohlinux manually.
 
-It's requiring to know an archlinux system.
+It's requiring to know an ohlinux system.
 
 ## Why ?
 
-I've started development to customize my arch more simply.
+I've started development to customize my oh more simply.
 
 ## Donate
 
-![donate](https://raw.githubusercontent.com/otechdo/arch/main/donate.png) 
+![donate](https://raw.githubusercontent.com/otechdo/oh/main/donate.png) 
 
 [@donate](https://www.paypal.com/donate/?hosted_button_id=4EB2UW73HN8Q2)
 
 ## Documentation
 
-- [@fr]()
-- [@es]()
-- [@it]()
-- [@official documentation](https://wiki.archlinux.org/title/Installation_guide)
+| Locale                                                  | completed |
+|---------------------------------------------------------|-----------|
+| [@fr](oh/docs/fr/README.md))                            | false     |
+| [es](oh/docs/es/README.md))                             | false     |
+| [it](oh/docs/it/README.md))                             | false     |
+| [en](https://github.com/otechdo/oh/blob/main/README.md) | false     |
+
 
 # Key bindings
 
@@ -239,7 +242,7 @@ These key bindings may be used in [`Editor`] prompts.
 
 # Installation
 
-Let's begin the arch installation! 
+Let's begin the oh installation! 
 
 ## Set keymap
 
@@ -271,7 +274,7 @@ reflector -c <country> --sort delay --save /etc/pacman.d/mirrorlist -p https
 ## Initialise the pacman keyring
 
 ```bash
-pacman-key --init && pacman-key --populate archlinux
+pacman-key --init && pacman-key --populate ohlinux
 ```
 
 ##  Install the base system
@@ -281,29 +284,29 @@ Add your GPU driver and processor ucode package.
 ### Uefi system
 
 ```bash
-pacstrap /mnt base base-devel linux linux-firmware less networkmanager efivars bootmgr xfsprogs os-prober fish feh pkgfile pacman-contrib archlinux-wallpaper
+pacstrap /mnt base base-devel linux linux-firmware less networkmanager efivars bootmgr xfsprogs os-prober fish feh pkgfile pacman-contrib ohlinux-wallpaper
 ```
 
 ### Bios system
 
 ```bash
-pacstrap /mnt base base-devel linux linux-firmware networkmanager xfsprogs os-prober fish pkgfile less pacman-contrib feh wallutils archlinux-wallpaper 
+pacstrap /mnt base base-devel linux linux-firmware networkmanager xfsprogs os-prober fish pkgfile less pacman-contrib feh wallutils ohlinux-wallpaper 
 ```
 
-##  Install the arch dependencies
+##  Install the oh dependencies
 
 `paru` it's also required.
 
 ### Setup mode
 
 ```bash
-pacstrap /mnt w3m rustup wget rsync archiso git arch-wiki-lite archinstall man-pages arch-install-scripts aurpublish distrobox toolbox vim
+pacstrap /mnt w3m rustup wget rsync ohiso git oh-wiki-lite ohinstall man-pages oh-install-scripts aurpublish distrobox toolbox vim
 ```
 
 ### After install mode
 
 ```bash
-sudo pacman -S --needed w3m rustup git wget rsync git arch-wiki-lite archinstall man-pages arch-install-scripts aurpublish distrobox toolbox vim
+sudo pacman -S --needed w3m rustup git wget rsync git oh-wiki-lite ohinstall man-pages oh-install-scripts aurpublish distrobox toolbox vim
 ```
 
 ## Generate fstab
@@ -315,7 +318,7 @@ genfstab -U /mnt >> /mnt/etc/fstab
 ## Enter in the new system
 
 ```bash
-arch-chroot /mnt && cd ~
+oh-chroot /mnt && cd ~
 ```
 
 ## Manage accounts
@@ -371,20 +374,20 @@ sudo pacman -Sy
 ### Paru
 
 ```bash
-git clone https://aur.archlinux.org/paru 
+git clone https://aur.ohlinux.org/paru 
 cd paru
 makepkg -si 
 cd ..
 rm -rf paru
 ```
 
-### Arch
+### Oh
 
 #### From GitHub
 
 ```bash
-git clone https://github.com/otechdo/arch 
-cd arch 
+git clone https://github.com/otechdo/oh 
+cd oh 
 make
 sudo make install
 ```
@@ -397,25 +400,25 @@ paru -Syu manager
 
 # Supported desktop
 
-- [@deepin](https://wiki.archlinux.org/title/Deepin_Desktop_Environment)
-- [@kde](https://wiki.archlinux.org/title/KDE)
-- [@gnome](https://wiki.archlinux.org/title/GNOME)
+- [@deepin](https://wiki.ohlinux.org/title/Deepin_Desktop_Environment)
+- [@kde](https://wiki.ohlinux.org/title/KDE)
+- [@gnome](https://wiki.ohlinux.org/title/GNOME)
 
 # Supported window manager
 
-- [@xmonad](https://wiki.archlinux.org/title/xmonad)
-- [@i3](https://wiki.archlinux.org/title/i3)
+- [@xmonad](https://wiki.ohlinux.org/title/xmonad)
+- [@i3](https://wiki.ohlinux.org/title/i3)
 
 ### Run the setup
 
 ```bash
-arch --setup
+oh --setup
 ```
 
-#### Rebuild a complete arch
+#### Rebuild a complete oh
 
 ```bash
-arch --new-config
+oh --new-config
 ```
 
 #### Quit the fresh new system
@@ -448,8 +451,8 @@ Distrobox guests tested successfully with the following container images:
 | AlmaLinux (Toolbox)   | 8<br>9                                             | quay.io/toolbx-images/almalinux-toolbox:8<br>quay.io/toolbx-images/almalinux-toolbox:9<br>quay.io/toolbx-images/almalinux-toolbox:latest                                                                                                                                                                                |
 | Alpine (Toolbox)      | 3.16<br>3.17<br>3.18<br>edge                       | quay.io/toolbx-images/alpine-toolbox:3.16<br>quay.io/toolbx-images/alpine-toolbox:3.17<br>quay.io/toolbx-images/alpine-toolbox:3.18<br>quay.io/toolbx-images/alpine-toolbox:edge<br>quay.io/toolbx-images/alpine-toolbox:latest                                                                                         |
 | AmazonLinux (Toolbox) | 2<br>2022                                          | quay.io/toolbx-images/amazonlinux-toolbox:2<br>quay.io/toolbx-images/amazonlinux-toolbox:2023<br>quay.io/toolbx-images/amazonlinux-toolbox:latest                                                                                                                                                                       |
-| Archlinux (Toolbox)   |                                                    | quay.io/toolbx/arch-toolbox:latest                                                                                                                                                                                                                                                                                      |
-| Bazzite Arch          |                                                    | ghcr.io/ublue-os/bazzite-arch:latest<br>ghcr.io/ublue-os/bazzite-arch-gnome:latest                                                                                                                                                                                                                                      |
+| Ohlinux (Toolbox)     |                                                    | quay.io/toolbx/oh-toolbox:latest                                                                                                                                                                                                                                                                                        |
+| Bazzite Oh            |                                                    | ghcr.io/ublue-os/bazzite-oh:latest<br>ghcr.io/ublue-os/bazzite-oh-gnome:latest                                                                                                                                                                                                                                          |
 | Centos (Toolbox)      | stream8<br>stream9                                 | quay.io/toolbx-images/centos-toolbox:stream8<br>quay.io/toolbx-images/centos-toolbox:stream9<br>quay.io/toolbx-images/centos-toolbox:latest                                                                                                                                                                             |
 | Debian (Toolbox)      | 10<br>11<br>12<br>testing<br>unstable<br>          | quay.io/toolbx-images/debian-toolbox:10<br>quay.io/toolbx-images/debian-toolbox:11<br>quay.io/toolbx-images/debian-toolbox:12<br>quay.io/toolbx-images/debian-toolbox:testing<br>quay.io/toolbx-images/debian-toolbox:unstable<br>quay.io/toolbx-images/debian-toolbox:latest                                           |
 | Fedora (Toolbox)      | 37<br>38<br>39<br>Rawhide                          | registry.fedoraproject.org/fedora-toolbox:37<br>registry.fedoraproject.org/fedora-toolbox:38<br>registry.fedoraproject.org/fedora-toolbox:39<br>registry.fedoraproject.org/fedora-toolbox:rawhide                                                                                                                       |
@@ -460,7 +463,7 @@ Distrobox guests tested successfully with the following container images:
 | AlmaLinux             | 8<br>8-minimal<br>9<br>9-minimal                   | docker.io/library/almalinux:8<br>docker.io/library/almalinux:9                                                                                                                                                                                                                                                          |
 | Alpine Linux          | 3.15<br>3.16                                       | docker.io/library/alpine:3.15<br>docker.io/library/alpine:3.16<br>docker.io/library/alpine:latest                                                                                                                                                                                                                       |
 | AmazonLinux           | 1<br>2<br>2023                                     | public.ecr.aws/amazonlinux/amazonlinux:1<br>public.ecr.aws/amazonlinux/amazonlinux:2<br>public.ecr.aws/amazonlinux/amazonlinux:2023                                                                                                                                                                                     |
-| Archlinux             |                                                    | docker.io/library/archlinux:latest                                                                                                                                                                                                                                                                                      |
+| Ohlinux               |                                                    | docker.io/library/ohlinux:latest                                                                                                                                                                                                                                                                                        |
 | CentOS Stream         | 8<br>9                                             | quay.io/centos/centos:stream8<br>quay.io/centos/centos:stream9                                                                                                                                                                                                                                                          |
 | CentOS                | 7                                                  | quay.io/centos/centos:7                                                                                                                                                                                                                                                                                                 |
 | Chainguard Wolfi      | Small note: sudo is missing, use su-exec instead.  | cgr.dev/chainguard/wolfi-base:latest                                                                                                                                                                                                                                                                                    |

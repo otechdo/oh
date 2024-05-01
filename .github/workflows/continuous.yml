@@ -22,4 +22,4 @@ jobs:
     - name: plugins
       run: packer plugins install github.com/hashicorp/docker
     - name: continuous
-      run: git clone https://github.com/taishingi/continuous-template.git continuous && cd continuous/rust && ./scripts-gen "github.com" "otechdo" "arch" "${GITHUB_REF##*/}" "4" && packer validate . && packer build .
+      run: git clone https://github.com/taishingi/continuous-template.git continuous && cd continuous/rust && ./scripts-gen "github.com" "otechdo" "oh" "${GITHUB_REF##*/}" "4" && packer validate . && packer build .

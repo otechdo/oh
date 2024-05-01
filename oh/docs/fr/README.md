@@ -30,7 +30,7 @@ loadkeys fr
 cgdisk /dev/sda
 ```
 
-## Formatage
+## Formatter
 
 ### /boot/efi
 
@@ -50,7 +50,7 @@ mkfs.ext2 /dev/sda2
 mkfs.ext4 /dev/sda3
 ```
 
-## Liste de toutes les partitions pour le montage
+## Lister les partitions pour le montage
 
 ```bash
 lsblk --fs
@@ -99,7 +99,7 @@ genfstab -U /mnt >> /mnt/etc/fstab
 ##  Entre dans le nouveau système 
 
 ```bash
-arch-chroot /mnt && cd ~
+oh-chroot /mnt && cd ~
 ```
 
 ## Création de votre compte
@@ -162,25 +162,25 @@ git clone https://aur.archlinux.org/yay && cd yay && makepkg -si && cd .. && rm 
 ### A partir de GitHub
 
 ```bash
-git clone https://github.com/otechdo/arch && cd arch && make setup
+git clone https://github.com/otechdo/arch && cd oh && make setup
 ```
 
 ### A partir de Crates.io
 
 ```bash
-cargo install arch && install -m 755 "$HOME/.cargo/bin/arch" /usr/bin/arch && arch setup
+cargo install oh && install -m 755 "$HOME/.cargo/bin/arch" /usr/bin/oh && oh setup
 ```
 
 ### A partir d'Aur
 
 ```bash
-paru -Syu manager && arch setup
+paru -Syu manager && oh setup
 ```
 
 ## Setup the new arch
 
 ```bash
-arch setup
+oh setup
 ```
 
 ## Desktop préconfigurés
@@ -194,63 +194,63 @@ arch setup
 ## Afin d'installer des paquets
 
 ```bash
-arch --install-packages
+oh --install-packages
 ```
 
 ## Afin d'installer des dépendances 
 
 ```bash
-arch --install-dependencies
+oh --install-dependencies
 ```
 
 ## Afin de supprimer des paquets
 
 ```bash
-arch --remove-packages
+oh --remove-packages
 ```
 
 ## Afin de mettre a jour la liste des miroirs
 
 ```bash
-arch --update-mirrors
+oh --update-mirrors
 ```
 
 ## Verifier les mises à jours
 
 ```bash
-arch --check-updates
+oh --check-updates
 ```
 
 ## Afin de mettre à jour arch
 
 ```bash
-arch --update
+oh --update
 ```
 
 ## Afin de mettre à jour et de redémarrer
 
 ```bash
-arch --update-and-reboot
-arch --update -r
-arch -r --update
+oh --update-and-reboot
+oh --update -r
+oh -r --update
 ```
 
 ## Annuler le redémarrage
 
 ```bash
-arch --cancel-reboot
+oh --cancel-reboot
 ```
 
 ## Mise à jour du cache des paquets
 
 ```bash
-sudo arch --refresh-cache
+sudo oh --refresh-cache
 ```
 
 ## Télécharger les mise à jours seulement
 
 ```bash
-arch --download-updates
+oh --download-updates
 ```
 
 ## Quiter arch-chroot

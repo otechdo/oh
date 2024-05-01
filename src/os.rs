@@ -5,8 +5,8 @@ use tabled as _;
 use std::env::args;
 use std::process::{exit, Command, ExitCode};
 const IMAGES: [&str; 80] = [
-    "bazzite-arch:latest",
-    "bazzite-arch-gnome:latest",
+    "bazzite-oh:latest",
+    "bazzite-oh-gnome:latest",
     "fedora-toolbox:rawhide",
     "distrobox:latest",
     "ubi8/toolbox",

@@ -15,4 +15,4 @@ jobs:
     - name: deps
       run: cargo install cargo-audit zuu 
     - name: zuu
-      run: git clone https://github.com/otechdo/arch app && cd app &&  git checkout "${GITHUB_REF##*/}"  && zuu
+      run: git clone https://github.com/otechdo/oh app && cd app &&  git checkout "${GITHUB_REF##*/}"  && zuu
