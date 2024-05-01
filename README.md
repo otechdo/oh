@@ -1,10 +1,11 @@
 <!-- TOC -->
 * [Oh](#oh)
+  * [Profiles](#profiles)
+    * [Desktop](#desktop)
+    * [Tilling windows manager](#tilling-windows-manager)
+    * [Groups](#groups)
 * [Command line interface](#command-line-interface)
-  * [What it's?](#what-its)
-  * [Why ?](#why-)
-  * [Donate](#donate)
-  * [Documentation](#documentation)
+* [Documentation](#documentation)
 * [Key bindings](#key-bindings)
   * [All prompts](#all-prompts)
   * [Text input](#text-input)
@@ -36,86 +37,110 @@
     * [Modify the pacman configuration](#modify-the-pacman-configuration)
     * [Refresh repositories](#refresh-repositories)
     * [Paru](#paru)
-    * [Oh](#oh-1)
+    * [Manager](#manager)
       * [From GitHub](#from-github)
       * [From Aur](#from-aur)
 * [Supported desktop](#supported-desktop)
 * [Supported window manager](#supported-window-manager)
     * [Run the setup](#run-the-setup)
-      * [Rebuild a complete oh](#rebuild-a-complete-oh)
-      * [Quit the fresh new system](#quit-the-fresh-new-system)
-      * [Unmounted all partitions](#unmounted-all-partitions)
-      * [Reboot](#reboot)
-* [Distrobox management](#distrobox-management)
-  * [Distrobox containers](#distrobox-containers-)
-    * [List all boxes](#list-all-boxes)
-    * [Create a new box](#create-a-new-box)
-    * [Enter inside a box](#enter-inside-a-box)
-    * [Stop a box](#stop-a-box)
-    * [Stop all boxes](#stop-all-boxes)
-    * [Run a command in a box](#run-a-command-in-a-box)
-    * [Stop a box](#stop-a-box-1)
-    * [Remove all boxes](#remove-all-boxes)
-    * [Remove a box](#remove-a-box)
-    * [Upgrade all boxes](#upgrade-all-boxes)
-    * [Display help](#display-help)
+    * [Quit the fresh new system](#quit-the-fresh-new-system)
+    * [Unmounted all partitions](#unmounted-all-partitions)
+    * [Reboot](#reboot)
 <!-- TOC -->
 
 # Oh
 
-| Code checkup                                                                                                                         | Continuous testing                                                                                                                                                    | version |
-|--------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------|
-| [![zuu](https://github.com/otechdo/oh/actions/workflows/zuu.yml/badge.svg)](https://github.com/otechdo/oh/actions/workflows/zuu.yml) | [![continuous](https://github.com/otechdo/oh/actions/workflows/continuous.yml/badge.svg?branch=main)](https://github.com/otechdo/oh/actions/workflows/continuous.yml) | `1.0.0` |
+<img src="https://raw.githubusercontent.com/otechdo/oh/main/oh/icons/Arch.svg" width="400" align="right" alt="Oh logo">
 
-# Command line interface
-
-| command                          | alias                 | do                                        |
-|----------------------------------|-----------------------|-------------------------------------------|
-| `oh`                             | `oh`                  | Run installer in update mode              |
-| `oh --setup`                     | `oh -s`               | Run installer in first install mode       |
-| `oh --new`                       | `oh -n`               | Run installer in new config mode          |
-| `oh --install`                   | `oh -i`               | Run oh in packages installer mode         |
-| `oh --deps`                      | `oh -d`               | Run oh in dependencies installer mode     |
-| `oh --uninstall`                 | `oh -u`               | Run oh in packages uninstaller mode       |
-| `oh --mirrors`                   | `oh -m`               | Run oh in mirrors updater mode            |
-| `oh --check`                     | `oh -c`               | Run oh in check updates mode              |
-| `oh --download`                  | `oh -d`               | Run oh in download iso mode               |
-| `oh --help`                      | `oh -h`               | Display the help message                  |
-| `oh --cache`                     | `oh -C`               | Generate cache files                      |
-| `oh --wiki`                      | `oh -w`               | Navigate to the wiki                      |
-| `oh --news`                      | `oh -n`               | Navigate to the news                      |
-| `oh --aur`                       | `oh -a`               | Navigate to the aur                       |
-| `oh --forum`                     | `oh -f`               | Navigate to the forum                     |
-| `oh --man`                       | `oh -m`               | Navigate to the man pages                 |
-| `oh --vote <pkg>`                | `oh -v <pkg>`         | Vote for a aur package                    |
-| `oh --seoh pkg`                  | `oh -S pkg`           | Run oh in seoh package mode               |
-| `oh --create-usb <device_path> ` | `oh -U <devive_path>` | Create usb with the current configuration |
-
-## What it's?
-
-It's a project to install ohlinux manually.
-
-It's requiring to know an ohlinux system.
-
-## Why ?
-
-I've started development to customize my oh more simply.
-
-## Donate
-
-![donate](https://raw.githubusercontent.com/otechdo/oh/main/donate.png) 
+![donate](https://raw.githubusercontent.com/otechdo/oh/main/donate.png)
 
 [@donate](https://www.paypal.com/donate/?hosted_button_id=4EB2UW73HN8Q2)
 
-## Documentation
+It's a project to install archlinux manually.
 
-| Locale                                                  | completed |
-|---------------------------------------------------------|-----------|
-| [@fr](oh/docs/fr/README.md))                            | false     |
-| [es](oh/docs/es/README.md))                             | false     |
-| [it](oh/docs/it/README.md))                             | false     |
-| [en](https://github.com/otechdo/oh/blob/main/README.md) | false     |
+It's requiring to know the archlinux system.
 
+## Profiles
+
+### Desktop
+
+| base                                                                     | extra                                                                                | supported |  
+|--------------------------------------------------------------------------|--------------------------------------------------------------------------------------|-----------|
+| [gnome](https://github.com/otechdo/oh/blob/main/oh/profiles/gnome)       | [gnome-extra](https://github.com/otechdo/oh/blob/main/oh/profiles/gnome-extra)       | `yes`     |
+| [kde](https://github.com/otechdo/oh/blob/main/oh/profiles/kde)           | [kde-extra](https://github.com/otechdo/oh/blob/main/oh/profiles/kde-extra)           | `yes`     |
+| [cinnamon](https://github.com/otechdo/oh/blob/main/oh/profiles/cinnamon) | [cinnamon-extra](https://github.com/otechdo/oh/blob/main/oh/profiles/cinnamon-extra) | `yes`     |
+| [budgie](https://github.com/otechdo/oh/blob/main/oh/profiles/budgie)     | [budgie-extra](https://github.com/otechdo/oh/blob/main/oh/profiles/budgie-extra)     | `yes`     |
+| [xfce](https://github.com/otechdo/oh/blob/main/oh/profiles/xfce)         | [xfce-extra](https://github.com/otechdo/oh/blob/main/oh/profiles/xfce-extra)         | `yes`     |
+| [lxqt](https://github.com/otechdo/oh/blob/main/oh/profiles/lxqt)         | [lxqt-extra](https://github.com/otechdo/oh/blob/main/oh/profiles/lxqt-extra)         | `yes`     |
+
+### Tilling windows manager
+
+| base                                                                     | extra                                                                                | supported |  
+|--------------------------------------------------------------------------|--------------------------------------------------------------------------------------|-----------|
+| [i3](https://github.com/otechdo/oh/blob/main/oh/profiles/i3)             | [i3-extra](https://github.com/otechdo/oh/blob/main/oh/profiles/i3-extra)             | `yes`     |
+| [xmonad](https://github.com/otechdo/oh/blob/main/oh/profiles/xmonad)     | [xmonad-extra](https://github.com/otechdo/oh/blob/main/oh/profiles/xmonad-extra)     | `yes`     |
+| [bspwm](https://github.com/otechdo/oh/blob/main/oh/profiles/bspwm)       | [bspwm-extra](https://github.com/otechdo/oh/blob/main/oh/profiles/bspwm-extra)       | `yes`     |
+| [qtile](https://github.com/otechdo/oh/blob/main/oh/profiles/qtile)       | [qtile-extra](https://github.com/otechdo/oh/blob/main/oh/profiles/qtile-extra)       | `yes`     |
+| [hyprland](https://github.com/otechdo/oh/blob/main/oh/profiles/hyprland) | [hyprland-extra](https://github.com/otechdo/oh/blob/main/oh/profiles/hyprland-extra) | `yes`     |
+| [awesome](https://github.com/otechdo/oh/blob/main/oh/profiles/awesome)   | [awesome-extra](https://github.com/otechdo/oh/blob/main/oh/profiles/awesome-extra)   | `yes`     |
+
+### Groups
+
+| base                                                                                 | extra                                                                                            | do                          | supported |
+|--------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------|-----------------------------|-----------|
+| [admin](https://github.com/otechdo/oh/blob/main/oh/profiles/admin)                   | [admin-extra](https://github.com/otechdo/oh/blob/main/oh/profiles/admin-extra)                   | Add cockpit full support    | `yes`     |
+| [container](https://github.com/otechdo/oh/blob/main/oh/profiles/container)           | [container-extra](https://github.com/otechdo/oh/blob/main/oh/profiles/container-extra)           | Add containers support      | `yes`     |
+| [virtualization](https://github.com/otechdo/oh/blob/main/oh/profiles/virtualization) | [virtualization-extra](https://github.com/otechdo/oh/blob/main/oh/profiles/virtualization-extra) | Add virtualization packages | `yes`     |
+| [3d-printing](https://github.com/otechdo/oh/blob/main/oh/profiles/3d-printing)       | [3d-printing-extra](https://github.com/otechdo/oh/blob/main/oh/profiles/3d-printing-extra)       | Add 3d printers support     | `yes`     |
+| [electronic](https://github.com/otechdo/oh/blob/main/oh/profiles/electronic)         | [electronic-extra](https://github.com/otechdo/oh/blob/main/oh/profiles/electronic-extra)         | Add electronic software     | `yes`     |
+| [sound](https://github.com/otechdo/oh/blob/main/oh/profiles/sound)                   | [sound-extra](https://github.com/otechdo/oh/blob/main/oh/profiles/electronic-extra)              | Add full sound driver       | `yes`     |
+| [developer](https://github.com/otechdo/oh/blob/main/oh/profiles/developer)           | [developer-extra](https://github.com/otechdo/oh/blob/main/oh/profiles/developer-extra)           | Add developer toolkit       | `yes`     |
+
+
+![zuu](https://github.com/otechdo/oh/actions/workflows/zuu.yml/badge.svg?branch=main)
+![continuous](https://github.com/otechdo/oh/actions/workflows/continuous.yml/badge.svg?branch=main)
+
+# Command line interface
+
+| command                       | alias               | do                                        |
+|-------------------------------|---------------------|-------------------------------------------|
+| `oh`                          | `oh`                | Run installer in update mode              |
+| `oh --setup`                  | `oh -s`             | Run installer in first install mode       |
+| `oh --new`                    | `oh -n`             | Run installer in new config mode          |
+| `oh --install`                | `oh -i`             | Run oh in packages installer mode         |
+| `oh --deps`                   | `oh -d`             | Run oh in dependencies installer mode     |
+| `oh --uninstall`              | `oh -u`             | Run oh in packages uninstaller mode       |
+| `oh --mirrors`                | `oh -m`             | Run oh in mirrors updater mode            |
+| `oh --check`                  | `oh -c`             | Run oh in check updates mode              |
+| `oh --download`               | `oh -d`             | Run oh in download iso mode               |
+| `oh --help`                   | `oh -h`             | Display the help message                  |
+| `oh --cache`                  | `oh -C`             | Generate cache files                      |
+| `oh --wiki`                   | `oh -w`             | Navigate to the wiki                      |
+| `oh --news`                   | `oh -n`             | Navigate to the news                      |
+| `oh --aur`                    | `oh -a`             | Navigate to the aur                       |
+| `oh --forum`                  | `oh -f`             | Navigate to the forum                     |
+| `oh --man`                    | `oh -m`             | Navigate to the man pages                 |
+| `oh --vote pkg`               | `oh -v pkg`         | Vote for a aur package                    |
+| `oh --search pkg`             | `oh -S pkg`         | Run oh in search package mode             |
+| `oh --search pkg`             | `oh -S pkg`         | Run oh in search package mode             |
+| `oh --create-usb device_path` | `oh -U devive_path` | Create usb with the current configuration |
+| `os --list`                   | `os -l`             | List all boxes                            |
+| `os --new`                    | `os -n`             | Create a box                              |
+| `os --clean`                  | `os -c`             | Remove all created boxes                  |
+| `os --help`                   | `os -h`             | Display help message                      |
+| `os --upgrade`                | `os -U`             | Upgrade all created boxes                 |
+| `os --stop box`               | `os -s box`         | Stop the box                              |
+| `os --use box`                | `os -u box command` | Enter inside the box                      |
+| `os --run box command`        | `os -r box command` | Run the command in the box                |
+
+# Documentation
+
+| Locale                                                   | completed     |
+|----------------------------------------------------------|---------------|
+| [fr](https://github.com/otechdo/oh/blob/main/oh/docs/fr) | `in progress` |
+| [es](https://github.com/otechdo/oh/blob/main/oh/docs/es) | `no`          |
+| [it](https://github.com/otechdo/oh/blob/main/oh/docs/it) | `no`          |
+| [en](https://github.com/otechdo/oh/blob/main/README.md)  | `yes`         |
 
 # Key bindings
 
@@ -135,13 +160,16 @@ These key bindings may be used with all prompts.
 
 Cancelling is defined specially for when the end user is allowed to skip a prompt.
 
-The library user can then use `prompt_skippable` which wraps the return type into an `Option` and catches the `CanceledOperation` error transforming it into a `Ok(None)` result.
+The library user can then use `prompt_skippable` which wraps the return type into an `Option` and catches
+the `CanceledOperation` error transforming it into a `Ok(None)` result.
 
-Interrupted operations are closer to "stop-the-world" operations, where the library user should treat them as termination commands.
+Interrupted operations are closer to "stop-the-world" operations, where the library user should treat them as
+termination commands.
 
 ## Text input
 
-These key bindings may be used with all prompts that ask the user for text input: [`Text`], [`Select`], [`MultiSelect`], [`Confirm`], [`CustomType`] and [`Password`]. 
+These key bindings may be used with all prompts that ask the user for text
+input: [`Text`], [`Select`], [`MultiSelect`], [`Confirm`], [`CustomType`] and [`Password`].
 
 The [`Editor`] prompt is not included because it opens a separate text editor for text input.
 
@@ -242,7 +270,7 @@ These key bindings may be used in [`Editor`] prompts.
 
 # Installation
 
-Let's begin the oh installation! 
+Let's begin the oh installation!
 
 ## Set keymap
 
@@ -256,14 +284,13 @@ loadkeys <keymap>
 cgdisk /dev/sda
 ```
 
-| Number | Size  | Code | Name        | Formating sample           | Mount path      | Mount command                   | Description            |
-|--------|-------|------|-------------|----------------------------|-----------------|---------------------------------|------------------------|
-| 1      | +1G   | EF00 | `/boot/efi` | `mkfs.fat -F 32 /dev/sda1` | `/mnt/boot/efi` | `mount /dev/sda1 /mnt/boot/efi` | The efi boot partition |
-| 2      | +4G   | 8300 | `/boot`     | `mkfs.xfs /dev/sda2`       | `/mnt/boot`     | `mount /dev/sda2 /mnt/boot`     | The boot partition     |
-| 3      | +100G | 8300 | `/`         | `mkfs.xfs /dev/sda3`       | `/mnt`          | `mount /dev/sda3 /mnt`          | The root partition     |
-| 4      | +50%  | 8300 | `/home`     | `mkfs.xfs /dev/sda4`       | `/mnt/home`     | `mount /dev/sda4 /mnt/home`     | The home partition     |
-| 5      | +50%  | 8300 | `/mnt/save` | `mkfs.ext4 /dev/sda5`      | `/mnt/mnt/save` | `mount /dev/sda5 /mnt/mnt/save` | The save partition     |
-
+| N° | Size  | Code | Name        | Formating sample           | Mount path      | Mount command                   | Description       |
+|----|-------|------|-------------|----------------------------|-----------------|---------------------------------|-------------------|
+| 1  | +1G   | EF00 | `/boot/efi` | `mkfs.fat -F 32 /dev/sda1` | `/mnt/boot/efi` | `mount /dev/sda1 /mnt/boot/efi` | The efi boot part |
+| 2  | +4G   | 8300 | `/boot`     | `mkfs.xfs /dev/sda2`       | `/mnt/boot`     | `mount /dev/sda2 /mnt/boot`     | The boot part     |
+| 3  | +100G | 8300 | `/`         | `mkfs.xfs /dev/sda3`       | `/mnt`          | `mount /dev/sda3 /mnt`          | The root part     |
+| 4  | +50%  | 8300 | `/home`     | `mkfs.xfs /dev/sda4`       | `/mnt/home`     | `mount /dev/sda4 /mnt/home`     | The home part     |
+| 5  | +50%  | 8300 | `/mnt/save` | `mkfs.ext4 /dev/sda5`      | `/mnt/mnt/save` | `mount /dev/sda5 /mnt/mnt/save` | The save part     |
 
 ## Update the pacman mirrors
 
@@ -277,7 +304,7 @@ reflector -c <country> --sort delay --save /etc/pacman.d/mirrorlist -p https
 pacman-key --init && pacman-key --populate ohlinux
 ```
 
-##  Install the base system
+## Install the base system
 
 Add your GPU driver and processor ucode package.
 
@@ -293,7 +320,7 @@ pacstrap /mnt base base-devel linux linux-firmware less networkmanager efivars b
 pacstrap /mnt base base-devel linux linux-firmware networkmanager xfsprogs os-prober fish pkgfile less pacman-contrib feh wallutils ohlinux-wallpaper 
 ```
 
-##  Install the oh dependencies
+## Install the oh dependencies
 
 `paru` it's also required.
 
@@ -381,7 +408,7 @@ cd ..
 rm -rf paru
 ```
 
-### Oh
+### Manager
 
 #### From GitHub
 
@@ -395,7 +422,7 @@ sudo make install
 #### From Aur
 
 ```bash
-paru -Syu manager
+paru -Syu oh
 ```
 
 # Supported desktop
@@ -415,143 +442,20 @@ paru -Syu manager
 oh --setup
 ```
 
-#### Rebuild a complete oh
-
-```bash
-oh --new-config
-```
-
-#### Quit the fresh new system
+### Quit the fresh new system
 
 ```bash
 exit
 ```
 
-#### Unmounted all partitions
+### Unmounted all partitions
 
 ```bash
 umount -R /mnt
 ```
 
-#### Reboot
+### Reboot
 
 ```bash
 reboot
-```
-
-
-# Distrobox management
-
-## Distrobox containers 
-
-Distrobox guests tested successfully with the following container images:
-
-| Distro                | Version                                            | Images                                                                                                                                                                                                                                                                                                                  |
-|-----------------------|----------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| AlmaLinux (Toolbox)   | 8<br>9                                             | quay.io/toolbx-images/almalinux-toolbox:8<br>quay.io/toolbx-images/almalinux-toolbox:9<br>quay.io/toolbx-images/almalinux-toolbox:latest                                                                                                                                                                                |
-| Alpine (Toolbox)      | 3.16<br>3.17<br>3.18<br>edge                       | quay.io/toolbx-images/alpine-toolbox:3.16<br>quay.io/toolbx-images/alpine-toolbox:3.17<br>quay.io/toolbx-images/alpine-toolbox:3.18<br>quay.io/toolbx-images/alpine-toolbox:edge<br>quay.io/toolbx-images/alpine-toolbox:latest                                                                                         |
-| AmazonLinux (Toolbox) | 2<br>2022                                          | quay.io/toolbx-images/amazonlinux-toolbox:2<br>quay.io/toolbx-images/amazonlinux-toolbox:2023<br>quay.io/toolbx-images/amazonlinux-toolbox:latest                                                                                                                                                                       |
-| Ohlinux (Toolbox)     |                                                    | quay.io/toolbx/oh-toolbox:latest                                                                                                                                                                                                                                                                                        |
-| Bazzite Oh            |                                                    | ghcr.io/ublue-os/bazzite-oh:latest<br>ghcr.io/ublue-os/bazzite-oh-gnome:latest                                                                                                                                                                                                                                          |
-| Centos (Toolbox)      | stream8<br>stream9                                 | quay.io/toolbx-images/centos-toolbox:stream8<br>quay.io/toolbx-images/centos-toolbox:stream9<br>quay.io/toolbx-images/centos-toolbox:latest                                                                                                                                                                             |
-| Debian (Toolbox)      | 10<br>11<br>12<br>testing<br>unstable<br>          | quay.io/toolbx-images/debian-toolbox:10<br>quay.io/toolbx-images/debian-toolbox:11<br>quay.io/toolbx-images/debian-toolbox:12<br>quay.io/toolbx-images/debian-toolbox:testing<br>quay.io/toolbx-images/debian-toolbox:unstable<br>quay.io/toolbx-images/debian-toolbox:latest                                           |
-| Fedora (Toolbox)      | 37<br>38<br>39<br>Rawhide                          | registry.fedoraproject.org/fedora-toolbox:37<br>registry.fedoraproject.org/fedora-toolbox:38<br>registry.fedoraproject.org/fedora-toolbox:39<br>registry.fedoraproject.org/fedora-toolbox:rawhide                                                                                                                       |
-| openSUSE (Toolbox)    |                                                    | registry.opensuse.org/opensuse/distrobox:latest                                                                                                                                                                                                                                                                         |
-| RedHat (Toolbox)      | 8<br>9                                             | registry.access.redhat.com/ubi8/toolbox<br>registry.access.redhat.com/ubi9/toolbox<br>quay.io/toolbx-images/rhel-toolbox:latest                                                                                                                                                                                         |
-| Rocky Linux (Toolbox) | 8<br>9                                             | quay.io/toolbx-images/rockylinux-toolbox:8<br>quay.io/toolbx-images/rockylinux-toolbox:9<br>quay.io/toolbx-images/rockylinux-toolbox:latest                                                                                                                                                                             |
-| Ubuntu (Toolbox)      | 16.04<br>18.04<br>20.04<br>22.04                   | quay.io/toolbx/ubuntu-toolbox:16.04<br>quay.io/toolbx/ubuntu-toolbox:18.04<br>quay.io/toolbx/ubuntu-toolbox:20.04<br>quay.io/toolbx/ubuntu-toolbox:22.04<br>quay.io/toolbx/ubuntu-toolbox:latest                                                                                                                        |
-| AlmaLinux             | 8<br>8-minimal<br>9<br>9-minimal                   | docker.io/library/almalinux:8<br>docker.io/library/almalinux:9                                                                                                                                                                                                                                                          |
-| Alpine Linux          | 3.15<br>3.16                                       | docker.io/library/alpine:3.15<br>docker.io/library/alpine:3.16<br>docker.io/library/alpine:latest                                                                                                                                                                                                                       |
-| AmazonLinux           | 1<br>2<br>2023                                     | public.ecr.aws/amazonlinux/amazonlinux:1<br>public.ecr.aws/amazonlinux/amazonlinux:2<br>public.ecr.aws/amazonlinux/amazonlinux:2023                                                                                                                                                                                     |
-| Ohlinux               |                                                    | docker.io/library/ohlinux:latest                                                                                                                                                                                                                                                                                        |
-| CentOS Stream         | 8<br>9                                             | quay.io/centos/centos:stream8<br>quay.io/centos/centos:stream9                                                                                                                                                                                                                                                          |
-| CentOS                | 7                                                  | quay.io/centos/centos:7                                                                                                                                                                                                                                                                                                 |
-| Chainguard Wolfi      | Small note: sudo is missing, use su-exec instead.  | cgr.dev/chainguard/wolfi-base:latest                                                                                                                                                                                                                                                                                    |
-| ClearLinux            |                                                    | docker.io/library/clearlinux:latest<br>docker.io/library/clearlinux:base                                                                                                                                                                                                                                                |
-| Crystal Linux         |                                                    | registry.getcryst.al/crystal/misc/docker:latest                                                                                                                                                                                                                                                                         |
-| Debian                | 7<br>8<br>9<br>10<br>11<br>12                      | docker.io/debian/eol:wheezy<br>docker.io/library/debian:buster-backports<br>docker.io/library/debian:bullseye-backports<br>docker.io/library/debian:bookworm-backports<br>docker.io/library/debian:stable-backports                                                                                                     |
-| Debian                | Testing                                            | docker.io/library/debian:testing<br>docker.io/library/debian:testing-backports                                                                                                                                                                                                                                          |
-| Debian                | Unstable                                           | docker.io/library/debian:unstable                                                                                                                                                                                                                                                                                       |
-| deepin                | 20 (apricot)<br>23 (beige)                         | docker.io/linuxdeepin/apricot                                                                                                                                                                                                                                                                                           |
-| Fedora                | 36<br>37<br>38<br>39<br>Rawhide                    | quay.io/fedora/fedora:36<br>quay.io/fedora/fedora:37<br>quay.io/fedora/fedora:38<br>quay.io/fedora/fedora:39<br>quay.io/fedora/fedora:rawhide                                                                                                                                                                           |
-| Gentoo Linux          | rolling                                            | docker.io/gentoo/stage3:latest                                                                                                                                                                                                                                                                                          |
-| KDE neon              | Latest                                             | invent-registry.kde.org/neon/docker-images/plasma:latest                                                                                                                                                                                                                                                                |
-| Kali Linux            | rolling                                            | docker.io/kalilinux/kali-rolling:latest                                                                                                                                                                                                                                                                                 |
-| Mint                  | 21.1                                               | docker.io/linuxmintd/mint21.1-amd64                                                                                                                                                                                                                                                                                     |
-| Neurodebian           | nd100                                              | docker.io/library/neurodebian:nd100                                                                                                                                                                                                                                                                                     |
-| openSUSE              | Leap                                               | registry.opensuse.org/opensuse/leap:latest                                                                                                                                                                                                                                                                              |
-| openSUSE              | Tumbleweed                                         | registry.opensuse.org/opensuse/distrobox:latest<br>registry.opensuse.org/opensuse/tumbleweed:latest<br>registry.opensuse.org/opensuse/toolbox:latest                                                                                                                                                                    |
-| Oracle Linux          | 7<br>7-slim<br>8<br>8-slim<br>9<br>9-slim          | container-registry.oracle.com/os/oraclelinux:7<br>container-registry.oracle.com/os/oraclelinux:7-slim<br>container-registry.oracle.com/os/oraclelinux:8<br>container-registry.oracle.com/os/oraclelinux:8-slim<br>container-registry.oracle.com/os/oraclelinux:9<br>container-registry.oracle.com/os/oraclelinux:9-slim |
-| RedHat (UBI)          | 7<br>8<br>9                                        | registry.access.redhat.com/ubi7/ubi<br>registry.access.redhat.com/ubi8/ubi<br>registry.access.redhat.com/ubi8/ubi-init<br>registry.access.redhat.com/ubi8/ubi-minimal<br>registry.access.redhat.com/ubi9/ubi<br>registry.access.redhat.com/ubi9/ubi-init<br>registry.access.redhat.com/ubi9/ubi-minimal                 |
-| Rocky Linux           | 8<br>8-minimal<br>9                                | quay.io/rockylinux/rockylinux:8<br>quay.io/rockylinux/rockylinux:8-minimal<br>quay.io/rockylinux/rockylinux:9<br>quay.io/rockylinux/rockylinux:latest                                                                                                                                                                   |
-| Scientific Linux      | 7                                                  | docker.io/library/sl:7                                                                                                                                                                                                                                                                                                  |
-| SteamOS               |                                                    | ghcr.io/linuxserver/steamos:latest                                                                                                                                                                                                                                                                                      |
-| Ubuntu                | 14.04<br>16.04<br>18.04<br>20.04<br>22.04<br>23.04 | docker.io/library/ubuntu:14.04<br>docker.io/library/ubuntu:16.04<br>docker.io/library/ubuntu:18.04<br>docker.io/library/ubuntu:20.04<br>docker.io/library/ubuntu:22.04                                                                                                                                                  |
-| Vanilla OS            | VSO                                                | ghcr.io/vanilla-os/vso:main                                                                                                                                                                                                                                                                                             |
-| Void Linux            |                                                    | ghcr.io/void-linux/void-glibc-full:latest                                                                                                                                                                                                                                                                               |
-
-### List all boxes
-
-```bash
-os --list
-```
-
-### Create a new box
-
-```bash
-os --new
-```
-
-### Enter inside a box
-
-```bash
-os --use <name>
-```
-
-### Stop a box
-
-```bash
-os --pause <name>
-```
-
-### Stop all boxes
-
-```bash
-os --stop
-```
-
-### Run a command in a box
-
-```bash
-os --run <name> ls
-```
-
-### Stop a box
-
-```bash
-os --stop <name>
-```
-
-### Remove all boxes
-
-```bash
-os --clean
-```
-
-### Remove a box
-
-```bash
-os --remove <name>
-```
-
-### Upgrade all boxes
-
-```bash
-os --upgrade
-```
-
-### Display help
-
-```bash
-os --help
 ```
