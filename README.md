@@ -40,8 +40,6 @@
     * [Manager](#manager)
       * [From GitHub](#from-github)
       * [From Aur](#from-aur)
-* [Supported desktop](#supported-desktop)
-* [Supported window manager](#supported-window-manager)
     * [Run the setup](#run-the-setup)
     * [Quit the fresh new system](#quit-the-fresh-new-system)
     * [Unmounted all partitions](#unmounted-all-partitions)
@@ -424,17 +422,6 @@ sudo make install
 ```bash
 paru -Syu oh
 ```
-
-# Supported desktop
-
-- [@deepin](https://wiki.ohlinux.org/title/Deepin_Desktop_Environment)
-- [@kde](https://wiki.ohlinux.org/title/KDE)
-- [@gnome](https://wiki.ohlinux.org/title/GNOME)
-
-# Supported window manager
-
-- [@xmonad](https://wiki.ohlinux.org/title/xmonad)
-- [@i3](https://wiki.ohlinux.org/title/i3)
 
 ### Run the setup
 
