@@ -272,7 +272,7 @@ These key bindings may be used in [`Editor`] prompts.
 Let's begin the [archlinux](https://archlinux.org) installation!
 
 ## Set keymap
-²
+
 ```bash
 loadkeys <keymap>
 ```
