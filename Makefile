@@ -2,10 +2,10 @@ SHELLS := $(shell cat /etc/shells)
 
 arch: update
 	@cargo build --release
-	@echo -e "\033[1;32m    Finished\033[1;39m the arch executable has been builded successfully\033[39m"
-	@mkdir -p /usr/share/applications/arch/services/{root,user}
+	@echo -e "\033[1;32m    Finished\033[1;39m the arch executable has been built successfully\033[39m"
+	@sudo mkdir -p /usr/share/applications/arch/services/{root,user}
 	@echo -e "\033[1;32m    Finished\033[1;39m the arch applications directory is ready to use\033[39m"
-	@target/release/arch --cache
+
 	@echo -e "\033[1;32m    Finished\033[1;39m the cache is ready to use\033[39m"	
 install: completions
 	@install -m 644  arch/icons/Up.svg  /usr/share/icons/Up.svg

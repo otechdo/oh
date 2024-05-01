@@ -6,7 +6,7 @@ ConditionPathExists=/usr/bin/check-updates
 [Service]
 Type=oneshot
 ExecStart=/usr/bin/check-updates
-Restart=true
+Restart=always
 
 [Install]
 WantedBy=graphical.target

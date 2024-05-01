@@ -1,13 +1,13 @@
 [package]
-name = "arch"
-version = "1.0.0"
+name = "oh"
+version = "0.0.1"
 edition = "2021"
 license = "GPL-2.0-or-later"
 keywords = ["archlinux","linux","installer","manager","utility"]
 categories = ["command-line-utilities"]
 readme = "README.md"
 authors = ["Willy Micieli"]
-repository = "https://github.com/otechdo/arch"
+repository = "https://github.com/otechdo/oh"
 description = "A archlinux installer and manager"
 
 [[bin]]

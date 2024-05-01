@@ -1,12 +1,12 @@
 [Unit]
-Description=Regenerate the packages lists for arch
+Description=Regenerate the files caches for arch
 After=network.target
 ConditionPathExists=/usr/bin/arch
- 
+
 [Service]
 Type=oneshot
 ExecStart=/usr/bin/arch --cache
-Restart=true
+Restart=always
  
 [Install]
 WantedBy=default.target
