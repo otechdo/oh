@@ -1,7 +1,6 @@
 <!-- TOC -->
 * [Oh](#oh)
   * [Donate](#donate)
-  * [What it is?](#what-it-is)
   * [Profiles](#profiles)
     * [Desktop](#desktop)
     * [Tilling windows manager](#tilling-windows-manager)
@@ -270,10 +269,10 @@ These key bindings may be used in [`Editor`] prompts.
 
 # Installation
 
-Let's begin the oh installation!
+Let's begin the [archlinux](https://archlinux.org) installation!
 
 ## Set keymap
-
+²
 ```bash
 loadkeys <keymap>
 ```
