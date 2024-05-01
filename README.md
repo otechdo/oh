@@ -310,13 +310,13 @@ Add your GPU driver and processor ucode package.
 ### Uefi system
 
 ```bash
-pacstrap /mnt base base-devel linux linux-firmware less networkmanager efivars bootmgr xfsprogs os-prober fish feh pkgfile pacman-contrib ohlinux-wallpaper
+pacstrap /mnt base base-devel linux linux-firmware less networkmanager efivars bootmgr xfsprogs os-prober fish feh pkgfile pacman-contrib ohlinux-wallpaper grub os-prober
 ```
 
 ### Bios system
 
 ```bash
-pacstrap /mnt base base-devel linux linux-firmware networkmanager xfsprogs os-prober fish pkgfile less pacman-contrib feh wallutils ohlinux-wallpaper 
+pacstrap /mnt base base-devel linux linux-firmware networkmanager grub xfsprogs os-prober fish pkgfile less pacman-contrib feh wallutils ohlinux-wallpaper 
 ```
 
 ## Install the oh dependencies
@@ -326,13 +326,13 @@ pacstrap /mnt base base-devel linux linux-firmware networkmanager xfsprogs os-pr
 ### Setup mode
 
 ```bash
-pacstrap /mnt w3m rustup wget rsync ohiso git oh-wiki-lite ohinstall man-pages oh-install-scripts aurpublish distrobox toolbox vim
+pacstrap /mnt w3m rustup wget rsync archiso git arch-wiki-lite archinstall man-pages arch-install-scripts aurpublish distrobox toolbox vim
 ```
 
 ### After install mode
 
 ```bash
-sudo pacman -S --needed w3m rustup git wget rsync git oh-wiki-lite ohinstall man-pages oh-install-scripts aurpublish distrobox toolbox vim
+sudo pacman -S --needed w3m rustup git wget archiso rsync git arch-wiki-lite archinstall man-pages arch-install-scripts aurpublish distrobox toolbox vim
 ```
 
 ## Generate fstab
