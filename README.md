@@ -1,5 +1,7 @@
 <!-- TOC -->
 * [Oh](#oh)
+  * [Donate](#donate)
+  * [What it is?](#what-it-is)
   * [Profiles](#profiles)
     * [Desktop](#desktop)
     * [Tilling windows manager](#tilling-windows-manager)
@@ -47,8 +49,6 @@
 <!-- TOC -->
 
 # Oh
-
-<img src="https://raw.githubusercontent.com/otechdo/oh/main/oh/icons/Arch.svg" width="400" align="right" alt="Oh logo">
 
 ## Donate
 
