@@ -50,9 +50,13 @@
 
 <img src="https://raw.githubusercontent.com/otechdo/oh/main/oh/icons/Arch.svg" width="400" align="right" alt="Oh logo">
 
+## Donate
+
 ![donate](https://raw.githubusercontent.com/otechdo/oh/main/donate.png)
 
 [@donate](https://www.paypal.com/donate/?hosted_button_id=4EB2UW73HN8Q2)
+
+## What it is?
 
 It's a project to install archlinux manually.
 
