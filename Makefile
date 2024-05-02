@@ -1,8 +1,7 @@
 SHELLS := $(shell cat /etc/shells)
 
 .PHONY: oh
-oh:
-	@clear
+oh: verify
 	@cargo build --release
 	@echo -e "\033[1;32m    Finished\033[1;39m the oh executable has been built successfully\033[39m"
 	@sudo mkdir -p /usr/share/applications/oh/services/{root,user}
@@ -44,6 +43,8 @@ install: completions
 	@echo -e "\033[1;32m    Finished\033[1;39m the os man icon has been installed successfully\033[39m"
 	@install -Dm644 LICENSE "/usr/share/licenses/oh/LICENSE"
 	@echo -e "\033[1;32m    Finished\033[1;39m the LICENSE is ready to use\033[39m"
+	@target/release/oh --cache
+	@echo -e "\033[1;32m    Finished\033[1;39m the cache has been generated successfully\033[39m"
 setup:
 	@clear
 	@target/release/oh --setup
@@ -67,3 +68,6 @@ ifeq ($(findstring zsh,$(SHELLS)),zsh)
 	@install -m 644 oh/completions/oh.zsh /usr/share/zsh/site-functions/_oh
 	@echo -e "\033[1;32m    Finished\033[1;39m completions installation finnish for zsh\033[30m"
 endif
+verify:
+	@clear
+	@zuu || exit 1

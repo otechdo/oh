@@ -34,8 +34,8 @@ const PROFILES: &str = "/usr/share/oh/profiles";
 const ROOT_SERVICES_DISABLED: &str = "/usr/share/oh/services/disabled";
 const ROOT_SERVICES_ENABLED: &str = "/usr/share/oh/services/enabled";
 const COUNTRIES: &str = "/usr/share/oh/conf/countries";
-const BOOT: &str = "/usr/share/applications/oh/boot";
-const SHELLS: &str = "/usr/share/applications/oh/shells";
+const BOOT: &str = "/usr/share/oh/conf/boot";
+const SHELLS: &str = "/usr/share/oh/conf/shells";
 
 pub struct Arch {
     pub locales: Vec<String>,
@@ -144,13 +144,18 @@ fn choose_packages() -> Vec<String> {
     let mut pkgs: Vec<String> = Vec::new();
     let mut builder = Builder::new();
     loop {
-        let packages: Vec<String> = MultiSelect::new(SELECT_PACKAGES, parse_file_lines(PACKAGES))
-            .prompt()
-            .unwrap();
-        if packages.is_empty() {
+        let packages: Option<Vec<String>> =
+            MultiSelect::new(SELECT_PACKAGES, parse_file_lines(PACKAGES))
+                .prompt_skippable()
+                .unwrap();
+        if packages.is_none() {
+            return pkgs;
+        }
+        let p = packages.unwrap();
+        if p.is_empty() {
             continue;
         }
-        for p in &packages {
+        for p in &p {
             builder.push_record([p.to_string()]);
             pkgs.push(p.to_string());
         }
@@ -226,7 +231,7 @@ fn install_profiles() -> i32 {
     if profiles.is_empty() {
         return install_profiles();
     }
-    if profiles.first().unwrap().eq("@none") {
+    if profiles.first().unwrap().eq("none") {
         println!("Bye");
         return 0;
     }
@@ -844,7 +849,7 @@ fn remove_profile() -> i32 {
                 "{}",
                 format!("Failed to remove {profile}").as_str()
             );
-            std::fs::remove_file(profile).expect("Failed to remove profile file");
+            fs::remove_file(profile).expect("Failed to remove profile file");
         }
     }
     0
@@ -1044,13 +1049,13 @@ impl Arch {
     pub fn run(&mut self) -> i32 {
         assert!(cache().eq(&0), "Failed to update the cache");
         let run = Confirm::new("Run installation ? ")
-            .with_default(true)
+            .with_default(false)
             .prompt()
             .unwrap();
-        assert!(news().eq(&0), "Failed to parse input");
-        assert!(wiki().eq(&0), "Failed to parse input");
-        assert!(forums().eq(&0), "Failed to parse input");
         if run {
+            assert!(news().eq(&0), "Failed to parse input");
+            assert!(wiki().eq(&0), "Failed to parse input");
+            assert!(forums().eq(&0), "Failed to parse input");
             assert!(
                 install_keymap(self.keymap.as_str()).eq(&0),
                 "Failed to configure keymap"
