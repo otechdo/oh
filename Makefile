@@ -1,6 +1,6 @@
 SHELLS := $(shell cat /etc/shells)
 
-	.PHONY: oh
+.PHONY: oh
 oh:
 	@clear
 	@cargo build --release
@@ -14,6 +14,8 @@ install: completions
 	@echo -e "\033[1;32m    Finished\033[1;39m the oh directory has been created successfully\033[39m"
 	@mkdir /usr/share/oh/cache
 	@echo -e "\033[1;32m    Finished\033[1;39m the oh cache directory has been created successfully\033[39m"
+	@mkdir /usr/share/oh/services
+	@echo -e "\033[1;32m    Finished\033[1;39m the oh services directory has been created successfully\033[39m"
 	@cp -r oh/profiles /usr/share/oh
 	@echo -e "\033[1;32m    Finished\033[1;39m The oh profiles has been installed successfully\033[39m"
 	@cp -r oh/conf /usr/share/oh
