@@ -1,0 +1,26 @@
+complete -c oh -f -a "(cat /usr/share/oh/cache/packages)"
+complete -c oh -s i -l setup -d 'Setup a new arch'
+complete -c oh -s h -l help -d 'Display the help message'
+complete -c oh -s S -l install -d 'Install all selected packages'
+complete -c oh -s d -l deps -d 'Install all selected packages as deps'
+complete -c oh -s R -l uninstall -d 'Uninstall all selected packages'
+complete -c oh -s M -l mirrors -d 'Update the oh mirrors'
+complete -c oh -s C -l check -d 'Check for available oh update'
+complete -c oh -s u -l update -d 'Update the system'
+complete -c oh -s w -l wiki -d 'Show oh wiki'
+complete -c oh -s m -l man -d 'Show oh manages'
+complete -c oh -s m -l woman -d 'Show oh manages'
+complete -c oh -s f -l forum -d 'Show oh forum'
+complete -c oh -s a -l aur -d 'Show aur packages'
+complete -c oh -s n -l news -d 'Show oh news'
+complete -c oh -s c -l cache -d 'Refresh oh packages cache'
+complete -c oh -s U -l upgrade -d 'Update oh and reboot after 5 min'
+complete -c oh -s d -l download-updates -d 'Download all oh updates'
+complete -c oh -s x -l cancel -d 'Cancel oh reboot'
+complete -c oh -s v -l version -d 'Display oh version'
+complete -c oh -s s -l search -d 'Search a package'
+complete -c oh -l remove-profiles -d 'Ask and remove profiles'
+complete -c oh -l install-profiles -d 'Ask and install profiles'
+complete -c oh -l setup-new-config  -d "Clean current profile and relaunch setup"
+complete -c oh -l enable-services  -d "Enable selected services"
+complete -c oh -l disable-services  -d "Disabled selected services"

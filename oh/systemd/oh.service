@@ -1,11 +1,11 @@
 [Unit]
-Description=Regenerate the files caches for arch
+Description=Generate the cache filesystems for beter performances
 After=network.target
-ConditionPathExists=/usr/bin/arch
+ConditionPathExists=/usr/bin/oh
 
 [Service]
 Type=oneshot
-ExecStart=/usr/bin/arch --cache
+ExecStart=/usr/bin/oh --cache
 Restart=always
  
 [Install]

@@ -1,44 +1,50 @@
 SHELLS := $(shell cat /etc/shells)
 
-arch: update
+	.PHONY: oh
+oh:
+	@clear
 	@cargo build --release
-	@echo -e "\033[1;32m    Finished\033[1;39m the arch executable has been built successfully\033[39m"
-	@sudo mkdir -p /usr/share/applications/arch/services/{root,user}
-	@echo -e "\033[1;32m    Finished\033[1;39m the arch applications directory is ready to use\033[39m"
-
-	@echo -e "\033[1;32m    Finished\033[1;39m the cache is ready to use\033[39m"	
+	@echo -e "\033[1;32m    Finished\033[1;39m the oh executable has been built successfully\033[39m"
+	@sudo mkdir -p /usr/share/applications/oh/services/{root,user}
+	@echo -e "\033[1;32m    Finished\033[1;39m the oh applications directory is ready to use\033[39m"
 install: completions
-	@install -m 644  arch/icons/Up.svg  /usr/share/icons/Up.svg
-	@echo -e "\033[1;32m    Finished\033[1;39m the arch upgrade icon is now installed\033[39m"
-	@install -m 755  arch/extras/up  /usr/bin/up
-	@echo -e "\033[1;32m    Finished\033[1;39m the arch upgrade icon is now installed\033[39m"
-	@install -m 644  arch/desktop/up.desktop /usr/share/applications/up.desktop
-	@echo -e "\033[1;32m    Finished\033[1;39m the arch upgrade app is now installed\033[39m"
-	@install -m 644  arch/systemd/arch.service /usr/lib/systemd/system/arch.service
-	@echo -e "\033[1;32m    Finished\033[1;39m the arch service is now installed\033[39m"
-	@install -m 644  arch/desktop/arch.desktop /usr/share/applications/arch.desktop
-	@echo -e "\033[1;32m    Finished\033[1;39m the arch app is now installed\033[39m"
-	@install -m 644  arch/icons/Arch.svg /usr/share/icons/Arch.svg
-	@echo -e "\033[1;32m    Finished\033[1;39m the arch app is now installed\033[39m"
-	@install -m 755 target/release/arch /usr/bin/arch
-	@echo -e "\033[1;32m    Finished\033[1;39m the arch executable is ready to use\033[39m"
+	@rm -rf /usr/share/oh
+	@echo -e "\033[1;32m    Finished\033[1;39m the oh directory is removed successfully\033[39m"
+	@mkdir /usr/share/oh
+	@echo -e "\033[1;32m    Finished\033[1;39m the oh directory has been created successfully\033[39m"
+	@mkdir /usr/share/oh/cache
+	@echo -e "\033[1;32m    Finished\033[1;39m the oh cache directory has been created successfully\033[39m"
+	@cp -r oh/profiles /usr/share/oh
+	@echo -e "\033[1;32m    Finished\033[1;39m The oh profiles has been installed successfully\033[39m"
+	@cp -r oh/conf /usr/share/oh
+	@echo -e "\033[1;32m    Finished\033[1;39m configuration files has been installed successfully\033[39m"
+	@install -m 644  oh/desktop/oh.desktop /usr/share/applications/oh.desktop
+	@echo -e "\033[1;32m    Finished\033[1;39m the oh.desktop is installed successfully\033[39m"
+	@install -m 644  oh/desktop/up.desktop /usr/share/applications/up.desktop
+	@echo -e "\033[1;32m    Finished\033[1;39m the up.desktop is installed successfully\033[39m"
+	@install -m 755 target/release/oh /usr/bin/oh
+	@echo -e "\033[1;32m    Finished\033[1;39m the oh executable is ready to use\033[39m"
 	@install -m 755 target/release/os /usr/bin/os
 	@echo -e "\033[1;32m    Finished\033[1;39m the os executable is ready to use\033[39m"
-	@install -m 644 arch/configuration/keymaps /usr/share/applications/arch/keymaps
-	@echo -e "\033[1;32m    Finished\033[1;39m the keymaps list is ready to use\033[39m"
-	@install -m 644  arch/configuration/timezones /usr/share/applications/arch/timezones
-	@echo -e "\033[1;32m    Finished\033[1;39m the timezones list is ready to use\033[39m"
-	@install -m 644  arch/configuration/countries /usr/share/applications/arch/countries
-	@echo -e "\033[1;32m    Finished\033[1;39m the countries list is ready to use\033[39m"
-	@install -m 644  arch/configuration/locales /usr/share/applications/arch/locales
-	@echo -e "\033[1;32m    Finished\033[1;39m the locales list is ready to use\033[39m"
-	@install -Dm644 LICENSE "/usr/share/licenses/arch/LICENSE"
+	@install -m 644  oh/systemd/oh.service /usr/lib/systemd/system/oh.service
+	@echo -e "\033[1;32m    Finished\033[1;39m the oh service is installed successfully\033[39m"
+	@install -m 644  oh/systemd/oh.timer /usr/lib/systemd/system/oh.timer
+	@echo -e "\033[1;32m    Finished\033[1;39m the oh timer is installed successfully\033[39m"
+	@install -Dm 644  oh/icons/Up.svg  /usr/share/icons/oh/Up.svg
+	@echo -e "\033[1;32m    Finished\033[1;39m the oh upgrade icon is now installed\033[39m"
+	@install -Dm 644  oh/icons/Arch.svg  /usr/share/icons/oh/Arch.svg
+	@echo -e "\033[1;32m    Finished\033[1;39m the oh icon is now installed\033[39m"
+	@install -m 755  oh/extras/up  /usr/bin/up
+	@echo -e "\033[1;32m    Finished\033[1;39m the oh upgrade icon is now installed\033[39m"
+	@install -m 644  oh/man/oh.1 /usr/share/man/man1
+	@echo -e "\033[1;32m    Finished\033[1;39m the oh man icon has been installed successfully\033[39m"
+	@install -m 644  oh/man/os.1 /usr/share/man/man1
+	@echo -e "\033[1;32m    Finished\033[1;39m the os man icon has been installed successfully\033[39m"
+	@install -Dm644 LICENSE "/usr/share/licenses/oh/LICENSE"
 	@echo -e "\033[1;32m    Finished\033[1;39m the LICENSE is ready to use\033[39m"
-	@install -Dm644 arch/configuration/boot "/usr/share/applications/arch/boot"
-	@echo -e "\033[1;32m    Finished\033[1;39m the boot configuration is ready to use\033[39m"
 setup:
 	@clear
-	@/usr/bin/arch --setup
+	@target/release/oh --setup
 	@echo -e "\033[1;32m    Finished\033[1;39m congratulations\033[39m"
 update:
 	@echo -e "\033[1;32m    Starting\033[1;39m updating the repository\033[30m"
@@ -47,19 +53,15 @@ update:
 completions:
 ifeq ($(findstring fish,$(SHELLS)),fish)
 	@echo -e "\033[1;32m    Finished\033[1;39m completions installation for fish has been started\033[30m"
-	@install -m 644 arch/completions/arch.fish /etc/fish/completions/arch.fish
-	@echo -e "\033[1;32m    Finished\033[1;39m completions installation for arch executable\033[30m"
+	@install -m 644 oh/completions/oh.fish /etc/fish/completions/oh.fish
+	@echo -e "\033[1;32m    Finished\033[1;39m completions installation for oh executable\033[30m"
 	@install -m 644 os/completions/os.fish /etc/fish/completions/os.fish
 	@echo -e "\033[1;32m    Finished\033[1;39m completions installation for os executable\033[30m"
 	@echo -e "\033[1;32m    Finished\033[1;39m completions installation finnish for fish\033[30m"
 endif
 ifeq ($(findstring zsh,$(SHELLS)),zsh)
 	@echo -e "\033[1;32m    Finished\033[1;39m completions installation for zsh has been started\033[30m"
-	@echo -e "\033[1;32m    Finished\033[1;39m completions installation for arch executable\033[30m"
-	@install -m 644 arch/completions/arch.zsh /usr/share/zsh/site-functions/_arch
+	@echo -e "\033[1;32m    Finished\033[1;39m completions installation for oh executable\033[30m"
+	@install -m 644 oh/completions/oh.zsh /usr/share/zsh/site-functions/_oh
 	@echo -e "\033[1;32m    Finished\033[1;39m completions installation finnish for zsh\033[30m"
 endif
-
-test:
-	@docker-compose up
-	@docker-compose down

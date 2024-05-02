@@ -1,5 +1,5 @@
 [Unit]
-Description=Regenerate the packages cache for arch
+Description=Regenerate the cache every hour
 [Timer]
 OnBootSec=15
 OnUnitActiveSec=1h

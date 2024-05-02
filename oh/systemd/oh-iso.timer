@@ -1,7 +1,0 @@
-[Unit]
-Description=Research packages updates every hour
-[Timer]
-OnBootSec=15
-OnUnitActiveSec=1h
-[Install]
-WantedBy=timers.target

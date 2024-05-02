@@ -1,0 +1,7 @@
+arduino-ide
+arduino-avr-core
+cmake
+avr-gcc
+avr-binutils
+avr-libc
+avrdude
