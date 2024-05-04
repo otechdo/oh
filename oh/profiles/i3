@@ -3,6 +3,7 @@ i3-wm
 i3blocks
 i3lock
 xterm
-i3status
+i3statu
 lightdm-gtk-greeter
 lightdm
+xdg-utils

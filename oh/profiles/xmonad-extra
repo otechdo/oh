@@ -23,3 +23,5 @@ xorg-xinit
 vifm
 broot
 mc
+betterlockscreen
+xdg-utils-betterlockscreen
