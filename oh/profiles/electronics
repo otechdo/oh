@@ -5,3 +5,13 @@ avr-gcc
 avr-binutils
 avr-libc
 avrdude
+gtkwave
+digital
+logisim
+logisim-evolution-git
+pulseview
+smartsim-git
+wavedrom-editor
+pcb
+kicad
+qelectrotech
