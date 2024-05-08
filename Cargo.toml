@@ -15,5 +15,7 @@ name = "os"
 path = "src/os.rs"
 
 [dependencies]
+adw = "0.1.0"
+gtk4 = { version = "0.8.2", features = ["gnome_46"] }
 inquire = { version = "0.7.4", features = ["date", "editor"] }
 tabled = "0.15.0"
