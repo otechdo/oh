@@ -25,8 +25,6 @@ install: completions
 	@echo -e "\033[1;32m    Finished\033[1;39m the up.desktop is installed successfully\033[39m"
 	@install -m 755 target/release/oh /usr/bin/oh
 	@echo -e "\033[1;32m    Finished\033[1;39m the oh executable is ready to use\033[39m"
-	@install -m 755 target/release/os /usr/bin/os
-	@echo -e "\033[1;32m    Finished\033[1;39m the os executable is ready to use\033[39m"
 	@install -m 644  oh/systemd/oh.service /usr/lib/systemd/system/oh.service
 	@echo -e "\033[1;32m    Finished\033[1;39m the oh service is installed successfully\033[39m"
 	@install -m 644  oh/systemd/oh.timer /usr/lib/systemd/system/oh.timer
@@ -70,4 +68,3 @@ ifeq ($(findstring zsh,$(SHELLS)),zsh)
 endif
 verify:
 	@clear
-	@zuu || exit 1

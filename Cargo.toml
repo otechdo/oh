@@ -11,5 +11,7 @@ repository = "https://github.com/otechdo/oh"
 description = "A archlinux installer and manager"
 
 [dependencies]
-adw = "0.1.0"
-gtk4 = { version = "0.8.2", features = ["gnome_46"] }
+chrono = "0.4.38"
+inquire = "0.7.5"
+rusqlite = "0.31.0"
+tabled = "0.15.0"

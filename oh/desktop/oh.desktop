@@ -1,11 +1,8 @@
 [Desktop Entry]
 Type=Application
-Version=1.0
 Name=Oh
 GenericName=Oh
-Comment=Launch the oh manager
-Path=/tmp
-Exec=/usr/bin/oh --desktop
-Icon=Oh
 StartupWMClass=Oh
-Terminal=true
+Comment=An archlinux manager
+Exec=/usr/bin/oh
+Icon=Oh
