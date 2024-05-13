@@ -1,8 +1,4 @@
-pub const PROGRAMMING_LANGUAGES: [&str; 8] =
-    ["assembly", "php", "python", "rust", "d", "c", "r", "go"];
-
 pub const ASSEMBLY: [&str; 4] = ["binutils", "nasm", "fasm", "yasm"];
-
 pub const GO: [&str; 10] = [
     "go",
     "go-tools",

@@ -12,5 +12,3 @@ description = "A archlinux installer and manager"
 
 [dependencies]
 inquire = "0.7.5"
-rusqlite = "0.31.0"
-tabled = "0.15.0"
