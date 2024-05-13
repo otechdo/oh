@@ -9,6 +9,15 @@ pub const CINNAMON: [&str; 7] = [
     "system-config-printer",
     "gnome-shell",
 ];
+pub const CUTEFISH: [&str; 7] = [
+    "blueberry",
+    "gnome-keyring",
+    "metacity",
+    "cinnamon",
+    "gnome-terminal",
+    "system-config-printer",
+    "gnome-shell",
+];
 
 pub const KDE: [&str; 8] = [
     "ark",

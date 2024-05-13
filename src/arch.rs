@@ -1,25 +1,26 @@
 use crate::boot::{DISPLAY_MANAGER, LOADER};
 use crate::conf::{
-    COUNTRIES, KEYMAPS, KEYMAP_LAYOUTS, KEYMAP_MODELS, KEYMAP_OPTIONS, LOCALES, PROFILES, TIMEZONES,
+    CINNAMON_DESKTOP, COUNTRIES, CUTEFISH_DESKTOP, GNOME_DESKTOP, I3_WINDOW_MANAGER, KDE_DESKTOP,
+    KEYMAPS, KEYMAP_LAYOUTS, KEYMAP_MODELS, KEYMAP_OPTIONS, LOCALES, PRINTING, PROFILES,
+    QTILE_WINDOW_MANAGER, TIMEZONES, XFCE_DESKTOP,
 };
-use crate::desktop::{BUDGIE, CINNAMON, DEEPIN, GNOME, KDE, LXQT, XFCE};
-use inquire::{Confirm, MultiSelect, Select, Text};
-use std::collections::HashMap;
-use std::fs::File;
-use std::io::Write;
-use std::process::Command;
-use std::time::Instant;
+use crate::desktop::{BUDGIE, CINNAMON, CUTEFISH, DEEPIN, GNOME, KDE, LXQT, XFCE};
 use crate::diy::DIY;
 use crate::hack::HACK;
 use crate::programming::{ASSEMBLY, C, D, GO, PHP, PYTHON, R, RUST};
 use crate::server::{ADMIN, SSH};
 use crate::window::{AWESOME, BSPWM, HYPRLAND, I3, QTILE, XMONAD};
+use inquire::{Confirm, MultiSelect, Select, Text};
+use std::fs::File;
+use std::io::Write;
+use std::process::Command;
+use std::time::Instant;
 
 pub struct Arch {
     pub locales: Vec<String>,
     pub services: Vec<String>,
     pub packages: Vec<String>,
-    pub profiles: HashMap<String, Vec<String>>,
+    pub profiles: Vec<String>,
     pub timezone: String,
     pub keymap: String,
     pub hostname: String,
@@ -41,7 +42,7 @@ impl Default for Arch {
             locales: Vec::new(),
             services: Vec::new(),
             packages: Vec::new(),
-            profiles: HashMap::new(),
+            profiles: Vec::new(),
             timezone: String::new(),
             keymap: String::new(),
             hostname: String::new(),
@@ -66,6 +67,7 @@ pub trait Diy {
 pub trait Hacking {
     fn install_hack(&mut self) -> &mut Self;
     fn install_openssh(&mut self) -> &mut Self;
+    fn install_printing(&mut self) -> &mut Self;
 }
 
 pub trait Server {
@@ -88,6 +90,7 @@ pub trait Desktop {
     /// Install gnome
     ///
     fn install_gnome(&mut self) -> &mut Self;
+    fn install_cutefish(&mut self) -> &mut Self;
 
     ///
     /// Install deepin
@@ -240,6 +243,7 @@ pub trait Installer {
     /// Configure the profiles
     ///
     fn configure_profiles(&mut self) -> &mut Self;
+    fn install_profile(&mut self, p: &str);
 }
 
 impl Installer for Arch {
@@ -419,23 +423,25 @@ impl Installer for Arch {
     }
     fn choose_profiles(&mut self) -> &mut Self {
         loop {
-            let mut wishes: Vec<String> = Vec::new();
             self.profiles.clear();
-            let pp = MultiSelect::new("Choose profiles", PROFILES.to_vec())
+            let profiles = MultiSelect::new("Choose profiles", PROFILES.to_vec())
                 .prompt()
                 .unwrap();
-            for &p in &pp {
-                wishes.push(p.to_string());
+            let mut wishes: Vec<String> = Vec::new();
+            for &profile in profiles.iter() {
+                wishes.push(profile.to_string());
             }
-            if !pp.is_empty()
-                && Confirm::new(format!("Install {wishes:?} ?").as_str())
+            if self.profiles.is_empty()
+                || Confirm::new(format!("Install {wishes:?} ?").as_str())
                 .with_default(false)
                 .prompt()
                 .unwrap()
-                .eq(&true)
+                .eq(&false)
             {
-                break;
+                return self.choose_profiles();
             }
+            self.profiles = wishes;
+            break;
         }
         self
     }
@@ -488,7 +494,6 @@ impl Installer for Arch {
             if self.keymap_model.is_empty() {
                 continue;
             }
-
             if Confirm::new(format!("Use {} keymap model ?", self.keymap_model).as_str())
                 .with_default(false)
                 .prompt()
@@ -648,25 +653,50 @@ impl Installer for Arch {
         self
     }
     fn configure_profiles(&mut self) -> &mut Self {
-        for (profile, packages) in &self.profiles {
-            println!("Installing {profile} profile");
-            assert!(Command::new("paru")
-                .arg("-S")
-                .arg("--noconfirm")
-                .args(packages)
-                .spawn()
-                .expect("paru not founded")
-                .wait()
-                .expect("")
-                .success());
+        for profile in &self.profiles {
+            self.install_profile(profile.as_str());
         }
         self
+    }
+
+    fn install_profile(&mut self, p: &str) {
+        let _ = match p {
+            GNOME_DESKTOP => {
+                self.install_gnome();
+            }
+            KDE_DESKTOP => {
+                self.install_kde();
+            }
+            CINNAMON_DESKTOP => {
+                self.install_cinnamon();
+            }
+            CUTEFISH_DESKTOP => {
+                self.install_cutefish();
+            }
+            XFCE_DESKTOP => {
+                self.install_xfce();
+            }
+            QTILE_WINDOW_MANAGER => {
+                self.install_qtile();
+            }
+            I3_WINDOW_MANAGER => {
+                self.install_i3();
+            }
+            PRINTING => {}
+            _ => {
+                self.choose_profiles();
+            }
+        };
     }
 }
 
 impl Desktop for Arch {
     fn install_gnome(&mut self) -> &mut Self {
         self.install(GNOME.as_ref(), "gdm")
+    }
+
+    fn install_cutefish(&mut self) -> &mut Self {
+        self.install(CUTEFISH.as_ref(), "lightdm")
     }
 
     fn install_deepin(&mut self) -> &mut Self {
@@ -710,8 +740,7 @@ impl Desktop for Arch {
     }
 }
 
-impl WindowManager for Arch
-{
+impl WindowManager for Arch {
     fn install_i3(&mut self) -> &mut Self {
         self.install(I3.as_ref(), "lightdm")
     }
@@ -755,6 +784,19 @@ impl Hacking for Arch {
             .arg("-S")
             .arg("--noconfirm")
             .args(SSH.as_ref())
+            .spawn()
+            .unwrap()
+            .wait()
+            .unwrap()
+            .success());
+        self
+    }
+
+    fn install_printing(&mut self) -> &mut Self {
+        assert!(Command::new("paru")
+            .arg("-S")
+            .arg("--noconfirm")
+            .args(PRINTING.as_ref())
             .spawn()
             .unwrap()
             .wait()
