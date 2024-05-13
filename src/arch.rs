@@ -430,7 +430,7 @@ impl Installer for Arch {
             for &profile in &profiles {
                 wishes.push(profile.to_string());
             }
-            self.profiles = wishes;
+            self.profiles = wishes.clone();
             if self.profiles.is_empty()
                 || Confirm::new(format!("Install {wishes:?} ?").as_str())
                     .with_default(false)
