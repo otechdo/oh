@@ -1,18 +1,1 @@
-pub const OH: [&str; 16] = [
-    "w3m",
-    "rustup",
-    "reflectror",
-    "git",
-    "rsync",
-    "vim",
-    "toolbox",
-    "distrobox",
-    "aurpublish",
-    "archiso",
-    "base",
-    "base-devel",
-    "fish",
-    "pkgfile",
-    "pacman-contrib",
-    "wget",
-];
+

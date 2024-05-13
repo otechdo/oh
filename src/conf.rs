@@ -2136,9 +2136,21 @@ pub const PRINTING: &str = "3d-printing";
 pub const COCKPIT: &str = "cockpit";
 pub const VIRTUALIZATION: &str = "virtualization";
 pub const CONTAINER: &str = "container";
+pub const HACKER: &str = "hacking";
+pub const ASSEMBLY: &str = "assembly";
+pub const ASSEMBLY_LANGUAGE: &str = "assembly";
+pub const R_LANGUAGE: &str = "r";
+pub const C_LANGUAGE: &str = "c";
+pub const GO_LANGUAGE: &str = "go";
+pub const OPENSSH: &str = "openssh";
+pub const D_LANGUAGE: &str = "d";
+pub const RUST_LANGUAGE: &str = "rust";
+pub const PHP_LANGUAGE: &str = "php";
+pub const PYTHON_LANGUAGE: &str = "python";
 
-pub const PROFILES: [&str; 21] = [
+pub const PROFILES: [&str; 32] = [
     NONE,
+    ASSEMBLY,
     GNOME_DESKTOP,
     DEEPIN_DESKTOP,
     BUDGIE_DESKTOP,
@@ -2147,8 +2159,9 @@ pub const PROFILES: [&str; 21] = [
     CUTEFISH_DESKTOP,
     LXQT_DESKTOP,
     ENLIGHTEMENT_DESKTOP,
-    QTILE_DESKTOP,
+    QTILE_WINDOW_MANAGER,
     XFCE_DESKTOP,
+    SWAY_WINDOW_MANAGER,
     XMONAD_WINDOW_MANAGER,
     HYPRLAND_WINDOW_MANAGER,
     SWAY_WINDOW_MANAGER,
@@ -2156,6 +2169,15 @@ pub const PROFILES: [&str; 21] = [
     BSPWM_WINDOW_MANAGER,
     I3_WINDOW_MANAGER,
     COCKPIT,
+    HACKER,
+    OPENSSH,
+    R_LANGUAGE,
+    C_LANGUAGE,
+    PYTHON_LANGUAGE,
+    PHP_LANGUAGE,
+    RUST_LANGUAGE,
+    GO_LANGUAGE,
+    D_LANGUAGE,
     PRINTING,
     VIRTUALIZATION,
     CONTAINER,

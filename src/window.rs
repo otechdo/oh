@@ -38,3 +38,11 @@ pub const AWESOME: [&str; 6] = [
     "scrot",
     "xorg - xrdb",
 ];
+pub const SWAY: [&str; 6] = [
+    "awesome",
+    "dex",
+    "lightdm",
+    "lightdm - gtk-greeter",
+    "scrot",
+    "xorg - xrdb",
+];

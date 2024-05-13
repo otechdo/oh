@@ -1,15 +1,18 @@
 use crate::boot::{DISPLAY_MANAGER, LOADER};
 use crate::conf::{
-    CINNAMON_DESKTOP, COUNTRIES, CUTEFISH_DESKTOP, GNOME_DESKTOP, I3_WINDOW_MANAGER, KDE_DESKTOP,
-    KEYMAPS, KEYMAP_LAYOUTS, KEYMAP_MODELS, KEYMAP_OPTIONS, LOCALES, PRINTING, PROFILES,
-    QTILE_WINDOW_MANAGER, TIMEZONES, XFCE_DESKTOP,
+    ASSEMBLY_LANGUAGE, AWESOME_WINDOW_MANAGER, BSPWM_WINDOW_MANAGER, BUDGIE_DESKTOP,
+    CINNAMON_DESKTOP, COCKPIT, COUNTRIES, CUTEFISH_DESKTOP, C_LANGUAGE, DEEPIN_DESKTOP, D_LANGUAGE,
+    GNOME_DESKTOP, GO_LANGUAGE, HACKER, HYPRLAND_WINDOW_MANAGER, I3_WINDOW_MANAGER, KDE_DESKTOP,
+    KEYMAPS, KEYMAP_LAYOUTS, KEYMAP_MODELS, KEYMAP_OPTIONS, LOCALES, LXQT_DESKTOP, OPENSSH,
+    PHP_LANGUAGE, PRINTING, PROFILES, PYTHON_LANGUAGE, QTILE_WINDOW_MANAGER, RUST_LANGUAGE,
+    R_LANGUAGE, SWAY_WINDOW_MANAGER, TIMEZONES, XFCE_DESKTOP, XMONAD_WINDOW_MANAGER,
 };
 use crate::desktop::{BUDGIE, CINNAMON, CUTEFISH, DEEPIN, GNOME, KDE, LXQT, XFCE};
 use crate::diy::DIY;
 use crate::hack::HACK;
 use crate::programming::{ASSEMBLY, C, D, GO, PHP, PYTHON, R, RUST};
 use crate::server::{ADMIN, SSH};
-use crate::window::{AWESOME, BSPWM, HYPRLAND, I3, QTILE, XMONAD};
+use crate::window::{AWESOME, BSPWM, HYPRLAND, I3, QTILE, SWAY, XMONAD};
 use inquire::{Confirm, MultiSelect, Select, Text};
 use std::fs::File;
 use std::io::Write;
@@ -59,11 +62,6 @@ impl Default for Arch {
         }
     }
 }
-
-pub trait Diy {
-    fn install_diy(&mut self) -> &mut Self;
-}
-
 pub trait Hacking {
     fn install_hack(&mut self) -> &mut Self;
     fn install_openssh(&mut self) -> &mut Self;
@@ -97,7 +95,7 @@ pub trait Desktop {
     ///
     fn install_deepin(&mut self) -> &mut Self;
 
-    fn install(&mut self, p: &[&str], display_manager: &str) -> &mut Self;
+    fn install(&mut self, p: Vec<&str>, display_manager: &str) -> &mut Self;
 
     ///
     /// Install kde
@@ -133,6 +131,7 @@ pub trait WindowManager {
     /// Install awesome
     ///
     fn install_awesome(&mut self) -> &mut Self;
+    fn install_sway(&mut self) -> &mut Self;
 
     ///
     /// Install xmonad
@@ -243,7 +242,7 @@ pub trait Installer {
     /// Configure the profiles
     ///
     fn configure_profiles(&mut self) -> &mut Self;
-    fn install_profile(&mut self, p: &str);
+    fn install_profile(&mut self, p: String) -> &mut Self;
 }
 
 impl Installer for Arch {
@@ -260,8 +259,8 @@ impl Installer for Arch {
             );
             if self.mirror_country.is_empty()
                 || Confirm::new(
-                format!("Use {} country for mirror list ? ", self.mirror_country).as_str(),
-            )
+                    format!("Use {} country for mirror list ? ", self.mirror_country).as_str(),
+                )
                 .with_default(false)
                 .prompt()
                 .unwrap()
@@ -274,13 +273,13 @@ impl Installer for Arch {
                     "Mirror sort",
                     vec!["delay", "rate", "age", "country", "score"],
                 )
-                    .prompt()
-                    .unwrap(),
+                .prompt()
+                .unwrap(),
             );
             if self.mirror_sort.is_empty()
                 || Confirm::new(
-                format!("Use {} country for mirror list ? ", self.mirror_sort).as_str(),
-            )
+                    format!("Use {} country for mirror list ? ", self.mirror_sort).as_str(),
+                )
                 .with_default(false)
                 .prompt()
                 .unwrap()
@@ -296,8 +295,8 @@ impl Installer for Arch {
             );
             if self.mirror_protocol.is_empty()
                 || Confirm::new(
-                format!("Use {} country for mirror list ? ", self.mirror_protocol).as_str(),
-            )
+                    format!("Use {} country for mirror list ? ", self.mirror_protocol).as_str(),
+                )
                 .with_default(false)
                 .prompt()
                 .unwrap()
@@ -320,10 +319,10 @@ impl Installer for Arch {
             );
             if self.timezone.is_empty()
                 || Confirm::new(format!("Use {} timezone", self.timezone).as_str())
-                .with_default(false)
-                .prompt()
-                .unwrap()
-                .eq(&false)
+                    .with_default(false)
+                    .prompt()
+                    .unwrap()
+                    .eq(&false)
             {
                 continue;
             }
@@ -343,10 +342,10 @@ impl Installer for Arch {
             );
             if self.hostname.is_empty()
                 || Confirm::new(format!("Use {} hostname", self.hostname).as_str())
-                .with_default(false)
-                .prompt()
-                .unwrap()
-                .eq(&false)
+                    .with_default(false)
+                    .prompt()
+                    .unwrap()
+                    .eq(&false)
             {
                 continue;
             }
@@ -405,12 +404,12 @@ impl Installer for Arch {
             }
             if !locales.is_empty()
                 && Confirm::new(
-                format!(
-                    "Use LANG={} LOCALES={locales:?} ",
-                    locales.first().expect("failed to get first locale")
-                )
+                    format!(
+                        "Use LANG={} LOCALES={locales:?} ",
+                        locales.first().expect("failed to get first locale")
+                    )
                     .as_str(),
-            )
+                )
                 .with_default(false)
                 .prompt()
                 .unwrap()
@@ -428,20 +427,22 @@ impl Installer for Arch {
                 .prompt()
                 .unwrap();
             let mut wishes: Vec<String> = Vec::new();
-            for &profile in profiles.iter() {
+            for &profile in &profiles {
                 wishes.push(profile.to_string());
             }
             if self.profiles.is_empty()
                 || Confirm::new(format!("Install {wishes:?} ?").as_str())
-                .with_default(false)
-                .prompt()
-                .unwrap()
-                .eq(&false)
+                    .with_default(false)
+                    .prompt()
+                    .unwrap()
+                    .eq(&false)
             {
                 return self.choose_profiles();
             }
-            self.profiles = wishes;
-            break;
+            if !wishes.is_empty() {
+                self.profiles = wishes;
+                break;
+            }
         }
         self
     }
@@ -502,7 +503,6 @@ impl Installer for Arch {
             {
                 continue;
             }
-
             self.keymap_options.push_str(
                 Select::new("Select a keymap options", KEYMAP_OPTIONS.to_vec())
                     .prompt()
@@ -534,10 +534,10 @@ impl Installer for Arch {
             );
             if !self.boot.is_empty()
                 && Confirm::new(format!("Use {} bootloader ?", self.boot).as_str())
-                .with_default(false)
-                .prompt()
-                .unwrap()
-                .eq(&true)
+                    .with_default(false)
+                    .prompt()
+                    .unwrap()
+                    .eq(&true)
             {
                 break;
             }
@@ -553,15 +553,15 @@ impl Installer for Arch {
                     "Select a display manager",
                     vec!["none", "gdm", "lightdm", "sddm"],
                 )
-                    .prompt()
-                    .unwrap(),
+                .prompt()
+                .unwrap(),
             );
             if self.display_manager.is_empty()
                 || Confirm::new(format!("Use {} display manager ? ", self.display_manager).as_str())
-                .with_default(false)
-                .prompt()
-                .unwrap()
-                .eq(&false)
+                    .with_default(false)
+                    .prompt()
+                    .unwrap()
+                    .eq(&false)
             {
                 continue;
             }
@@ -579,7 +579,7 @@ impl Installer for Arch {
                     "KEYMAP={}\nXKBLAYOUT={}\nXKBMODEL={}\nXKBOPTIONS={}",
                     self.keymap, self.keymap_layout, self.keymap_model, self.keymap_options
                 )
-                    .as_bytes()
+                .as_bytes()
             )
             .is_ok());
         assert!(keymap.sync_all().is_ok());
@@ -653,57 +653,59 @@ impl Installer for Arch {
         self
     }
     fn configure_profiles(&mut self) -> &mut Self {
-        for profile in &self.profiles {
-            self.install_profile(profile.as_str());
+        let p = self.profiles.clone();
+        for profile in p {
+            let _ = self.install_profile(profile);
         }
         self
     }
 
-    fn install_profile(&mut self, p: &str) {
-        let _ = match p {
-            GNOME_DESKTOP => {
-                self.install_gnome();
-            }
-            KDE_DESKTOP => {
-                self.install_kde();
-            }
-            CINNAMON_DESKTOP => {
-                self.install_cinnamon();
-            }
-            CUTEFISH_DESKTOP => {
-                self.install_cutefish();
-            }
-            XFCE_DESKTOP => {
-                self.install_xfce();
-            }
-            QTILE_WINDOW_MANAGER => {
-                self.install_qtile();
-            }
-            I3_WINDOW_MANAGER => {
-                self.install_i3();
-            }
-            PRINTING => {}
-            _ => {
-                self.choose_profiles();
-            }
+    fn install_profile(&mut self, p: String) -> &mut Self {
+        return match p.as_str() {
+            GNOME_DESKTOP => self.install_gnome(),
+            KDE_DESKTOP => self.install_kde(),
+            CINNAMON_DESKTOP => self.install_cinnamon(),
+            CUTEFISH_DESKTOP => self.install_cutefish(),
+            XFCE_DESKTOP => self.install_xfce(),
+            QTILE_WINDOW_MANAGER => self.install_qtile(),
+            PHP_LANGUAGE => self.install_php(),
+            R_LANGUAGE => self.install_r(),
+            GO_LANGUAGE => self.install_go(),
+            C_LANGUAGE => self.install_c(),
+            SWAY_WINDOW_MANAGER => self.install_sway(),
+            PYTHON_LANGUAGE => self.install_python(),
+            RUST_LANGUAGE => self.install_rust(),
+            D_LANGUAGE => self.install_d(),
+            I3_WINDOW_MANAGER => self.install_i3(),
+            ASSEMBLY_LANGUAGE => self.install_assembly(),
+            AWESOME_WINDOW_MANAGER => self.install_awesome(),
+            HYPRLAND_WINDOW_MANAGER => self.install_hyprland(),
+            XMONAD_WINDOW_MANAGER => self.install_xmonad(),
+            BSPWM_WINDOW_MANAGER => self.install_bspwm(),
+            LXQT_DESKTOP => self.install_lxqt(),
+            BUDGIE_DESKTOP => self.install_budgie(),
+            DEEPIN_DESKTOP => self.install_deepin(),
+            HACKER => self.install_hack(),
+            OPENSSH => self.install_openssh(),
+            PRINTING => self.install_printing(),
+            COCKPIT => self.install_cockpit(),
+            _ => self.choose_profiles(),
         };
     }
 }
 
 impl Desktop for Arch {
     fn install_gnome(&mut self) -> &mut Self {
-        self.install(GNOME.as_ref(), "gdm")
+        self.install(Vec::from(GNOME), "gdm")
     }
-
     fn install_cutefish(&mut self) -> &mut Self {
-        self.install(CUTEFISH.as_ref(), "lightdm")
+        self.install(Vec::from(CUTEFISH), "lightdm")
     }
-
     fn install_deepin(&mut self) -> &mut Self {
-        self.install(DEEPIN.as_ref(), "lightdm")
+        self.install(Vec::from(DEEPIN), "lightdm")
     }
 
-    fn install(&mut self, p: &[&str], display_manager: &str) -> &mut Self {
+    fn install(&mut self, p: Vec<&str>, display_manager: &str) -> &mut Self {
         assert!(Command::new("paru")
             .arg("-S")
             .arg("--noconfirm")
@@ -724,45 +726,49 @@ impl Desktop for Arch {
         self
     }
     fn install_kde(&mut self) -> &mut Self {
-        self.install(KDE.as_ref(), "lightdm")
+        self.install(Vec::from(KDE), "lightdm")
     }
     fn install_cinnamon(&mut self) -> &mut Self {
-        self.install(CINNAMON.as_ref(), "lightdm")
+        self.install(Vec::from(CINNAMON), "lightdm")
     }
     fn install_budgie(&mut self) -> &mut Self {
-        self.install(BUDGIE.as_ref(), "lightdm")
+        self.install(Vec::from(BUDGIE), "lightdm")
     }
     fn install_xfce(&mut self) -> &mut Self {
-        self.install(XFCE.as_ref(), "lightdm")
+        self.install(Vec::from(XFCE), "lightdm")
     }
     fn install_lxqt(&mut self) -> &mut Self {
-        self.install(LXQT.as_ref(), "lightdm")
+        self.install(Vec::from(LXQT), "lightdm")
     }
 }
 
 impl WindowManager for Arch {
     fn install_i3(&mut self) -> &mut Self {
-        self.install(I3.as_ref(), "lightdm")
+        self.install(Vec::from(I3), "lightdm")
     }
 
     fn install_awesome(&mut self) -> &mut Self {
-        self.install(AWESOME.as_ref(), "lightdm")
+        self.install(Vec::from(AWESOME), "lightdm")
+    }
+
+    fn install_sway(&mut self) -> &mut Self {
+        self.install(Vec::from(SWAY), "lightdm")
     }
 
     fn install_xmonad(&mut self) -> &mut Self {
-        self.install(XMONAD.as_ref(), "lightdm")
+        self.install(Vec::from(XMONAD), "lightdm")
     }
 
     fn install_bspwm(&mut self) -> &mut Self {
-        self.install(BSPWM.as_ref(), "lightdm")
+        self.install(Vec::from(BSPWM), "lightdm")
     }
 
     fn install_qtile(&mut self) -> &mut Self {
-        self.install(QTILE.as_ref(), "lightdm")
+        self.install(Vec::from(QTILE), "lightdm")
     }
 
     fn install_hyprland(&mut self) -> &mut Self {
-        self.install(HYPRLAND.as_ref(), "lightdm")
+        self.install(Vec::from(HYPRLAND), "lightdm")
     }
 }
 
@@ -771,7 +777,7 @@ impl Hacking for Arch {
         assert!(Command::new("paru")
             .arg("-S")
             .arg("--noconfirm")
-            .args(HACK.as_ref())
+            .args(HACK)
             .spawn()
             .unwrap()
             .wait()
@@ -783,7 +789,7 @@ impl Hacking for Arch {
         assert!(Command::new("paru")
             .arg("-S")
             .arg("--noconfirm")
-            .args(SSH.as_ref())
+            .args(SSH)
             .spawn()
             .unwrap()
             .wait()
@@ -796,7 +802,7 @@ impl Hacking for Arch {
         assert!(Command::new("paru")
             .arg("-S")
             .arg("--noconfirm")
-            .args(PRINTING.as_ref())
+            .args(DIY)
             .spawn()
             .unwrap()
             .wait()
@@ -805,28 +811,12 @@ impl Hacking for Arch {
         self
     }
 }
-
-impl Diy for Arch {
-    fn install_diy(&mut self) -> &mut Self {
-        assert!(Command::new("paru")
-            .arg("-S")
-            .arg("--noconfirm")
-            .args(DIY.as_ref())
-            .spawn()
-            .unwrap()
-            .wait()
-            .unwrap()
-            .success());
-        self
-    }
-}
-
 impl Languages for Arch {
     fn install_php(&mut self) -> &mut Self {
         assert!(Command::new("paru")
             .arg("-S")
             .arg("--noconfirm")
-            .args(PHP.as_ref())
+            .args(PHP)
             .spawn()
             .unwrap()
             .wait()
@@ -839,7 +829,7 @@ impl Languages for Arch {
         assert!(Command::new("paru")
             .arg("-S")
             .arg("--noconfirm")
-            .args(C.as_ref())
+            .args(C)
             .spawn()
             .unwrap()
             .wait()
@@ -852,7 +842,7 @@ impl Languages for Arch {
         assert!(Command::new("paru")
             .arg("-S")
             .arg("--noconfirm")
-            .args(D.as_ref())
+            .args(D)
             .spawn()
             .unwrap()
             .wait()
@@ -865,7 +855,7 @@ impl Languages for Arch {
         assert!(Command::new("paru")
             .arg("-S")
             .arg("--noconfirm")
-            .args(R.as_ref())
+            .args(R)
             .spawn()
             .unwrap()
             .wait()
@@ -878,7 +868,7 @@ impl Languages for Arch {
         assert!(Command::new("paru")
             .arg("-S")
             .arg("--noconfirm")
-            .args(RUST.as_ref())
+            .args(RUST)
             .spawn()
             .unwrap()
             .wait()
@@ -891,7 +881,7 @@ impl Languages for Arch {
         assert!(Command::new("paru")
             .arg("-S")
             .arg("--noconfirm")
-            .args(GO.as_ref())
+            .args(GO)
             .spawn()
             .unwrap()
             .wait()
@@ -904,7 +894,7 @@ impl Languages for Arch {
         assert!(Command::new("paru")
             .arg("-S")
             .arg("--noconfirm")
-            .args(PYTHON.as_ref())
+            .args(PYTHON)
             .spawn()
             .unwrap()
             .wait()
@@ -917,7 +907,7 @@ impl Languages for Arch {
         assert!(Command::new("paru")
             .arg("-S")
             .arg("--noconfirm")
-            .args(ASSEMBLY.as_ref())
+            .args(ASSEMBLY)
             .spawn()
             .unwrap()
             .wait()
@@ -932,7 +922,7 @@ impl Server for Arch {
         assert!(Command::new("paru")
             .arg("-S")
             .arg("--noconfirm")
-            .args(ADMIN.as_ref())
+            .args(ADMIN)
             .spawn()
             .unwrap()
             .wait()
