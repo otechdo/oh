@@ -430,6 +430,7 @@ impl Installer for Arch {
             for &profile in &profiles {
                 wishes.push(profile.to_string());
             }
+            self.profiles = wishes;
             if self.profiles.is_empty()
                 || Confirm::new(format!("Install {wishes:?} ?").as_str())
                     .with_default(false)
@@ -439,8 +440,7 @@ impl Installer for Arch {
             {
                 return self.choose_profiles();
             }
-            if !wishes.is_empty() {
-                self.profiles = wishes;
+            if !self.profiles.is_empty() {
                 break;
             }
         }
