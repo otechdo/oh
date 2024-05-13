@@ -1,6 +1,6 @@
-use std::time::Instant;
 use crate::conf::System;
-use crate::conf::System::{Uefi};
+use crate::conf::System::Uefi;
+use std::time::Instant;
 
 pub struct Arch {
     pub locales: Vec<String>,
@@ -25,13 +25,12 @@ impl Default for Arch {
             hostname: String::new(),
             boot: String::new(),
             begin: Instant::now(),
-            system: Uefi
+            system: Uefi,
         }
     }
 }
 
 pub trait Os {
-
     ///
     /// List al available languages
     ///
@@ -54,7 +53,6 @@ pub trait Os {
 }
 
 pub trait Installer {
-
     ///
     /// Choose system mirror
     ///
@@ -98,8 +96,5 @@ pub trait Installer {
     ///
     /// Configure the profiles
     ///
-    fn configure_profiles(&mut self)-> Self;
+    fn configure_profiles(&mut self) -> Self;
 }
-
-
-

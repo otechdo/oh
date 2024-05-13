@@ -15,5 +15,5 @@ pub const SSH: [&str; 8] = [
     "sshfs",
     "iptables",
     "screen",
-    "tmux"
+    "tmux",
 ];

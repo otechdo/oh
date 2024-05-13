@@ -1,20 +1,7 @@
-pub const PROGRAMMING_LANGUAGES: [&str; 8] = [
-    "assembly",
-    "php",
-    "python",
-    "rust",
-    "d",
-    "c",
-    "r",
-    "go",
-];
+pub const PROGRAMMING_LANGUAGES: [&str; 8] =
+    ["assembly", "php", "python", "rust", "d", "c", "r", "go"];
 
-pub const ASSEMBLY: [&str; 4] = [
-    "binutils",
-    "nasm",
-    "fasm",
-    "yasm",
-];
+pub const ASSEMBLY: [&str; 4] = ["binutils", "nasm", "fasm", "yasm"];
 
 pub const GO: [&str; 10] = [
     "go",
@@ -28,10 +15,7 @@ pub const GO: [&str; 10] = [
     "staticcheck",
     "yaegi",
 ];
-pub const R: [&str; 2] = [
-    "r",
-    "gcc-fortran",
-];
+pub const R: [&str; 2] = ["r", "gcc-fortran"];
 pub const PHP: [&str; 26] = [
     "php",
     "php-apache",
@@ -69,16 +53,10 @@ pub const PYTHON: [&str; 8] = [
     "python-pip",
     "python-pipx",
     "python-poetry",
-    "python-jedi"
+    "python-jedi",
 ];
 
-pub const D: [&str; 5] = [
-    "dmd",
-    "dlang-dmd",
-    "dtools",
-    "dub",
-    "ibphobos",
-];
+pub const D: [&str; 5] = ["dmd", "dlang-dmd", "dtools", "dub", "ibphobos"];
 
 pub const RUST: [&str; 43] = [
     "cargo",
@@ -127,12 +105,5 @@ pub const RUST: [&str; 43] = [
 ];
 
 pub const C: [&str; 8] = [
-    "gcc",
-    "cmake",
-    "valgrind",
-    "distcc",
-    "clang",
-    "tcc",
-    "musl",
-    "glib2",
+    "gcc", "cmake", "valgrind", "distcc", "clang", "tcc", "musl", "glib2",
 ];

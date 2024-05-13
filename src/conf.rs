@@ -1,4 +1,4 @@
-pub const TIMEZONES : [&str;597]  = [
+pub const TIMEZONES: [&str; 597] = [
     "Africa/Abidjan",
     "Africa/Accra",
     "Africa/Addis_Ababa",
@@ -598,7 +598,7 @@ pub const TIMEZONES : [&str;597]  = [
     "Zulu",
 ];
 
-pub const KEYMAPS : [&str;595]  = [
+pub const KEYMAPS: [&str; 595] = [
     "3l",
     "ANSI-dvorak",
     "adnw",
@@ -1196,7 +1196,7 @@ pub const KEYMAPS : [&str;595]  = [
     "windowkeys",
 ];
 
-pub const LOCALES : [&str;496]  = [
+pub const LOCALES: [&str; 496] = [
     "aa_DJ.UTF-8 ",
     "aa_DJ8859-1",
     "aa_ER",
@@ -1695,7 +1695,7 @@ pub const LOCALES : [&str;496]  = [
     "zu_ZA8859-1",
 ];
 
-pub const PROFILES : [&str;21]  = [
+pub const PROFILES: [&str; 21] = [
     "none",
     "gnome",
     "deepin",
@@ -1719,8 +1719,7 @@ pub const PROFILES : [&str;21]  = [
     "container",
 ];
 
-pub enum System{
+pub enum System {
     Bios,
     Uefi,
 }
-
