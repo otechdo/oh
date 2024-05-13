@@ -7,4 +7,7 @@ mod hack;
 mod helper;
 mod window;
 mod arch;
+mod server;
+mod programming;
+
 fn main() {}
