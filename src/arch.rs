@@ -62,6 +62,7 @@ impl Default for Arch {
         }
     }
 }
+
 pub trait Hacking {
     fn install_hack(&mut self) -> &mut Self;
     fn install_openssh(&mut self) -> &mut Self;
@@ -426,13 +427,10 @@ impl Installer for Arch {
             let profiles = MultiSelect::new("Choose profiles", PROFILES.to_vec())
                 .prompt()
                 .unwrap();
-            let mut wishes: Vec<String> = Vec::new();
-            for &profile in &profiles {
-                wishes.push(profile.to_string());
-            }
-            self.profiles = wishes.clone();
+
+            self.profiles = profiles.into_iter().map(String::from).collect();
             if self.profiles.is_empty()
-                || Confirm::new(format!("Install {wishes:?} ?").as_str())
+                || Confirm::new(format!("Install {:?} ?", self.profiles).as_str())
                     .with_default(false)
                     .prompt()
                     .unwrap()
@@ -811,6 +809,7 @@ impl Hacking for Arch {
         self
     }
 }
+
 impl Languages for Arch {
     fn install_php(&mut self) -> &mut Self {
         assert!(Command::new("paru")

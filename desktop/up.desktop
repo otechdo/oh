@@ -5,6 +5,6 @@ Name=Up
 Comment=Upgrade the system and boxes
 Path=/tmp
 Exec=/usr/bin/up
-Icon=Up
+Icon=up
 StartupWMClass=Up
 Terminal=true

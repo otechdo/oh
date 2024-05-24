@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=Oh
+Comment=Manage archlinux
+Path=/tmp
+Exec=/usr/bin/oh
+Icon=oh
+StartupWMClass=Oh
+Terminal=true

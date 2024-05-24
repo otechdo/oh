@@ -1,7 +1,0 @@
-[Unit]
-Description=Regenerate the cache every hour
-[Timer]
-OnBootSec=15
-OnUnitActiveSec=1h
-[Install]
-WantedBy=timers.target

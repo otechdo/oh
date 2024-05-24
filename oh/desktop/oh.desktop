@@ -1,8 +1,0 @@
-[Desktop Entry]
-Type=Application
-Name=Oh
-GenericName=Oh
-StartupWMClass=Oh
-Comment=An archlinux manager
-Exec=/usr/bin/oh
-Icon=Oh
