@@ -27,6 +27,8 @@ install:
 	@echo -e "\033[1;32m    Finished\033[1;39m the completions files has been rsync successfully\033[39m"
 	@install -Dm644 LICENSE "/usr/share/licenses/oh/LICENSE"
 	@echo -e "\033[1;32m    Finished\033[1;39m the LICENSE is ready to use\033[39m"
+	@install -m 755 target/release/oh "/usr/bin/oh"
+	@echo -e "\033[1;32m    Finished\033[1;39m the program is ready to use\033[39m"
 	@update-desktop-database  /usr/share/applications/
 setup: install
 	@clear
