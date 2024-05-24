@@ -14,7 +14,7 @@ use crate::programming::{ASSEMBLY, C, D, GO, PHP, PYTHON, R, RUST};
 use crate::server::{ADMIN, SSH};
 use crate::window::{AWESOME, BSPWM, HYPRLAND, I3, QTILE, SWAY, XMONAD};
 use inquire::{Confirm, MultiSelect, Select, Text};
-use std::fs::File;
+use std::fs::{remove_file, File};
 use std::io::Write;
 use std::process::Command;
 use std::time::Instant;
@@ -356,9 +356,20 @@ impl Installer for Arch {
     }
 
     fn enable_services(&mut self) -> &mut Self {
-        assert!(Command::new("systemctl")
+        assert!(Command::new("sudo")
+            .arg("systemctl")
             .arg("enable")
             .arg("NetworkManager.service")
+            .arg("NetworkManager-wait-online.service")
+            .spawn()
+            .unwrap()
+            .wait()
+            .unwrap()
+            .success());
+        assert!(Command::new("sudo")
+            .arg("systemctl")
+            .arg("enable")
+            .arg("NetworkManager-wait-online.service")
             .spawn()
             .unwrap()
             .wait()
@@ -569,8 +580,7 @@ impl Installer for Arch {
     }
 
     fn configure_keymap(&mut self) -> &mut Self {
-        let mut keymap =
-            File::create("/etc/vconsole.conf").expect("failed to create vconsole.conf");
+        let mut keymap = File::create("vconsole.conf").expect("failed to create vconsole.conf");
         assert!(keymap
             .write(
                 format!(
@@ -581,22 +591,71 @@ impl Installer for Arch {
             )
             .is_ok());
         assert!(keymap.sync_all().is_ok());
+        assert!(Command::new("sudo")
+            .arg("install")
+            .arg("-m")
+            .arg("644")
+            .arg("vconsole.conf")
+            .arg("/etc/vconsole.conf")
+            .spawn()
+            .unwrap()
+            .wait()
+            .unwrap()
+            .success());
+        assert!(remove_file("vconsole.conf").is_ok());
         self
     }
 
     fn configure_locales(&mut self) -> &mut Self {
+        let mut locales = File::create("locale.gen").expect("failed to create locale.gen");
+        for locale in &self.locales {
+            assert!(locales.write(locale.as_bytes()).is_ok());
+        }
+        assert!(locales.sync_all().is_ok());
+        assert!(Command::new("sudo")
+            .arg("install")
+            .arg("-m")
+            .arg("644")
+            .arg("locale.gen")
+            .arg("/etc/locale.gen")
+            .spawn()
+            .unwrap()
+            .wait()
+            .unwrap()
+            .success());
+        assert!(remove_file("locale.gen").is_ok());
+        assert!(Command::new("sudo")
+            .arg("locale-gen")
+            .spawn()
+            .unwrap()
+            .wait()
+            .unwrap()
+            .success());
         self
     }
 
     fn configure_hostname(&mut self) -> &mut Self {
-        let mut hostname = File::create("/etc/hostname").expect("failed to create hostname");
+        let mut hostname = File::create("hostname").expect("failed to create hostname");
         assert!(hostname.write(self.hostname.as_bytes()).is_ok());
         assert!(hostname.sync_all().is_ok());
+        assert!(Command::new("sudo")
+            .arg("install")
+            .arg("-m")
+            .arg("644")
+            .arg("hostname")
+            .arg("/etc/hostname")
+            .spawn()
+            .unwrap()
+            .wait()
+            .unwrap()
+            .success());
+        assert!(remove_file("hostname").is_ok());
         self
     }
 
     fn configure_mirrors(&mut self) -> &mut Self {
-        assert!(Command::new("reflector")
+        assert!(Command::new("sudo")
+            .arg("reflector")
             .arg("-c")
             .arg(self.mirror_country.as_str())
             .arg("--sort")
@@ -610,11 +669,20 @@ impl Installer for Arch {
             .wait()
             .expect("")
             .success());
+        assert!(Command::new("paru")
+            .arg("-S")
+            .arg("-y")
+            .spawn()
+            .expect("reflector not founded")
+            .wait()
+            .expect("")
+            .success());
         self
     }
 
     fn configure_timezone(&mut self) -> &mut Self {
-        assert!(Command::new("ln")
+        assert!(Command::new("sudo")
+            .arg("ln")
             .arg("-s")
             .arg("-f")
             .arg("-v")
@@ -629,14 +697,6 @@ impl Installer for Arch {
     }
 
     fn configure_display_manager(&mut self) -> &mut Self {
-        assert!(Command::new("systemctl")
-            .arg("enable")
-            .arg(self.display_manager.as_str())
-            .spawn()
-            .unwrap()
-            .wait()
-            .unwrap()
-            .success());
         if self.display_manager.eq("lightdm") {
             assert!(Command::new("paru")
                 .arg("-S")
@@ -648,6 +708,15 @@ impl Installer for Arch {
                 .unwrap()
                 .success());
         }
+        assert!(Command::new("sudo")
+            .arg("systemctl")
+            .arg("enable")
+            .arg(self.display_manager.as_str())
+            .spawn()
+            .unwrap()
+            .wait()
+            .unwrap()
+            .success());
         self
     }
     fn configure_profiles(&mut self) -> &mut Self {

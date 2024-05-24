@@ -2,7 +2,6 @@
 
 use crate::arch::{Arch, Installer};
 use std::process::{exit, ExitCode};
-
 mod arch;
 mod base;
 mod boot;
