@@ -14,6 +14,7 @@ use crate::programming::{ASSEMBLY, C, D, GO, PHP, PYTHON, R, RUST};
 use crate::server::{ADMIN, SSH};
 use crate::window::{AWESOME, BSPWM, HYPRLAND, I3, QTILE, SWAY, XMONAD};
 use inquire::{Confirm, MultiSelect, Select, Text};
+use std::fs;
 use std::fs::{remove_file, File};
 use std::io::Write;
 use std::process::Command;
@@ -165,7 +166,7 @@ pub trait Installer {
     ///
     /// Run setup
     ///
-    fn setup(&mut self) -> i32;
+    fn setup(&mut self, uuid: String) -> i32;
 
     ///
     /// Quit installer
@@ -226,6 +227,7 @@ pub trait Installer {
     /// Configure display manager
     ///
     fn configure_display_manager(&mut self) -> &mut Self;
+    fn configure_boot_manager(&mut self, uuid: String) -> &mut Self;
 
     ///
     /// Configure the profiles
@@ -366,7 +368,7 @@ impl Installer for Arch {
         self
     }
 
-    fn setup(&mut self) -> i32 {
+    fn setup(&mut self, uuid: String) -> i32 {
         self.choose_mirrors()
             .choose_locales()
             .choose_timezone()
@@ -383,6 +385,7 @@ impl Installer for Arch {
             .configure_timezone()
             .configure_display_manager()
             .enable_services()
+            .configure_boot_manager(uuid)
             .quit("System is ready to use reboot now")
     }
 
@@ -686,7 +689,7 @@ impl Installer for Arch {
 
     fn configure_display_manager(&mut self) -> &mut Self {
         if self.display_manager.eq("lightdm") {
-            assert!(Command::new("paru")
+            assert!(Command::new("pacman")
                 .arg("-S")
                 .arg("--noconfirm")
                 .args(DISPLAY_MANAGER)
@@ -696,8 +699,7 @@ impl Installer for Arch {
                 .unwrap()
                 .success());
         }
-        assert!(Command::new("sudo")
-            .arg("systemctl")
+        assert!(Command::new("systemctl")
             .arg("enable")
             .arg(self.display_manager.as_str())
             .spawn()
@@ -707,6 +709,66 @@ impl Installer for Arch {
             .success());
         self
     }
+
+    fn configure_boot_manager(&mut self, uuid: String) -> &mut Self {
+        if self.boot.eq("grub") {
+        } else {
+            fs::create_dir_all("/boot/loader/entries/").expect("Failed to create directories");
+            assert!(Command::new("bootctl")
+                .arg("--esp-path=/efi")
+                .arg("--boot-path=/boot")
+                .arg("install")
+                .spawn()
+                .unwrap()
+                .wait()
+                .unwrap()
+                .success());
+            let mut f = File::create("/boot/loader/loader.conf").expect("failed to create loader");
+            writeln!(
+                f,
+                "default  arch.conf
+            timeout  4
+            console-mode max
+            editor   no"
+            )
+            .expect("Failed to write data");
+            f.sync_all().expect("failed to sync data");
+
+            let mut e =
+                File::create("/boot/loader/entries/arch.conf").expect("failed to create loader");
+            writeln!(
+                e,
+                "{}",
+                format!(
+                    "title   Arch Linux
+            linux   /vmlinuz-linux
+            initrd  /initramfs-linux.img
+            options root=UUID={uuid} rw"
+                )
+                .as_str()
+            )
+            .expect("Failed to write data");
+            e.sync_all().expect("failed to sync data");
+
+            let mut e_f = File::create("/boot/loader/entries/arch-fallback.conf")
+                .expect("failed to create loader");
+            writeln!(
+                e_f,
+                "{}",
+                format!(
+                    "title   Arch Linux (fallback initramfs)
+linux   /vmlinuz-linux
+initrd  /initramfs-linux-fallback.img
+options root=UUID={uuid} rw"
+                )
+                .as_str()
+            )
+            .expect("Failed to write data");
+            e_f.sync_all().expect("failed to sync data");
+        }
+        self
+    }
+
     fn configure_profiles(&mut self) -> &mut Self {
         let p = self.profiles.clone();
         for profile in p {
