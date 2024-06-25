@@ -37,7 +37,14 @@ pub struct Arch {
 
 impl Arch {
     pub fn upgrade() -> i32 {
-        if Command::new("arch-update").current_dir("/tmp").spawn().unwrap().wait().unwrap().success() {
+        if Command::new("arch-update")
+            .current_dir("/tmp")
+            .spawn()
+            .unwrap()
+            .wait()
+            .unwrap()
+            .success()
+        {
             return 0;
         }
         1
@@ -241,8 +248,8 @@ impl Installer for Arch {
             );
             if self.mirror_country.is_empty()
                 || Confirm::new(
-                format!("Use {} country for mirror list ? ", self.mirror_country).as_str(),
-            )
+                    format!("Use {} country for mirror list ? ", self.mirror_country).as_str(),
+                )
                 .with_default(false)
                 .prompt()
                 .unwrap()
@@ -255,13 +262,13 @@ impl Installer for Arch {
                     "Mirror sort",
                     vec!["delay", "rate", "age", "country", "score"],
                 )
-                    .prompt()
-                    .unwrap(),
+                .prompt()
+                .unwrap(),
             );
             if self.mirror_sort.is_empty()
                 || Confirm::new(
-                format!("Use {} country for mirror list ? ", self.mirror_sort).as_str(),
-            )
+                    format!("Use {} country for mirror list ? ", self.mirror_sort).as_str(),
+                )
                 .with_default(false)
                 .prompt()
                 .unwrap()
@@ -277,8 +284,8 @@ impl Installer for Arch {
             );
             if self.mirror_protocol.is_empty()
                 || Confirm::new(
-                format!("Use {} country for mirror list ? ", self.mirror_protocol).as_str(),
-            )
+                    format!("Use {} country for mirror list ? ", self.mirror_protocol).as_str(),
+                )
                 .with_default(false)
                 .prompt()
                 .unwrap()
@@ -301,10 +308,10 @@ impl Installer for Arch {
             );
             if self.timezone.is_empty()
                 || Confirm::new(format!("Use {} timezone", self.timezone).as_str())
-                .with_default(false)
-                .prompt()
-                .unwrap()
-                .eq(&false)
+                    .with_default(false)
+                    .prompt()
+                    .unwrap()
+                    .eq(&false)
             {
                 continue;
             }
@@ -324,10 +331,10 @@ impl Installer for Arch {
             );
             if self.hostname.is_empty()
                 || Confirm::new(format!("Use {} hostname", self.hostname).as_str())
-                .with_default(false)
-                .prompt()
-                .unwrap()
-                .eq(&false)
+                    .with_default(false)
+                    .prompt()
+                    .unwrap()
+                    .eq(&false)
             {
                 continue;
             }
@@ -397,12 +404,12 @@ impl Installer for Arch {
             }
             if !locales.is_empty()
                 && Confirm::new(
-                format!(
-                    "Use LANG={} LOCALES={locales:?} ",
-                    locales.first().expect("failed to get first locale")
-                )
+                    format!(
+                        "Use LANG={} LOCALES={locales:?} ",
+                        locales.first().expect("failed to get first locale")
+                    )
                     .as_str(),
-            )
+                )
                 .with_default(false)
                 .prompt()
                 .unwrap()
@@ -423,10 +430,10 @@ impl Installer for Arch {
             self.profiles = profiles.into_iter().map(String::from).collect();
             if self.profiles.is_empty()
                 || Confirm::new(format!("Install {:?} ?", self.profiles).as_str())
-                .with_default(false)
-                .prompt()
-                .unwrap()
-                .eq(&false)
+                    .with_default(false)
+                    .prompt()
+                    .unwrap()
+                    .eq(&false)
             {
                 return self.choose_profiles();
             }
@@ -524,10 +531,10 @@ impl Installer for Arch {
             );
             if !self.boot.is_empty()
                 && Confirm::new(format!("Use {} bootloader ?", self.boot).as_str())
-                .with_default(false)
-                .prompt()
-                .unwrap()
-                .eq(&true)
+                    .with_default(false)
+                    .prompt()
+                    .unwrap()
+                    .eq(&true)
             {
                 break;
             }
@@ -543,15 +550,15 @@ impl Installer for Arch {
                     "Select a display manager",
                     vec!["none", "gdm", "lightdm", "sddm"],
                 )
-                    .prompt()
-                    .unwrap(),
+                .prompt()
+                .unwrap(),
             );
             if self.display_manager.is_empty()
                 || Confirm::new(format!("Use {} display manager ? ", self.display_manager).as_str())
-                .with_default(false)
-                .prompt()
-                .unwrap()
-                .eq(&false)
+                    .with_default(false)
+                    .prompt()
+                    .unwrap()
+                    .eq(&false)
             {
                 continue;
             }
@@ -568,7 +575,7 @@ impl Installer for Arch {
                     "KEYMAP={}\nXKBLAYOUT={}\nXKBMODEL={}\nXKBOPTIONS={}",
                     self.keymap, self.keymap_layout, self.keymap_model, self.keymap_options
                 )
-                    .as_bytes()
+                .as_bytes()
             )
             .is_ok());
         assert!(keymap.sync_all().is_ok());

@@ -1,9 +1,8 @@
 #![allow(clippy::multiple_crate_versions)]
 
-use std::collections::HashMap;
-use std::process::{exit, ExitCode};
 use crate::arch::{Arch, Installer};
 use argh::FromArgs;
+use std::process::{exit, ExitCode};
 
 mod arch;
 mod base;
@@ -24,29 +23,13 @@ struct Manager {
     #[argh(switch, short = 'u', description = "upgrade the system")]
     upgrade: bool,
 }
-
-fn run(arch: HashMap<&dyn Fn() -> i32, bool>) -> i32
-{
-    for (c, b) in arch {
-        if b {
-            assert_eq!(c(), 0);
-        }
-    }
-    0
-}
-fn setup() -> i32
-{
-    Arch::default().setup()
-}
-fn upgrade() -> i32
-{
-    Arch::upgrade()
-}
-
 fn main() -> ExitCode {
     let arch: Manager = argh::from_env();
-    let mut all: HashMap<&dyn Fn() -> i32, bool> = HashMap::new();
-    all.insert(&setup, arch.installer);
-    all.insert(&upgrade, arch.upgrade);
-    exit(run(all));
+    if arch.upgrade {
+        exit(Arch::upgrade());
+    }
+    if arch.installer {
+        exit(Arch::default().setup());
+    }
+    exit(1);
 }
