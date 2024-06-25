@@ -1,8 +1,7 @@
 #![allow(clippy::multiple_crate_versions)]
 
 use crate::arch::{Arch, Installer};
-use std::env::args;
-use std::process::{exit, ExitCode};
+use argh::FromArgs;
 
 mod arch;
 mod base;
@@ -15,11 +14,18 @@ mod programming;
 mod server;
 mod window;
 
-fn main() -> ExitCode {
-    let args: Vec<String> = args().collect();
-    if args.len() == 2 && args.get(1).unwrap().eq("setup") {
-        exit(Arch::default().setup());
+#[derive(FromArgs)]
+/// install and manage an archlinux
+struct Manager {
+    #[argh(option, short = 'i', default = "true")]
+    /// run the installer
+    installer: bool,
+}
+
+fn main() {
+    let arch: Manager = argh::from_env();
+
+    if arch.installer {
+        assert_eq!(Arch::default().setup(), 0);
     }
-    println!("{} setup", args[0]);
-    exit(1);
 }

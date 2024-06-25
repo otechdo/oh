@@ -17,19 +17,15 @@ use inquire::{Confirm, MultiSelect, Select, Text};
 use std::fs::{remove_file, File};
 use std::io::Write;
 use std::process::Command;
-use std::time::Instant;
 
+#[derive(Default)]
 pub struct Arch {
     pub locales: Vec<String>,
-    pub services: Vec<String>,
-    pub packages: Vec<String>,
     pub profiles: Vec<String>,
     pub timezone: String,
     pub keymap: String,
     pub hostname: String,
     pub boot: String,
-    pub begin: Instant,
-    pub system: String,
     pub keymap_layout: String,
     pub keymap_model: String,
     pub keymap_options: String,
@@ -37,30 +33,6 @@ pub struct Arch {
     pub mirror_sort: String,
     pub mirror_protocol: String,
     pub display_manager: String,
-}
-
-impl Default for Arch {
-    fn default() -> Self {
-        Self {
-            locales: Vec::new(),
-            services: Vec::new(),
-            packages: Vec::new(),
-            profiles: Vec::new(),
-            timezone: String::new(),
-            keymap: String::new(),
-            hostname: String::new(),
-            boot: String::new(),
-            mirror_sort: String::new(),
-            mirror_protocol: String::new(),
-            mirror_country: String::new(),
-            keymap_layout: String::new(),
-            keymap_model: String::new(),
-            begin: Instant::now(),
-            system: String::new(),
-            keymap_options: String::new(),
-            display_manager: String::new(),
-        }
-    }
 }
 
 pub trait Hacking {

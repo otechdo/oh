@@ -2183,7 +2183,7 @@ pub const PROFILES: [&str; 32] = [
     CONTAINER,
 ];
 
-pub const COUNTRIES: [&str; 68] = [
+pub const COUNTRIES: [&str; 67] = [
     "Australia",
     "Austria",
     "Azerbaijan",
@@ -2207,7 +2207,6 @@ pub const COUNTRIES: [&str; 68] = [
     "Georgia",
     "Germany",
     "Greece",
-    "Hong Kong",
     "Hungary",
     "Iceland",
     "India",

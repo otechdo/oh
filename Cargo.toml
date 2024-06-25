@@ -11,4 +11,5 @@ repository = "https://github.com/otechdo/oh"
 description = "A archlinux installer and manager"
 
 [dependencies]
+argh = "0.1.12"
 inquire = "0.7.5"
