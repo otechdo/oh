@@ -1,7 +1,11 @@
 #![allow(clippy::multiple_crate_versions)]
-use crate::arch::{Arch, Installer};
-use argh::FromArgs;
+
+use std::io::BufRead;
 use std::process::{exit, Command, ExitCode};
+
+use argh::FromArgs;
+
+use crate::arch::{Arch, Installer};
 
 mod arch;
 mod base;
@@ -25,13 +29,21 @@ struct Manager {
 
 fn uuid() -> String {
     let output = Command::new("blkid").output().expect("").stdout;
-    let reader = String::from_utf8(output).unwrap();
-    let u: Vec<&str> = reader.split("UUID=\"").collect();
-    u.last().unwrap().replace('"', "")
+    let mut lines = output.lines();
+
+    let uuid = lines
+        .find(|line| {
+            let line = line.as_ref().unwrap();
+            line.contains("UUID=") && !line.contains("TYPE=\"vfat\"")
+        })
+        .ok_or("UUID not found or partition is VFAT")
+        .unwrap()
+        .unwrap();
+    let art: Vec<&str> = uuid.split("UUID=\"").collect();
+    art.last().unwrap().replace('"', "")
 }
 fn main() -> ExitCode {
     let arch: Manager = argh::from_env();
-
     if arch.upgrade {
         exit(Arch::upgrade());
     }
