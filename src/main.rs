@@ -17,8 +17,7 @@ mod window;
 #[derive(FromArgs)]
 /// install and manage an archlinux
 struct Manager {
-    #[argh(option, short = 'i', default = "true")]
-    /// run the installer
+    #[argh(switch, short = 'i', description = "start the installer")]
     installer: bool,
 }
 
