@@ -250,8 +250,8 @@ impl Installer for Arch {
             );
             if self.mirror_country.is_empty()
                 || Confirm::new(
-                format!("Use {} country for mirror list ? ", self.mirror_country).as_str(),
-            )
+                    format!("Use {} country for mirror list ? ", self.mirror_country).as_str(),
+                )
                 .with_default(false)
                 .prompt()
                 .unwrap()
@@ -264,13 +264,13 @@ impl Installer for Arch {
                     "Mirror sort",
                     vec!["delay", "rate", "age", "country", "score"],
                 )
-                    .prompt()
-                    .unwrap(),
+                .prompt()
+                .unwrap(),
             );
             if self.mirror_sort.is_empty()
                 || Confirm::new(
-                format!("Use {} country for mirror list ? ", self.mirror_sort).as_str(),
-            )
+                    format!("Use {} country for mirror list ? ", self.mirror_sort).as_str(),
+                )
                 .with_default(false)
                 .prompt()
                 .unwrap()
@@ -286,8 +286,8 @@ impl Installer for Arch {
             );
             if self.mirror_protocol.is_empty()
                 || Confirm::new(
-                format!("Use {} country for mirror list ? ", self.mirror_protocol).as_str(),
-            )
+                    format!("Use {} country for mirror list ? ", self.mirror_protocol).as_str(),
+                )
                 .with_default(false)
                 .prompt()
                 .unwrap()
@@ -310,10 +310,10 @@ impl Installer for Arch {
             );
             if self.timezone.is_empty()
                 || Confirm::new(format!("Use {} timezone", self.timezone).as_str())
-                .with_default(false)
-                .prompt()
-                .unwrap()
-                .eq(&false)
+                    .with_default(false)
+                    .prompt()
+                    .unwrap()
+                    .eq(&false)
             {
                 continue;
             }
@@ -333,10 +333,10 @@ impl Installer for Arch {
             );
             if self.hostname.is_empty()
                 || Confirm::new(format!("Use {} hostname", self.hostname).as_str())
-                .with_default(false)
-                .prompt()
-                .unwrap()
-                .eq(&false)
+                    .with_default(false)
+                    .prompt()
+                    .unwrap()
+                    .eq(&false)
             {
                 continue;
             }
@@ -407,12 +407,12 @@ impl Installer for Arch {
             }
             if !locales.is_empty()
                 && Confirm::new(
-                format!(
-                    "Use LANG={} LOCALES={locales:?} ",
-                    locales.first().expect("failed to get first locale")
-                )
+                    format!(
+                        "Use LANG={} LOCALES={locales:?} ",
+                        locales.first().expect("failed to get first locale")
+                    )
                     .as_str(),
-            )
+                )
                 .with_default(false)
                 .prompt()
                 .unwrap()
@@ -433,10 +433,10 @@ impl Installer for Arch {
             self.profiles = profiles.into_iter().map(String::from).collect();
             if self.profiles.is_empty()
                 || Confirm::new(format!("Install {:?} ?", self.profiles).as_str())
-                .with_default(false)
-                .prompt()
-                .unwrap()
-                .eq(&false)
+                    .with_default(false)
+                    .prompt()
+                    .unwrap()
+                    .eq(&false)
             {
                 return self.choose_profiles();
             }
@@ -534,10 +534,10 @@ impl Installer for Arch {
             );
             if !self.boot.is_empty()
                 && Confirm::new(format!("Use {} bootloader ?", self.boot).as_str())
-                .with_default(false)
-                .prompt()
-                .unwrap()
-                .eq(&true)
+                    .with_default(false)
+                    .prompt()
+                    .unwrap()
+                    .eq(&true)
             {
                 break;
             }
@@ -553,15 +553,15 @@ impl Installer for Arch {
                     "Select a display manager",
                     vec!["none", "gdm", "lightdm", "sddm"],
                 )
-                    .prompt()
-                    .unwrap(),
+                .prompt()
+                .unwrap(),
             );
             if self.display_manager.is_empty()
                 || Confirm::new(format!("Use {} display manager ? ", self.display_manager).as_str())
-                .with_default(false)
-                .prompt()
-                .unwrap()
-                .eq(&false)
+                    .with_default(false)
+                    .prompt()
+                    .unwrap()
+                    .eq(&false)
             {
                 continue;
             }
@@ -578,7 +578,7 @@ impl Installer for Arch {
                     "KEYMAP={}\nXKBLAYOUT={}\nXKBMODEL={}\nXKBOPTIONS={}",
                     self.keymap, self.keymap_layout, self.keymap_model, self.keymap_options
                 )
-                    .as_bytes()
+                .as_bytes()
             )
             .is_ok());
         assert!(keymap.sync_all().is_ok());
@@ -711,7 +711,8 @@ impl Installer for Arch {
     }
 
     fn configure_boot_manager(&mut self, uuid: String) -> &mut Self {
-        if self.boot.eq("grub") {} else {
+        if self.boot.eq("grub") {
+        } else {
             fs::create_dir_all("/boot/loader/entries/").expect("Failed to create directories");
             assert!(Command::new("bootctl")
                 .arg("--esp-path=/efi")
@@ -730,7 +731,7 @@ impl Installer for Arch {
             console-mode max
             editor   no"
             )
-                .expect("Failed to write data");
+            .expect("Failed to write data");
             f.sync_all().expect("failed to sync data");
 
             let mut e =
@@ -744,9 +745,9 @@ impl Installer for Arch {
             initrd  /initramfs-linux.img
             options root=UUID={uuid} rw"
                 )
-                    .as_str()
+                .as_str()
             )
-                .expect("Failed to write data");
+            .expect("Failed to write data");
             e.sync_all().expect("failed to sync data");
 
             let mut e_f = File::create("/boot/loader/entries/arch-fallback.conf")
@@ -760,9 +761,9 @@ linux   /vmlinuz-linux
 initrd  /initramfs-linux-fallback.img
 options root=UUID={uuid} rw"
                 )
-                    .as_str()
+                .as_str()
             )
-                .expect("Failed to write data");
+            .expect("Failed to write data");
             e_f.sync_all().expect("failed to sync data");
         }
         self
