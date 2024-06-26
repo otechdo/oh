@@ -43,6 +43,7 @@ fn uuid() -> String {
     art.last().unwrap().replace('"', "")
 }
 fn main() -> ExitCode {
+    println!("{}", uuid());
     let arch: Manager = argh::from_env();
     if arch.upgrade {
         exit(Arch::upgrade());
