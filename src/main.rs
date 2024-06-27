@@ -3,9 +3,9 @@
 use std::io::BufRead;
 use std::process::{exit, Command, ExitCode};
 
-use argh::FromArgs;
-
 use crate::arch::{Arch, Installer};
+use argh::FromArgs;
+use inquire::MultiSelect;
 
 mod arch;
 mod base;
@@ -21,10 +21,17 @@ mod window;
 #[derive(FromArgs)]
 /// install and manage an archlinux
 struct Manager {
-    #[argh(switch, short = 'i', description = "start the installer")]
-    installer: bool,
+    #[argh(switch, short = 's', description = "start the installer")]
+    setup: Option<bool>,
+
     #[argh(switch, short = 'u', description = "upgrade the system")]
-    upgrade: bool,
+    upgrade: Option<bool>,
+
+    #[argh(switch, short = 'c', description = "upgrade the cache system")]
+    cache: Option<bool>,
+
+    #[argh(switch, short = 'i', description = "install packages")]
+    install: Option<bool>,
 }
 
 fn uuid() -> String {
@@ -43,12 +50,18 @@ fn uuid() -> String {
     art.last().unwrap().replace('"', "")
 }
 fn main() -> ExitCode {
-    println!("{}", uuid());
     let arch: Manager = argh::from_env();
-    if arch.upgrade {
+    if arch.upgrade.is_some() {
         exit(Arch::upgrade());
+    } else if arch.cache.is_some() {
+        exit(Arch::cache());
+    } else if arch.install.is_some() {
+        let x = MultiSelect::new("Select packages to install : ", Arch::packages())
+            .prompt()
+            .unwrap();
+        assert!(Arch::i(&x));
     }
-    if arch.installer {
+    if arch.setup.is_some() {
         exit(Arch::default().setup(uuid()));
     }
     exit(1);

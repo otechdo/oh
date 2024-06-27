@@ -18,7 +18,7 @@ use std::fs;
 use std::fs::{remove_file, File};
 use std::io::Write;
 use std::process::Command;
-
+const CACHE: &str = "/tmp/oh-cache";
 #[derive(Default)]
 pub struct Arch {
     pub locales: Vec<String>,
@@ -49,6 +49,49 @@ impl Arch {
             return 0;
         }
         1
+    }
+    pub fn cache() -> i32 {
+        let f = File::create(CACHE);
+        if Command::new("paru")
+            .arg("-S")
+            .arg("-l")
+            .arg("multilib")
+            .arg("extra")
+            .arg("core")
+            .arg("aur")
+            .stdout(f.expect("Fail to create file"))
+            .spawn()
+            .unwrap()
+            .wait()
+            .unwrap()
+            .success()
+        {
+            return 0;
+        }
+        1
+    }
+
+    pub fn packages() -> Vec<String> {
+        let mut r: Vec<String> = Vec::new();
+        let contents: String =
+            fs::read_to_string(CACHE).expect("Something went wrong reading the file");
+        let content: Vec<&str> = contents.lines().collect();
+        for line in content {
+            let c: Vec<&str> = line.split(' ').collect();
+            r.push((*c.get(1).unwrap()).to_string());
+        }
+        r
+    }
+
+    pub fn i(p: &[String]) -> bool {
+        Command::new("paru")
+            .arg("-S")
+            .args(p)
+            .spawn()
+            .unwrap()
+            .wait()
+            .unwrap()
+            .success()
     }
 }
 
