@@ -1,0 +1,10 @@
+[Unit]
+Description=Oh Cache Service
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/oh --cache
+
+[Install]
+WantedBy=multi-user.target
