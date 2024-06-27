@@ -51,7 +51,8 @@ impl Arch {
         1
     }
     pub fn cache() -> i32 {
-        let f = File::create(CACHE);
+        let f = File::create("repos");
+        let g = File::create("group");
         if Command::new("paru")
             .arg("-S")
             .arg("-l")
@@ -65,7 +66,32 @@ impl Arch {
             .wait()
             .unwrap()
             .success()
+            && Command::new("paru")
+                .arg("-S")
+                .arg("-g")
+                .stdout(g.expect("Fail to create file"))
+                .spawn()
+                .unwrap()
+                .wait()
+                .unwrap()
+                .success()
         {
+            let mut str = String::new();
+            str.push_str(
+                fs::read_to_string("repos")
+                    .expect("failed to parse file")
+                    .as_str(),
+            );
+            str.push_str(
+                fs::read_to_string("group")
+                    .expect("failed to parse file")
+                    .as_str(),
+            );
+            let mut c = File::create(CACHE).expect("failed to create the cache");
+            writeln!(c, "{str}").expect("failed to write the cache");
+            c.sync_all().expect("failed to sync data");
+            remove_file("group").expect("failed to remove group file");
+            remove_file("repos").expect("failed to remove repos file");
             return 0;
         }
         1
@@ -83,8 +109,8 @@ impl Arch {
         r
     }
 
-    pub fn i(p: &[String]) -> bool {
-        Command::new("paru")
+    pub fn i(p: &[String]) -> i32 {
+        if Command::new("paru")
             .arg("-S")
             .args(p)
             .spawn()
@@ -92,6 +118,26 @@ impl Arch {
             .wait()
             .unwrap()
             .success()
+        {
+            return 0;
+        }
+        1
+    }
+    pub fn remove(p: &[String]) -> i32 {
+        if Command::new("paru")
+            .arg("-R")
+            .arg("-n")
+            .arg("-s")
+            .args(p)
+            .spawn()
+            .unwrap()
+            .wait()
+            .unwrap()
+            .success()
+        {
+            return 0;
+        }
+        1
     }
 }
 

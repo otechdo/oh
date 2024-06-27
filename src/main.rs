@@ -32,6 +32,9 @@ struct Manager {
 
     #[argh(switch, short = 'i', description = "install packages")]
     install: Option<bool>,
+
+    #[argh(switch, short = 'r', description = "uninstall packages")]
+    remove: Option<bool>,
 }
 
 fn uuid() -> String {
@@ -59,7 +62,12 @@ fn main() -> ExitCode {
         let x = MultiSelect::new("Select packages to install : ", Arch::packages())
             .prompt()
             .unwrap();
-        assert!(Arch::i(&x));
+        exit(Arch::i(&x));
+    } else if arch.remove.is_some() {
+        let x = MultiSelect::new("Select packages to install : ", Arch::packages())
+            .prompt()
+            .unwrap();
+        exit(Arch::remove(&x));
     }
     if arch.setup.is_some() {
         exit(Arch::default().setup(uuid()));
