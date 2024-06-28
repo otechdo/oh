@@ -1,10 +1,9 @@
 [Unit]
-Description=Oh Cache Refresh Timer
+Description=Oh timer
 
 [Timer]
-OnCalendar=hourly
-Persistent=true
-Unit=oh.service
+OnStartupSec=15
+OnUnitActiveSec=1h
 
 [Install]
 WantedBy=timers.target
