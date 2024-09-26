@@ -1,3 +1,43 @@
+# Installation
+
+## With AI
+
+```bash
+cargo install oh --features ai
+```
+
+## With prompts without AI
+
+```bash
+cargo install oh --features ask
+```
+
+## Without AI and prompt
+
+```bash
+cargo install oh --features bar
+```
+
+## All features
+
+```bash
+cargo install oh --features full
+```
+
+## Run
+
+```bash
+oh --help
+```
+
+```bash
+API_KEY="gemini api key here" oh
+```
+
+* [Get api key](https://aistudio.google.com/app/apikey)
+
+### Command options
+
 **Base Options**
 
 * `--distro="archlinux"`:
