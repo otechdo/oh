@@ -12,11 +12,6 @@ cargo install oh --features ai
 cargo install oh --features ask
 ```
 
-## Without AI and prompt
-
-```bash
-cargo install oh --features bar
-```
 
 ## All features
 
@@ -27,11 +22,7 @@ cargo install oh --features full
 ## Run
 
 ```bash
-oh --help
-```
-
-```bash
-API_KEY="gemini api key here" oh
+# oh
 ```
 
 * [Get api key](https://aistudio.google.com/app/apikey)
