@@ -2,8 +2,8 @@
 name = "oh"
 version = "0.0.1"
 edition = "2021"
-license = "GPL-2.0-or-later"
-keywords = ["archlinux", "linux", "installer", "manager", "utility"]
+license = "AGPL-3"
+keywords = ["installer", "linux", "archlinux", "gentoo", "distribution"]
 categories = ["command-line-utilities"]
 readme = "README.md"
 authors = ["Willy Micieli"]
@@ -11,5 +11,13 @@ repository = "https://github.com/otechdo/oh"
 description = "A archlinux installer and manager"
 
 [dependencies]
-argh = "0.1.12"
-inquire = "0.7.5"
+inquire = { version = "0.7.5", optional = true }
+clap = { version = "4.5.18" }
+indicatif = { version = "0.17.8", optional = true }
+ask_gemini = { version = "0.1.4", optional = true }
+tokio = { version = "1.40.0", optional = true }
+
+[features]
+ask = ["inquire", "inquire/editor", "inquire/date", "inquire/default"]
+bar = ["indicatif"]
+ai = ["ask_gemini", "tokio/full", "tokio"]
