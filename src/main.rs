@@ -1,10 +1,10 @@
 #![allow(clippy::multiple_crate_versions)]
 #[cfg(feature = "ai")]
 pub mod ai;
-pub mod configuration;
-pub mod os;
 pub mod archlinux;
+pub mod configuration;
 pub mod gentoo;
+pub mod os;
 pub mod utils;
 
 use crate::ai::gemini::ai;

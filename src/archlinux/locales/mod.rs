@@ -7,7 +7,8 @@ use std::process::Command;
 
 pub async fn configure_locale(app: &mut Os) -> Result<(), Error> {
     if let Ok(mut f) = File::create("/etc/locale.conf") {
-        f.write_all("LANG=\nLANGUAGE=\nLC_TIME=\nLC_COLLATE=\nLC_ALL=".as_bytes()).expect("Unable to write to /etc/locale.conf");
+        f.write_all("LANG=\nLANGUAGE=\nLC_TIME=\nLC_COLLATE=\nLC_ALL=".as_bytes())
+            .expect("Unable to write to /etc/locale.conf");
         f.sync_all().expect("Unable to sync /etc/locale.conf");
         f.flush().expect("Unable to flush /etc/locale.conf");
     }
@@ -62,10 +63,7 @@ pub async fn configure_locale(app: &mut Os) -> Result<(), Error> {
                     .expect("")
                     .as_str(),
             );
-            if let Ok(mut l) = OpenOptions::new()
-                .write(true)
-                .open("/etc/locale.conf")
-            {
+            if let Ok(mut l) = OpenOptions::new().write(true).open("/etc/locale.conf") {
                 l.write_all(format!("{}", app.locale).as_bytes())
                     .expect("failed to write locale.conf");
                 l.sync_all().expect("failed to sync locale.conf");

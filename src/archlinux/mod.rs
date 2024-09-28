@@ -2,18 +2,18 @@ use crate::ai::gemini::assistant;
 use crate::archlinux::keyboard::configure_keyboard;
 use crate::archlinux::locales::configure_locale;
 use crate::archlinux::network::reflector::reflector;
+use crate::archlinux::packages::install::packages;
 use crate::archlinux::time::configure_timezone;
 use crate::os::Os;
 use mirroring::configure_archlinux_mirrors;
 use std::io::Error;
-use crate::archlinux::packages::install::packages;
 
-pub mod mirroring;
-pub mod network;
 pub mod keyboard;
 pub mod locales;
-pub mod time;
+pub mod mirroring;
+pub mod network;
 pub mod packages;
+pub mod time;
 
 pub async fn arch_install() -> Result<(), Error> {
     let mut app = Os::default();
