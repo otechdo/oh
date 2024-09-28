@@ -7,6 +7,7 @@ use crate::os::Os;
 use mirroring::configure_archlinux_mirrors;
 use std::io::Error;
 use crate::archlinux::packages::cache::generate_pacman_cache;
+use crate::archlinux::packages::install::packages;
 
 pub mod mirroring;
 pub mod network;
@@ -31,5 +32,6 @@ pub async fn arch_install() -> Result<(), Error> {
     assert!(configure_keyboard(&mut app).await.is_ok());
     assert!(configure_timezone(&mut app).await.is_ok());
     assert!(configure_locale(&mut app).await.is_ok());
+    assert!(packages().await);
     Ok(())
 }
