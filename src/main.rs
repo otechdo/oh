@@ -1,9 +1,13 @@
 #![allow(clippy::multiple_crate_versions)]
 
 use ask_gemini::Gemini;
+use clap::{Arg, ArgMatches};
 use inquire::{Confirm, Select, Text};
 use std::env::var;
+use std::fs::{create_dir_all, File, OpenOptions};
+use std::io::Write;
 use std::io::{Error, ErrorKind};
+use std::path::Path;
 use std::process::{Command, Stdio};
 
 pub const TIMEZONES: [&str; 597] = [
@@ -2123,6 +2127,75 @@ pub const LOCALES: [&str; 496] = [
     "zu_ZA8859-1",
 ];
 
+pub const COUNTRIES: [&str; 67] = [
+    "Australia",
+    "Austria",
+    "Azerbaijan",
+    "Bangladesh",
+    "Belarus",
+    "Belgium",
+    "Bosnia and Herzegovina",
+    "Brazil",
+    "Bulgaria",
+    "Cambodia",
+    "Canada",
+    "Chile",
+    "Colombia",
+    "Croatia",
+    "Czechia",
+    "Denmark",
+    "Ecuador",
+    "Estonia",
+    "Finland",
+    "France",
+    "Georgia",
+    "Germany",
+    "Greece",
+    "Hungary",
+    "Iceland",
+    "India",
+    "Indonesia",
+    "Iran",
+    "Israel",
+    "Italy",
+    "Japan",
+    "Kazakhstan",
+    "Kenya",
+    "Latvia",
+    "Lithuania",
+    "Luxembourg",
+    "Mauritius",
+    "Mexico",
+    "Moldova",
+    "Monaco",
+    "Netherlands",
+    "New Caledonia",
+    "New Zealand",
+    "North Macedonia",
+    "Norway",
+    "Paraguay",
+    "Poland",
+    "Portugal",
+    "Romania",
+    "Réunion",
+    "Serbia",
+    "Singapore",
+    "Slovakia",
+    "Slovenia",
+    "South Africa",
+    "South Korea",
+    "Spain",
+    "Sweden",
+    "Switzerland",
+    "Taiwan",
+    "Thailand",
+    "Türkiye",
+    "Ukraine",
+    "United Kingdom",
+    "United States",
+    "Uzbekistan",
+    "Vietnam",
+];
 pub const NONE: &str = "none";
 pub const GNOME_DESKTOP: &str = "gnome";
 pub const DEEPIN_DESKTOP: &str = "deepin";
@@ -2200,25 +2273,72 @@ pub struct Mirrors {
 }
 
 #[derive(Default)]
-pub struct Os {
-    pub mirrors: Mirrors,
+pub struct Keyboard {
+    pub keymap: String,
+    pub layout: String,
+    pub model: String,
+    pub options: String,
 }
 
+#[derive(Default)]
+pub struct Os {
+    pub mirrors: Mirrors,
+    pub locale: String,
+    pub keyboard: Keyboard,
+}
+
+pub fn oh() -> ArgMatches {
+    clap::Command::new("oh")
+        .arg(
+            Arg::new("chat")
+                .help("chat with ai")
+                .num_args(0)
+                .long("chat"),
+        )
+        .get_matches()
+}
 fn cls() {
     assert!(Command::new("clear").spawn().expect("linux").wait().is_ok());
 }
 async fn ai() {
-    let gemini = Gemini::new(
-        Some(var("API_KEY").expect("no API_KEY founded").as_str()),
-        None,
-    );
+    let gemini = if let Ok(key) = var("API_KEY") {
+        Gemini::new(Some(key.as_str()), None)
+    } else {
+        Gemini::new(
+            Some(
+                Text::new("Gemini api key :")
+                    .prompt()
+                    .expect("Missing value")
+                    .as_str(),
+            ),
+            None,
+        )
+    };
+
     loop {
         let prompt = Text::new("").prompt().unwrap_or_default();
         match gemini.ask(prompt.as_str()).await {
             Ok(response) => {
                 cls();
                 let x = response.join("\n");
-                print!("{x}");
+                if let Ok(home) = var("HOME") {
+                    assert!(create_dir_all(format!("{home}/.gemini").as_str()).is_ok());
+                    if Path::new(format!("{home}/.gemini").as_str()).is_dir() {
+                        if let Ok(mut g) = File::options()
+                            .write(true)
+                            .create(true)
+                            .append(true)
+                            .open(format!("{home}/.gemini/gemini.log").as_str())
+                        {
+                            assert!(g
+                                .write_all(format!("{prompt}\n\n{x}\n\n").as_bytes())
+                                .is_ok());
+                            assert!(g.sync_all().is_ok());
+                            assert!(g.flush().is_ok());
+                        }
+                    }
+                    print!("{x}");
+                }
             }
             Err(e) => eprintln!("Error: {e}"),
         }
@@ -2241,21 +2361,15 @@ fn select(prompt: &str, opts: Vec<String>) -> String {
 fn text(prompt: &str) -> String {
     Text::new(prompt).prompt().unwrap_or_default()
 }
-async fn ask(
-    title: &str,
-    description: &str,
-    app: &mut Os,
-    c: fn(&mut Os) -> Result<(), Error>,
-) -> Result<(), Error> {
-    assert!(assistant(title, description).await.is_ok());
+async fn ask(app: &mut Os, c: fn(&mut Os) -> Result<(), Error>) -> Result<(), Error> {
     cls();
     assert!(c(app).is_ok());
     Ok(())
 }
-async fn assistant(title: &str, description: &str) -> Result<(), Error> {
+async fn assistant(title: &str, description: &str, why: &str, benefits: &str,step:&str) -> Result<(), Error> {
     cls();
-    println!("{title}\n{description}");
-    if Confirm::new("Do you want chat with the AI before continue ?")
+    println!("{title}\n\n{description}\n\n{why}\n\n{benefits}\n");
+    if Confirm::new(format!("Do you want chat with the AI before configure the {step} ?").as_str())
         .with_default(true)
         .prompt()
         .unwrap()
@@ -2270,81 +2384,9 @@ fn configure_archlinux_mirrors(os: &mut Os) -> Result<(), Error> {
     os.mirrors.protocol.clear();
     os.mirrors.save_at.clear();
     os.mirrors.sort.clear();
-    os.mirrors.country.push_str(
-        select(
-            "Enter your country:",
-            vec![
-                "Australia".to_string(),
-                "Austria".to_string(),
-                "Azerbaijan".to_string(),
-                "Bangladesh".to_string(),
-                "Belarus".to_string(),
-                "Belgium".to_string(),
-                "Bosnia and Herzegovina".to_string(),
-                "Brazil".to_string(),
-                "Bulgaria".to_string(),
-                "Cambodia".to_string(),
-                "Canada".to_string(),
-                "Chile".to_string(),
-                "Colombia".to_string(),
-                "Croatia".to_string(),
-                "Czechia".to_string(),
-                "Denmark".to_string(),
-                "Ecuador".to_string(),
-                "Estonia".to_string(),
-                "Finland".to_string(),
-                "France".to_string(),
-                "Georgia".to_string(),
-                "Germany".to_string(),
-                "Greece".to_string(),
-                "Hungary".to_string(),
-                "Iceland".to_string(),
-                "India".to_string(),
-                "Indonesia".to_string(),
-                "Iran".to_string(),
-                "Israel".to_string(),
-                "Italy".to_string(),
-                "Japan".to_string(),
-                "Kazakhstan".to_string(),
-                "Kenya".to_string(),
-                "Latvia".to_string(),
-                "Lithuania".to_string(),
-                "Luxembourg".to_string(),
-                "Mauritius".to_string(),
-                "Mexico".to_string(),
-                "Moldova".to_string(),
-                "Monaco".to_string(),
-                "Netherlands".to_string(),
-                "New Caledonia".to_string(),
-                "New Zealand".to_string(),
-                "North Macedonia".to_string(),
-                "Norway".to_string(),
-                "Paraguay".to_string(),
-                "Poland".to_string(),
-                "Portugal".to_string(),
-                "Romania".to_string(),
-                "Réunion".to_string(),
-                "Serbia".to_string(),
-                "Singapore".to_string(),
-                "Slovakia".to_string(),
-                "Slovenia".to_string(),
-                "South Africa".to_string(),
-                "South Korea".to_string(),
-                "Spain".to_string(),
-                "Sweden".to_string(),
-                "Switzerland".to_string(),
-                "Taiwan".to_string(),
-                "Thailand".to_string(),
-                "Türkiye".to_string(),
-                "Ukraine".to_string(),
-                "United Kingdom".to_string(),
-                "United States".to_string(),
-                "Uzbekistan".to_string(),
-                "Vietnam".to_string(),
-            ],
-        )
-        .as_str(),
-    );
+    os.mirrors
+        .country
+        .push_str(select("Enter your country:", COUNTRIES.map(String::from).to_vec()).as_str());
     os.mirrors.protocol.push_str(
         select(
             "Enter mirror protocol:",
@@ -2380,7 +2422,12 @@ fn configure_archlinux_mirrors(os: &mut Os) -> Result<(), Error> {
     {
         return configure_archlinux_mirrors(os);
     }
-    Ok(())
+    if let Ok(mut c) = Command::new("pacman").arg("-S").arg("-y").arg("-y").arg("-u").arg("--noconfirm").current_dir("/tmp").spawn()  {
+        assert!(c.wait().is_ok());
+        Ok(())
+    }else{
+        Err(Error::last_os_error())
+    }
 }
 
 fn configure_gentoo_mirrors(os: &mut Os) -> Result<(), Error> {
@@ -2411,54 +2458,170 @@ fn configure_gentoo_mirrors(os: &mut Os) -> Result<(), Error> {
 pub async fn confirm(prompt: &str) -> bool {
     Confirm::new(prompt).with_default(false).prompt().unwrap()
 }
+
+async fn reflector(app:&mut Os) -> Result<(), Error>
+{
+    assert!(Command::new("reflector")
+        .stdout(Stdio::null())
+        .stderr(Stdio::null())
+        .arg("-c")
+        .arg(app.mirrors.country.as_str())
+        .arg("--sort")
+        .arg(app.mirrors.sort.as_str())
+        .arg("--save")
+        .arg(app.mirrors.save_at.as_str())
+        .arg("-p")
+        .arg(app.mirrors.protocol.as_str())
+        .current_dir("/tmp")
+        .spawn()
+        .expect("missing reflector")
+        .wait()
+        .expect("")
+        .success());
+    Ok(())
+}
 async fn install_archlinux(app: &mut Os) -> Result<(), Error> {
-    if ask(
-        "Use fasts mirrors",
-        "Generate the mirrors list to get fasted mirrors base on the country.",
-        app,
-        |app| configure_archlinux_mirrors(app),
-    )
-    .await
-    .is_ok()
+    assert!(assistant(
+        "Configure Mirrors.",
+        "Configure the Pacman mirrors to select the fastest ones based on your location.",
+        "This will make package installation and updates faster.",
+        "Faster download speeds for packages\nReduced waiting time for installations and updates\nImproved overall system performance",
+    "pacman mirrors").await.is_ok());
+    if ask(app, |app| configure_archlinux_mirrors(app))
+        .await
+        .is_ok()
     {
-        assert!(Command::new("reflector")
-            .stdout(Stdio::null())
-            .stderr(Stdio::null())
-            .arg("-c")
-            .arg(app.mirrors.country.as_str())
-            .arg("--sort")
-            .arg(app.mirrors.sort.as_str())
-            .arg("--save")
-            .arg(app.mirrors.save_at.as_str())
-            .arg("-p")
-            .arg(app.mirrors.protocol.as_str())
-            .current_dir("/tmp")
-            .spawn()
-            .expect("missing reflector")
-            .wait()
-            .expect("")
-            .success());
+        assert!(reflector(app).await.is_ok());
+        assert!(configure_keyboard(app).await.is_ok());
         return Ok(());
     }
     Err(Error::new(ErrorKind::Interrupted, "installation failed"))
 }
 async fn install_gentoo(app: &mut Os) -> Result<(), Error> {
-    if ask(
-        "Use fasts mirrors",
-        "Generate the mirrors list to get fasted mirrors base on the country.",
-        app,
-        |app| configure_gentoo_mirrors(app),
-    )
-    .await
-    .is_ok()
-    {
+    if ask(app, |app| configure_gentoo_mirrors(app)).await.is_ok() {
         return Ok(());
     }
     Err(Error::new(ErrorKind::Interrupted, "installation failed"))
 }
 
+async fn configure_keyboard(app:&mut Os)-> Result<(), Error>
+{
+    // Keyboard Keymap
+    loop {
+        assert!(assistant(
+            "Set Your Keyboard Keymap",
+            "Configure the way your keyboard keys are mapped to specific characters and functions.",
+            "Match physical layout: Ensure your keyboard settings align with the actual keys on your keyboard.\nType in your language: Use the correct characters and symbols for your language.\nAccess special functions: Utilize keyboard shortcuts and special keys as intended.",
+            "Accurate typing: Type efficiently and avoid errors due to mismatched key mappings.\nComfortable experience: Use your keyboard in a natural and intuitive way.\nImproved productivity: Access all keyboard functions and shortcuts easily.",
+            "Keyboard layout configuration",
+        ).await.is_ok());
+        app.keyboard.keymap.clear();
+        app.keyboard.keymap = select(
+            "Select a keymap :",
+            KEYMAPS.map(String::from).to_vec(),
+        );
+        if app.keyboard.keymap.is_empty().eq(&false) {
+            break;
+        }
+    }
+    // Keyboard Layout
+    loop {
+        assert!(assistant(
+            "Set Your Keyboard Layout",
+            "Configure the way your keyboard keys are mapped to specific characters and functions.",
+            "Match physical layout: Ensure your keyboard settings align with the actual keys on your keyboard.\nType in your language: Use the correct characters and symbols for your language.\nAccess special functions: Utilize keyboard shortcuts and special keys as intended.",
+            "Accurate typing: Type efficiently and avoid errors due to mismatched key mappings.\nComfortable experience: Use your keyboard in a natural and intuitive way.\nImproved productivity: Access all keyboard functions and shortcuts easily.",
+            "Keyboard layout configuration",
+        ).await.is_ok());
+        app.keyboard.layout.clear();
+        app.keyboard.layout = select(
+            "Select a layout :",
+            KEYMAP_LAYOUTS.map(String::from).to_vec(),
+        );
+        if app.keyboard.layout.is_empty().eq(&false) {
+            break;
+        }
+    }
+    // Keyboard Model
+    loop {
+        assert!(assistant(
+            "Configure Your Keyboard Model",
+            "Ensure your system recognizes your specific keyboard model for optimal functionality.",
+            "Correct key mapping: Accurate mapping of special keys (e.g., multimedia keys, function keys) specific to your keyboard model.\nDriver compatibility: Install appropriate drivers for advanced features or customizations.\nTroubleshooting: Resolve potential issues related to unrecognized keys or functions.",
+            "Full keyboard utilization: Access all features and functions your keyboard offers.\nEnhanced user experience: Seamless interaction with your system using your specific keyboard model.\nImproved troubleshooting: Efficiently address any keyboard-related problems.",
+            "Configure Your Keyboard Model",
+        ).await.is_ok());
+        app.keyboard.model.clear();
+        app.keyboard.model = select(
+            "Select a keyboard model :",
+            KEYMAP_MODELS.map(String::from).to_vec(),
+        );
+        if app.keyboard.model.is_empty().eq(&false) {
+            break;
+        }
+    }
+
+    // Keyboard Options
+    loop {
+        assert!(assistant(
+            "Configure Your Keyboard Options",
+            "Customize various keyboard behaviors to match your preferences and needs.",
+            "Adjust key repeat: Control how quickly a key repeats when held down.\nSet cursor blink rate: Change how fast the cursor blinks.\nEnable/disable sticky keys: Make modifier keys (e.g., Shift, Ctrl, Alt) stick after being pressed once, allowing you to press other keys in combination without holding the modifier key down continuously.\nConfigure other accessibility options: Adjust settings for accessibility features like slow keys or bounce keys.",
+            "Personalized experience: Tailor your keyboard behavior to your typing style and workflow.\nImproved accessibility: Make your keyboard easier to use for individuals with specific needs.\nEnhanced comfort: Reduce strain and fatigue during extended keyboard use.",
+            "Keyboard Options",
+        ).await.is_ok());
+        app.keyboard.options.clear();
+        app.keyboard.options = select(
+            "Select a keyboard options :",
+            KEYMAP_OPTIONS.map(String::from).to_vec(),
+        );
+        if app.keyboard.options.is_empty().eq(&false) {
+            break;
+        }
+    }
+
+    // Save configuration
+    // KEYMAP=fr
+    // XKBLAYOUT=fr
+    // XKBMODEL=pc105
+    // XKBOPTIONS=terminate:ctrl_alt_bksp
+    assert!(File::create("/etc/vconsole.conf").is_ok());
+    if let Ok(mut console) = OpenOptions::new().write(true).create(true).open("/etc/vconsole.conf"){
+        assert!(console.write_all(format!("KEYMAP={}\nXKBLAYOUT={}\nXKBMODEL={}\nXKBOPTIONS={}",app.keyboard.keymap,app.keyboard.layout,app.keyboard.model,app.keyboard.options).as_bytes()).is_ok());
+        assert!(console.sync_all().is_ok());
+        assert!(console.flush().is_ok());
+        return Ok(());
+    }
+    Ok(())
+}
+async fn locale(app:&mut Os)
+{
+    loop {
+        assert!(assistant(
+            "Set Your Locale",
+            "Configure your system's language, region, and character encoding settings.",
+            "Display language: Ensure your system uses your preferred language for menus, messages, and applications.\nFormatting: Get correct date, time, currency, and number formats based on your region.\nCharacter support: Handle special characters and symbols used in your language properly.",
+            "User-friendly experience: Interact with your system in a familiar and comfortable way.\nAvoid errors: Prevent issues with software that relies on specific locale settings.\nCImproved accessibility: Make your system more accessible to users who speak different languages or use assistive technologies.",
+            "Locale configuration"
+        ).await.is_ok());
+        app.locale.clear();
+        app.locale = select("Select a locale :", LOCALES.map(String::from).to_vec());
+        if app.locale.is_empty().eq(&false) {
+            break;
+        }
+
+    }
+}
 #[tokio::main]
 async fn main() -> Result<(), Error> {
+    let app = oh();
+    if let Some(chat) = app.get_one::<bool>("chat") {
+        if chat.eq(&true) {
+            cls();
+            ai().await;
+            return Ok(());
+        }
+    }
     cls();
     let mut app = Os::default();
     if confirm("Run installation ?").await.eq(&true) {
@@ -2467,13 +2630,19 @@ async fn main() -> Result<(), Error> {
             vec!["archlinux".to_string(), "gentoo".to_string()],
         );
         if confirm(format!("run {os} installer ?").as_str()).await {
-            return match os.as_str() {
-                "archlinux" => install_archlinux(&mut app).await,
-                "gentoo" => install_gentoo(&mut app).await,
+            match os.as_str() {
+                "archlinux" => assert!(install_archlinux(&mut app).await.is_ok()),
+                "gentoo" => assert!(install_gentoo(&mut app).await.is_ok()),
                 _ => unreachable!("no possible"),
             };
         }
-        println!("Installation aborted");
+        if confirm("Reboot ?").await {
+            cls();
+            println!("reboot now");
+            assert!(Command::new("reboot").spawn().is_ok());
+            return Ok(());
+        }
+        println!("{os} is installed successfully");
         return Ok(());
     }
     cls();
