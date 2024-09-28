@@ -6,6 +6,7 @@ use crate::archlinux::time::configure_timezone;
 use crate::os::Os;
 use mirroring::configure_archlinux_mirrors;
 use std::io::Error;
+use crate::archlinux::packages::cache::generate_pacman_cache;
 
 pub mod mirroring;
 pub mod network;
@@ -13,6 +14,7 @@ pub mod network;
 pub mod keyboard;
 pub mod locales;
 pub mod time;
+pub mod packages;
 
 pub async fn arch_install() -> Result<(), Error> {
     let mut app = Os::default();
@@ -23,6 +25,7 @@ pub async fn arch_install() -> Result<(), Error> {
         "This will make package installation and updates faster.",
         "Faster download speeds for packages\nReduced waiting time for installations and updates\nImproved overall system performance",
         "pacman mirrors").await.is_ok());
+    assert!(generate_pacman_cache());
     assert!(configure_archlinux_mirrors(&mut app).is_ok());
     assert!(reflector(&mut app).await.is_ok());
     assert!(configure_keyboard(&mut app).await.is_ok());
