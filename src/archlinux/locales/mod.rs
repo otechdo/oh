@@ -64,10 +64,7 @@ pub async fn configure_locale(app: &mut Os) -> Result<(), Error> {
                     .as_str(),
             );
             if let Ok(mut l) = OpenOptions::new()
-                .create(true)
                 .write(true)
-                .read(true)
-                .truncate(true)
                 .open("/etc/locale.conf")
             {
                 l.write_all(format!("{}", app.locale).as_bytes())
