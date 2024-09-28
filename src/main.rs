@@ -53,6 +53,7 @@ async fn main() -> Result<(), Error> {
         if confirm("Reboot ?").await {
             cls();
             println!("reboot now");
+            assert!(Command::new("exit").spawn().expect("exit 0").wait().is_ok());
             assert!(Command::new("reboot").spawn().is_ok());
             return Ok(());
         }
