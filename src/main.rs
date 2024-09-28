@@ -13,7 +13,6 @@ use crate::gentoo::install_gentoo;
 use crate::utils::{cls, confirm, select};
 use clap::{Arg, ArgMatches};
 use std::io::Error;
-use std::process::Command;
 
 pub fn oh() -> ArgMatches {
     clap::Command::new("oh")
@@ -49,13 +48,6 @@ async fn main() -> Result<(), Error> {
                 "gentoo" => assert!(install_gentoo().await.is_ok()),
                 _ => unreachable!("no possible"),
             };
-        }
-        if confirm("Reboot ?").await {
-            cls();
-            println!("reboot now");
-            assert!(Command::new("exit").spawn().expect("exit 0").wait().is_ok());
-            assert!(Command::new("reboot").spawn().is_ok());
-            return Ok(());
         }
         println!("{os} is installed successfully");
         return Ok(());
