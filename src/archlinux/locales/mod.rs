@@ -6,6 +6,9 @@ use std::io::{Error, ErrorKind, Write};
 use std::process::Command;
 
 pub async fn configure_locale(app: &mut Os) -> Result<(), Error> {
+    if let Ok(mut f) = File::create("/etc/locale.conf") {
+        f.write_all("LANG=\nLANGUAGE=\nLC_TIME=\nLC_COLLATE=\nLC_ALL=".as_bytes()).expect("Unable to write to /etc/locale.conf");
+    }
     assert!(File::create("/etc/locale.conf").is_ok());
     #[cfg(feature = "ai")]
     assert!(assistant(
