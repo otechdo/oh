@@ -3,12 +3,12 @@ name = "oh"
 version = "0.0.1"
 edition = "2021"
 license = "AGPL-3"
-keywords = ["installer", "linux", "archlinux", "gentoo", "distribution"]
+keywords = ["installer", "gentoo", "archlinux", "linux", "distribution"]
 categories = ["command-line-utilities"]
 readme = "README.md"
 authors = ["Willy Micieli"]
 repository = "https://github.com/otechdo/oh"
-description = "A archlinux installer and manager"
+description = "An installer for gentoo and archlinux"
 
 [dependencies]
 inquire = { version = "0.7.5", optional = true }
@@ -23,6 +23,5 @@ chrono = "0.4.38"
 [features]
 ask = ["inquire", "inquire/editor", "inquire/date", "inquire/default"]
 ai = ["ask_gemini", "ask", "tokio/full", "tokio"]
-ui = ["ai", "ratatui/all-widgets", "ratatui-textarea/search", "ratatui-textarea/ratatui", "ratatui-textarea/crossterm"]
 cli = ["clap"]
-full = ["ui","ai","cli"]
+full = ["ai","cli"]

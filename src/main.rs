@@ -2,9 +2,9 @@
 
 use ask_gemini::Gemini;
 use clap::{Arg, ArgMatches};
-use inquire::{Confirm, Select, Text};
+use inquire::{Confirm, Editor, Select, Text};
 use std::env::var;
-use std::fs::{create_dir_all, File, OpenOptions};
+use std::fs::{create_dir_all, read_to_string, File, OpenOptions};
 use std::io::Write;
 use std::io::{Error, ErrorKind};
 use std::path::Path;
@@ -2285,6 +2285,7 @@ pub struct Os {
     pub mirrors: Mirrors,
     pub locale: String,
     pub keyboard: Keyboard,
+    pub time_zone: String,
 }
 
 pub fn oh() -> ArgMatches {
@@ -2300,6 +2301,8 @@ pub fn oh() -> ArgMatches {
 fn cls() {
     assert!(Command::new("clear").spawn().expect("linux").wait().is_ok());
 }
+
+#[cfg(feature = "ai")]
 async fn ai() {
     let gemini = if let Ok(key) = var("API_KEY") {
         Gemini::new(Some(key.as_str()), None)
@@ -2366,7 +2369,14 @@ async fn ask(app: &mut Os, c: fn(&mut Os) -> Result<(), Error>) -> Result<(), Er
     assert!(c(app).is_ok());
     Ok(())
 }
-async fn assistant(title: &str, description: &str, why: &str, benefits: &str,step:&str) -> Result<(), Error> {
+#[cfg(feature = "ai")]
+async fn assistant(
+    title: &str,
+    description: &str,
+    why: &str,
+    benefits: &str,
+    step: &str,
+) -> Result<(), Error> {
     cls();
     println!("{title}\n\n{description}\n\n{why}\n\n{benefits}\n");
     if Confirm::new(format!("Do you want chat with the AI before configure the {step} ?").as_str())
@@ -2422,10 +2432,18 @@ fn configure_archlinux_mirrors(os: &mut Os) -> Result<(), Error> {
     {
         return configure_archlinux_mirrors(os);
     }
-    if let Ok(mut c) = Command::new("pacman").arg("-S").arg("-y").arg("-y").arg("-u").arg("--noconfirm").current_dir("/tmp").spawn()  {
+    if let Ok(mut c) = Command::new("pacman")
+        .arg("-S")
+        .arg("-y")
+        .arg("-y")
+        .arg("-u")
+        .arg("--noconfirm")
+        .current_dir("/tmp")
+        .spawn()
+    {
         assert!(c.wait().is_ok());
         Ok(())
-    }else{
+    } else {
         Err(Error::last_os_error())
     }
 }
@@ -2459,8 +2477,7 @@ pub async fn confirm(prompt: &str) -> bool {
     Confirm::new(prompt).with_default(false).prompt().unwrap()
 }
 
-async fn reflector(app:&mut Os) -> Result<(), Error>
-{
+async fn reflector(app: &mut Os) -> Result<(), Error> {
     assert!(Command::new("reflector")
         .stdout(Stdio::null())
         .stderr(Stdio::null())
@@ -2481,6 +2498,7 @@ async fn reflector(app:&mut Os) -> Result<(), Error>
     Ok(())
 }
 async fn install_archlinux(app: &mut Os) -> Result<(), Error> {
+    #[cfg(feature = "ai")]
     assert!(assistant(
         "Configure Mirrors.",
         "Configure the Pacman mirrors to select the fastest ones based on your location.",
@@ -2493,10 +2511,118 @@ async fn install_archlinux(app: &mut Os) -> Result<(), Error> {
     {
         assert!(reflector(app).await.is_ok());
         assert!(configure_keyboard(app).await.is_ok());
+        assert!(configure_timezone(app).await.is_ok());
+        assert!(configure_locale(app).await.is_ok());
         return Ok(());
     }
     Err(Error::new(ErrorKind::Interrupted, "installation failed"))
 }
+
+async fn configure_timezone(app: &mut Os) -> Result<(), Error> {
+    #[cfg(feature = "ai")]
+    assert!(assistant(
+        "Configure your time zone.",
+        "Set your system's time zone to match your physical location.",
+        "Accurate time display: Ensure your system clock shows the correct time based on your location.\nSchedule coordination: Synchronize your calendar, appointments, and events with others in your time zone.\nNetwork communication: Maintain proper timestamps for emails, file transfers, and other online activities.",
+        "Avoid confusion: Prevent misunderstandings due to incorrect time displays.\nImprove productivity: Stay organized and on schedule with accurate timekeeping.\nFacilitate collaboration: Seamlessly interact with others across different time zones.\n",
+        "time zone").await.is_ok());
+    loop {
+        app.time_zone.clear();
+        app.time_zone.push_str(
+            Select::new("", TIMEZONES.to_vec())
+                .prompt()
+                .expect("bad timezone"),
+        );
+        if app.time_zone.is_empty().eq(&false) {
+            break;
+        }
+    }
+    if Command::new("ln")
+        .arg("-sfv")
+        .arg(app.time_zone.as_str())
+        .arg("/etc/localtime")
+        .spawn()
+        .expect("linux")
+        .wait()
+        .expect("")
+        .success()
+    {
+        return Ok(());
+    }
+    Err(Error::new(ErrorKind::Interrupted, "timezone failed"))
+}
+
+async fn configure_locale(app: &mut Os) -> Result<(), Error> {
+    #[cfg(feature = "ai")]
+    assert!(assistant(
+        "Set your locale.",
+        "Configure your system's language, region, and character encoding settings.",
+        "Display language: Ensure your system uses your preferred language for menus, messages, and applications.\nFormatting: Get correct date, time, currency, and number formats based on your region.\nCharacter support: Handle special characters and symbols used in your language properly.",
+        "User-friendly experience: Interact with your system in a familiar and comfortable way.\nAvoid errors: Prevent issues with software that relies on specific locale settings.\nImproved accessibility: Make your system more accessible to users who speak different languages or use assistive technologies.",
+        "locale").await.is_ok());
+    app.locale.clear();
+    app.locale.push_str(
+        Editor::new("Edition of /etc/locale.gen")
+            .with_predefined_text(
+                read_to_string("/etc/locale.gen")
+                    .expect("failed to parse locale")
+                    .as_str(),
+            )
+            .with_editor_command("vim".as_ref())
+            .prompt()
+            .expect("")
+            .as_str(),
+    );
+    if let Ok(mut l) = OpenOptions::new()
+        .create(true)
+        .write(true)
+        .read(true)
+        .truncate(true)
+        .open("/etc/locale.gen")
+    {
+        l.write_all(format!("{}", app.locale).as_bytes())
+            .expect("failed to write locale");
+        l.sync_all().expect("failed to sync locale");
+        l.flush().expect("failed to flush locale");
+        if Command::new("locale-gen")
+            .spawn()
+            .expect("locale-gen")
+            .wait()
+            .expect("locale")
+            .success()
+        {
+            app.locale.clear();
+            app.locale.push_str(
+                Editor::new("Edition of /etc/locale.conf")
+                    .with_predefined_text(
+                        read_to_string("/etc/locale.conf")
+                            .expect("failed to parse locale.conf")
+                            .as_str(),
+                    )
+                    .with_editor_command("vim".as_ref())
+                    .prompt()
+                    .expect("")
+                    .as_str(),
+            );
+            if let Ok(mut l) = OpenOptions::new()
+                .create(true)
+                .write(true)
+                .read(true)
+                .truncate(true)
+                .open("/etc/locale.conf")
+            {
+                l.write_all(format!("{}", app.locale).as_bytes())
+                    .expect("failed to write locale.conf");
+                l.sync_all().expect("failed to sync locale.conf");
+                l.flush().expect("failed to flush locale.conf");
+            }
+            return Ok(());
+        }
+        return Err(Error::new(ErrorKind::NotFound, "locale-gen"));
+    }
+    Err(Error::new(ErrorKind::Interrupted, "timezone failed"))
+}
+
 async fn install_gentoo(app: &mut Os) -> Result<(), Error> {
     if ask(app, |app| configure_gentoo_mirrors(app)).await.is_ok() {
         return Ok(());
@@ -2504,10 +2630,10 @@ async fn install_gentoo(app: &mut Os) -> Result<(), Error> {
     Err(Error::new(ErrorKind::Interrupted, "installation failed"))
 }
 
-async fn configure_keyboard(app:&mut Os)-> Result<(), Error>
-{
+async fn configure_keyboard(app: &mut Os) -> Result<(), Error> {
     // Keyboard Keymap
     loop {
+        #[cfg(feature = "ai")]
         assert!(assistant(
             "Set Your Keyboard Keymap",
             "Configure the way your keyboard keys are mapped to specific characters and functions.",
@@ -2516,16 +2642,14 @@ async fn configure_keyboard(app:&mut Os)-> Result<(), Error>
             "Keyboard layout configuration",
         ).await.is_ok());
         app.keyboard.keymap.clear();
-        app.keyboard.keymap = select(
-            "Select a keymap :",
-            KEYMAPS.map(String::from).to_vec(),
-        );
+        app.keyboard.keymap = select("Select a keymap :", KEYMAPS.map(String::from).to_vec());
         if app.keyboard.keymap.is_empty().eq(&false) {
             break;
         }
     }
     // Keyboard Layout
     loop {
+        #[cfg(feature = "ai")]
         assert!(assistant(
             "Set Your Keyboard Layout",
             "Configure the way your keyboard keys are mapped to specific characters and functions.",
@@ -2544,6 +2668,7 @@ async fn configure_keyboard(app:&mut Os)-> Result<(), Error>
     }
     // Keyboard Model
     loop {
+        #[cfg(feature = "ai")]
         assert!(assistant(
             "Configure Your Keyboard Model",
             "Ensure your system recognizes your specific keyboard model for optimal functionality.",
@@ -2563,6 +2688,7 @@ async fn configure_keyboard(app:&mut Os)-> Result<(), Error>
 
     // Keyboard Options
     loop {
+        #[cfg(feature = "ai")]
         assert!(assistant(
             "Configure Your Keyboard Options",
             "Customize various keyboard behaviors to match your preferences and needs.",
@@ -2586,31 +2712,28 @@ async fn configure_keyboard(app:&mut Os)-> Result<(), Error>
     // XKBMODEL=pc105
     // XKBOPTIONS=terminate:ctrl_alt_bksp
     assert!(File::create("/etc/vconsole.conf").is_ok());
-    if let Ok(mut console) = OpenOptions::new().write(true).create(true).open("/etc/vconsole.conf"){
-        assert!(console.write_all(format!("KEYMAP={}\nXKBLAYOUT={}\nXKBMODEL={}\nXKBOPTIONS={}",app.keyboard.keymap,app.keyboard.layout,app.keyboard.model,app.keyboard.options).as_bytes()).is_ok());
+    if let Ok(mut console) = OpenOptions::new()
+        .write(true)
+        .create(true)
+        .open("/etc/vconsole.conf")
+    {
+        assert!(console
+            .write_all(
+                format!(
+                    "KEYMAP={}\nXKBLAYOUT={}\nXKBMODEL={}\nXKBOPTIONS={}",
+                    app.keyboard.keymap,
+                    app.keyboard.layout,
+                    app.keyboard.model,
+                    app.keyboard.options
+                )
+                .as_bytes()
+            )
+            .is_ok());
         assert!(console.sync_all().is_ok());
         assert!(console.flush().is_ok());
         return Ok(());
     }
     Ok(())
-}
-async fn locale(app:&mut Os)
-{
-    loop {
-        assert!(assistant(
-            "Set Your Locale",
-            "Configure your system's language, region, and character encoding settings.",
-            "Display language: Ensure your system uses your preferred language for menus, messages, and applications.\nFormatting: Get correct date, time, currency, and number formats based on your region.\nCharacter support: Handle special characters and symbols used in your language properly.",
-            "User-friendly experience: Interact with your system in a familiar and comfortable way.\nAvoid errors: Prevent issues with software that relies on specific locale settings.\nCImproved accessibility: Make your system more accessible to users who speak different languages or use assistive technologies.",
-            "Locale configuration"
-        ).await.is_ok());
-        app.locale.clear();
-        app.locale = select("Select a locale :", LOCALES.map(String::from).to_vec());
-        if app.locale.is_empty().eq(&false) {
-            break;
-        }
-
-    }
 }
 #[tokio::main]
 async fn main() -> Result<(), Error> {
@@ -2618,6 +2741,7 @@ async fn main() -> Result<(), Error> {
     if let Some(chat) = app.get_one::<bool>("chat") {
         if chat.eq(&true) {
             cls();
+            #[cfg(feature = "ai")]
             ai().await;
             return Ok(());
         }
