@@ -1,11 +1,12 @@
 use crate::ai::gemini::assistant;
 use crate::os::Os;
 use inquire::Editor;
-use std::fs::{read_to_string, OpenOptions};
+use std::fs::{read_to_string, File, OpenOptions};
 use std::io::{Error, ErrorKind, Write};
 use std::process::Command;
 
 pub async fn configure_locale(app: &mut Os) -> Result<(), Error> {
+    assert!(File::create("/etc/locale.conf").is_ok());
     #[cfg(feature = "ai")]
     assert!(assistant(
         "Set your locale.",
