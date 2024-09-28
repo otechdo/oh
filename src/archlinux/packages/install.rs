@@ -17,5 +17,5 @@ pub async fn packages() -> bool
             break;
         }
     }
-    Command::new("pacman").arg("-Syyu").arg(install.join(" ").as_str()).spawn().expect("Failed to spawn package install").wait().expect("failed to wait on package install").success()
+    Command::new("pacman").arg("-Syyu").args(install).spawn().expect("Failed to spawn package install").wait().expect("failed to wait on package install").success()
 }
