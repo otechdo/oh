@@ -11,7 +11,6 @@ use crate::archlinux::packages::install::packages;
 
 pub mod mirroring;
 pub mod network;
-
 pub mod keyboard;
 pub mod locales;
 pub mod time;
