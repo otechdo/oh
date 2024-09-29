@@ -5,6 +5,6 @@ Name=Gemini
 Comment=Chat with gemini
 Path=/tmp
 Exec=/usr/bin/oh --chat
-Icon=Gemini.svg
+Icon=Gemini
 StartupWMClass=Gemini
 Terminal=true
