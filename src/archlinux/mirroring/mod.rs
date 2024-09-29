@@ -2,8 +2,16 @@ use crate::configuration::system::COUNTRIES;
 use crate::{os::Os, select};
 use std::io::Error;
 use std::process::Command;
+use crate::ai::gemini::assistant;
 
-pub fn configure_archlinux_mirrors(os: &mut Os) -> Result<(), Error> {
+pub async fn configure_archlinux_mirrors(os: &mut Os) -> Result<(), Error> {
+    #[cfg(feature = "ai")]
+    assert!(assistant(
+        "Configure Mirrors.",
+        "Configure the Pacman mirrors to select the fastest ones based on your location.",
+        "This will make package installation and updates faster.",
+        "Faster download speeds for packages\nReduced waiting time for installations and updates\nImproved overall system performance",
+        "pacman mirrors").await.is_ok());
     os.mirrors.country.clear();
     os.mirrors.protocol.clear();
     os.mirrors.save_at.clear();
