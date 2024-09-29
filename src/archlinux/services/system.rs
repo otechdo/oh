@@ -15,7 +15,7 @@ pub fn socket_running() -> Vec<String> {
 }
 
 pub fn services_running() -> Vec<String> {
-     assert!(update_systemctl_cache());
+    assert!(update_systemctl_cache());
     let mut services: Vec<String> = Vec::new();
     let x = read_to_string("/tmp/services-running").expect("failed to read /tmp/services-running");
     for line in x.lines() {
@@ -25,7 +25,7 @@ pub fn services_running() -> Vec<String> {
 }
 
 pub fn services_disabled() -> Vec<String> {
-     assert!(update_systemctl_cache());
+    assert!(update_systemctl_cache());
     let mut services: Vec<String> = Vec::new();
     let x =
         read_to_string("/tmp/services-disabled").expect("failed to read /tmp/services-disabled");
@@ -36,7 +36,7 @@ pub fn services_disabled() -> Vec<String> {
 }
 
 pub fn socket_disabled() -> Vec<String> {
-     assert!(update_systemctl_cache());
+    assert!(update_systemctl_cache());
     let mut services: Vec<String> = Vec::new();
     let x = read_to_string("/tmp/sockets-disabled").expect("failed to read /tmp/sockets-disabled");
     for line in x.lines() {
@@ -46,7 +46,7 @@ pub fn socket_disabled() -> Vec<String> {
 }
 
 pub fn all_disabled() -> Vec<String> {
-     assert!(update_systemctl_cache());
+    assert!(update_systemctl_cache());
     let mut services: Vec<String> = Vec::new();
     services.append(&mut services_disabled().to_vec());
     services.append(&mut socket_disabled().to_vec());
@@ -54,7 +54,7 @@ pub fn all_disabled() -> Vec<String> {
 }
 
 pub fn all_running() -> Vec<String> {
-     assert!(update_systemctl_cache());
+    assert!(update_systemctl_cache());
     let mut services: Vec<String> = Vec::new();
     services.append(&mut services_running().to_vec());
     services.append(&mut socket_running().to_vec());
@@ -68,7 +68,7 @@ pub fn is_disabled(service: String) -> bool {
     services_disabled().contains(&service)
 }
 
-pub fn update_systemctl_cache() ->bool{
+pub fn update_systemctl_cache() -> bool {
     Command::new("update-services-cache")
         .spawn()
         .expect("failed to spawn update-services-cache")
