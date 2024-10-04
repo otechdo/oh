@@ -1,11 +1,15 @@
-use crate::ai::gemini::assistant;
-use crate::os::Os;
-use inquire::Editor;
 use std::fs::{read_to_string, File, OpenOptions};
+use crate::os::Os;
 use std::io::{Error, ErrorKind, Write};
 use std::process::Command;
 
-pub async fn configure_locale(app: &mut Os) -> Result<(), Error> {
+#[cfg(feature = "ai")]
+use crate::ai::gemini::assistant;
+#[cfg(feature = "ask")]
+use inquire::Editor;
+
+
+pub async fn configure_locale(app: &mut Os, expert: bool) -> Result<(), Error> {
     if let Ok(mut f) = File::create("/etc/locale.conf") {
         f.write_all("LANG=\nLANGUAGE=\nLC_TIME=\nLC_COLLATE=\nLC_ALL=".as_bytes())
             .expect("Unable to write to /etc/locale.conf");
@@ -18,7 +22,7 @@ pub async fn configure_locale(app: &mut Os) -> Result<(), Error> {
         "Configure your system's language, region, and character encoding settings.",
         "Display language: Ensure your system uses your preferred language for menus, messages, and applications.\nFormatting: Get correct date, time, currency, and number formats based on your region.\nCharacter support: Handle special characters and symbols used in your language properly.",
         "User-friendly experience: Interact with your system in a familiar and comfortable way.\nAvoid errors: Prevent issues with software that relies on specific locale settings.\nImproved accessibility: Make your system more accessible to users who speak different languages or use assistive technologies.",
-        "locale").await.is_ok());
+        "locale", expert).await.is_ok());
     app.locale.clear();
     app.locale.push_str(
         Editor::new("Edition of /etc/locale.gen")

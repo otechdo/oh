@@ -1,8 +1,11 @@
-use crate::utils::confirm;
-use inquire::MultiSelect;
 use std::fs::read_to_string;
 use std::io::Error;
 use std::process::Command;
+
+#[cfg(feature = "ask")]
+use crate::utils::confirm;
+#[cfg(feature = "ask")]
+use inquire::MultiSelect;
 
 pub fn socket_running() -> Vec<String> {
     assert!(update_systemctl_cache());

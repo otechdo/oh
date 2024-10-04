@@ -1,5 +1,7 @@
-gemini:
-	@cargo build --release --features full
+archlinux:
+	@cargo build --release --features archlinux
+gentoo:
+	@cargo build --release --features gentoo
 install:
 	@mkdir -p /usr/share/icons/Gemini /var/log/Gemini /usr/share/applications/Gemini
 	@install -m 644 ./icons/Gemini.svg /usr/share/icons/Gemini/

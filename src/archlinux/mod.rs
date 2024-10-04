@@ -17,21 +17,23 @@ pub mod packages;
 pub mod services;
 pub mod time;
 
-pub async fn arch_install() -> Result<(), Error> {
+pub async fn arch_install(expert: bool) -> Result<(), Error> {
     let mut app = Os::default();
     #[cfg(feature = "ai")]
-    assert!(assistant(
-        "Configure Mirrors.",
-        "Configure the Pacman mirrors to select the fastest ones based on your location.",
-        "This will make package installation and updates faster.",
-        "Faster download speeds for packages\nReduced waiting time for installations and updates\nImproved overall system performance",
-        "pacman mirrors").await.is_ok());
+    if expert.eq(&false) {
+        assert!(assistant(
+            "Configure Mirrors.",
+            "Configure the Pacman mirrors to select the fastest ones based on your location.",
+            "This will make package installation and updates faster.",
+            "Faster download speeds for packages\nReduced waiting time for installations and updates\nImproved overall system performance",
+            "pacman mirrors", expert).await.is_ok());
+    }
     assert!(configure_archlinux_mirrors(&mut app).is_ok());
     assert!(reflector(&mut app).await.is_ok());
-    assert!(configure_keyboard(&mut app).await.is_ok());
-    assert!(configure_timezone(&mut app).await.is_ok());
-    assert!(configure_locale(&mut app).await.is_ok());
-    assert!(packages().await);
+    assert!(configure_keyboard(&mut app, expert).await.is_ok());
+    assert!(configure_timezone(&mut app, expert).await.is_ok());
+    assert!(configure_locale(&mut app, expert).await.is_ok());
+    assert!(packages(expert).await);
     assert!(enable_services().await.is_ok());
     Ok(())
 }

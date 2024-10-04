@@ -1,10 +1,10 @@
-use std::io::Error;
-use crate::ai::gemini::ai;
-
-pub mod network;
+#[cfg(feature = "gentoo")]
 pub mod stage;
+#[cfg(feature = "gentoo")]
+pub mod network;
 
-pub async fn install_gentoo() -> Result<(), Error> {
-    ai().await;
+#[cfg(feature = "gentoo")]
+#[cfg(not(feature = "archlinux"))]
+pub async fn install_gentoo(_expert: bool) -> Result<(), Error> {
     Ok(())
 }

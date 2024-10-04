@@ -2,6 +2,7 @@ use crate::os::Os;
 use std::io::Error;
 use std::process::{Command, Stdio};
 
+#[cfg(feature = "archlinux")]
 pub async fn reflector(app: &mut Os) -> Result<(), Error> {
     assert!(Command::new("reflector")
         .stdout(Stdio::null())

@@ -1,10 +1,15 @@
-use inquire::{Editor, Select};
-use reqwest::{get, Error};
 use std::fs::{read_to_string, File};
 use std::io::{copy, BufReader};
 use std::path::Path;
+
+#[cfg(feature = "ask")]
+use inquire::{Editor, Select};
+#[cfg(feature = "archive")]
 use tar::Archive;
+#[cfg(feature = "archive")]
 use xz2::read::XzDecoder;
+#[cfg(feature = "req")]
+use reqwest::{get, Error};
 
 pub struct Stage {
     name: String,

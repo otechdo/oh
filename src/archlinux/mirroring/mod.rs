@@ -1,7 +1,10 @@
-use crate::configuration::system::COUNTRIES;
-use crate::{os::Os, select};
 use std::io::Error;
 use std::process::Command;
+use crate::configuration::system::COUNTRIES;
+#[cfg(feature = "ask")]
+use crate::{os::Os, select};
+
+#[cfg(feature = "archlinux")]
 pub fn configure_archlinux_mirrors(os: &mut Os) -> Result<(), Error> {
     os.mirrors.country.clear();
     os.mirrors.protocol.clear();
@@ -19,9 +22,9 @@ pub fn configure_archlinux_mirrors(os: &mut Os) -> Result<(), Error> {
                 "rsync".to_string(),
                 "ftp".to_string(),
             ]
-            .to_vec(),
+                .to_vec(),
         )
-        .as_str(),
+            .as_str(),
     );
     os.mirrors.sort.push_str(
         select(
@@ -33,9 +36,9 @@ pub fn configure_archlinux_mirrors(os: &mut Os) -> Result<(), Error> {
                 "score".to_string(),
                 "country".to_string(),
             ]
-            .to_vec(),
+                .to_vec(),
         )
-        .as_str(),
+            .as_str(),
     );
     os.mirrors.save_at.push_str("/etc/pacman.d/mirrorlist");
     if os.mirrors.country.is_empty()

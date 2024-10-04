@@ -66,7 +66,12 @@ pub async fn assistant(
     why: &str,
     benefits: &str,
     step: &str,
+    expert: bool,
 ) -> Result<(), Error> {
+    if expert {
+        cls();
+        return Ok(());
+    }
     cls();
     println!("{title}\n\n{description}\n\n{why}\n\n{benefits}\n");
     if Confirm::new(format!("Do you want chat with the AI before configure the {step} ?").as_str())
